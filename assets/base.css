@@ -1,0 +1,12 @@
+@media (min-width: 550px) {
+	.column {
+		width: 100%;
+  		float: left;
+		box-sizing: border-box; }
+
+	.small.column	{ width: 25%; }
+	.large.column	{ width: 75%; }
+}
+h1, h2, h3, h4, h5, h6 {
+    color: hotpink
+}
