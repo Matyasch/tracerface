@@ -1,10 +1,7 @@
 class Data:
-    def __init__(self):
+    def __init__(self, parsed_output):
         self.nodes = []
-        self.edges = []
-        with open("assets/data") as infile:
-            for line in infile:
-                elements = line.rstrip('\n').split(' ')
-                self.nodes.append(elements[0])
-                self.edges.append(elements)
+        self.edges = set(tuple(edge) for edge in parsed_output)
+        for edge in self.edges:
+            self.nodes.append(edge[0])
         self.nodes = list(set(self.nodes))

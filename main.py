@@ -9,41 +9,59 @@ import dash
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
-from persistence import Data
 from model import Model
+import parser
+from persistence import Data
 from viewmodel import ViewModel
 import view.layout as layout
 from webapp import WebApp
 
 
-CALLGRIND_OUT_FILE_PATH = Path('assets/callgrind')
-PARSED_OUT_FILE = Path('assets/parsed')
+CALLGRIND_PURE_FILE = Path('assets/callgrind_pure')
+CALLGRIND_ANNOTATED_FILE = Path('assets/callgrind_annotated')
+
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument('--binary-path',
         type=Path,
-        help='path to binary to be profiled',
-        required=True)
+        help='path to binary to be profiled')
+    parser.add_argument('--callgrind-out-file',
+        type=Path,
+        help='path to callgrind output-file')
 
     return parser.parse_args(args)
 
 
 def main(args):
     parsed_args = parse_args(args)
-    subprocess.run([
-        'valgrind',
-        '--tool=callgrind',
-        '--dump-instr=yes',
-        '--dump-line=yes',
-        '--callgrind-out-file={}'.format(str(CALLGRIND_OUT_FILE_PATH)),
-        './{}'.format(str(parsed_args.binary_path))
-    ])
-    data = Data()
+    if parsed_args.binary_path:
+        subprocess.run([
+            'valgrind',
+            '--tool=callgrind',
+            '--dump-instr=yes',
+            '--dump-line=yes',
+            '--callgrind-out-file={}'.format(str(CALLGRIND_PURE_FILE)),
+            './{}'.format(str(parsed_args.binary_path))
+        ])
+        pipe = subprocess.Popen([
+            'callgrind_annotate',
+            '--threshold=100',
+            '--inclusive=yes',
+            '--tree=caller',
+            str(CALLGRIND_PURE_FILE)
+        ], stdout=subprocess.PIPE)
+        text = pipe.communicate()[0].decode("utf-8")
+        Path('testout').write_text(text)
+        parsed_output = parser.parse_callgrind_output(text, 'main')
+    else:
+        parsed_output = parser.parse_callgrind_output(parsed_args.callgrind_out_file, 'main')
+    data = Data(parsed_output)
     model = Model(data)
     view_model = ViewModel(model)
-    web_app = WebApp(view_model)
-    web_app.app.run_server(debug=True)
+    WEB_APP = WebApp(view_model)
+    WEB_APP.app.run_server(debug=True)
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])

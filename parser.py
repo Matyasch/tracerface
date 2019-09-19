@@ -1,24 +1,17 @@
 #!/usr/bin/env python3
-
+#TODO: Count function calls, which is the subtotal of each call is each stack
 import re
-import sys
-
-from_fn = sys.argv[1]
-caller_pattern = re.compile('{}')
-
-call_stack = [[from_fn, 'None']]
-searching = [from_fn]
 
 
 def get_caller_pattern(fn_name):
-    return re.compile('\s+[0-9]+\s\s\<\s.*\:{}\s\('.format(fn_name))
+    return re.compile('\s+([0-9]|,)+\s\s\<\s.*\:{}\s\('.format(fn_name))
 
 
 def get_called(functions):
     for function in functions:
-        fn_name = re.search('^\s+[0-9]+\s\s\*\s\s.*\:(.*)\s', function)
+        fn_name = re.search('^^\s+([0-9]|,)+\s\s\*\s\s.*\:(.*)\s\[', function)
         if fn_name:
-            return fn_name.group(1)
+            return fn_name.group(2)
 
 
 def get_calls(function_name, stacks):
@@ -31,18 +24,17 @@ def get_calls(function_name, stacks):
     return called_functions
 
 
+def parse_callgrind_output(annotated_output, from_fn):
+    call_stack = [[from_fn, 'None']]
+    searching = [from_fn]
+    stacks = annotated_output.split('\n\n')
 
-with open('teststack.txt') as infile:
-    stacks = infile.read().split('\n\n')
-
-while searching:
-    caller_function = searching.pop(0)
-    called_functions = get_calls(caller_function, stacks)
-    for called_function in called_functions:
-        call_stack.append([called_function, caller_function])
-        searching.append(called_function)
-
-
-for call in call_stack:
-    print(call)
-#from_pattern = re.compile('\s\s\s\s[0-9]+\s\s\*\s\(([0-9]+)\)\s{}$'.format(from_fn))
+    while searching:
+        caller_function = searching.pop(0)
+        called_functions = get_calls(caller_function, stacks)
+        for called_function in called_functions:
+            call_stack.append([called_function, caller_function])
+            searching.append(called_function)
+    for call in call_stack:
+        print(call)
+    return call_stack

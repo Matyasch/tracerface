@@ -22,7 +22,7 @@ def graph_layout(view_model):
             id='graph',
             layout={
                 'name': 'dagre',
-                'animate': True,
+                'spacingFactor': '3',
             },
             style={
                 'width': '100%',
@@ -35,11 +35,12 @@ def graph_layout(view_model):
                     'style': {
                         'content': 'data(id)',
                         'text-valign': 'center',
+                        'width': 'label',
+                        'height': 'label',
                         'shape': 'rectangle',
                         'border-color': 'black',
                         'background-color': 'white',
-                        'border-width': '1',
-                        'width': 'label'
+                        'border-width': '1'
                     }
                 },
                 {
