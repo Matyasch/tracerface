@@ -66,30 +66,13 @@ def dashboard():
         children=[
             dcc.Tab(children=[
                 html.P(
-                    children=f'Layout',
+                    children=f'Info',
                     style={'margin-left': '3px'}
                 ),
-                dcc.Dropdown(
-                    id='dropdown-layout',
-                    value='dagre',
-                    clearable=False,
-                    options=[
-                        {'label': name.capitalize(), 'value': name}
-                        for name in ['dagre', 'klay', 'breadthfirst']
-                    ],
+                html.Pre(
+                    id='info-box',
+                    style=styles['pre']
                 )
-            ]),
-            html.P(
-                children=f'Info',
-                style={'margin-left': '3px'}
-            ),
-            html.Pre(
-                id='cytoscape-tapNodeData-json',
-                style=styles['pre']
-            )
+            ])
         ]
     )
-
-
-def dashboard_infopanel():
-    pass

@@ -14,7 +14,3 @@ class WebApp():
             layout.graph_layout(view_model),
             layout.dashboard()
         ])
-
-
-    def start(self, app, debug):
-        app.run_server(debug)

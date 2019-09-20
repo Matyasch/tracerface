@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import argparse
 import json
+from pathlib import Path
 import sys
 
 import dash
-import dash_html_components as html
 from dash.dependencies import Input, Output, State
 
 from model import Model
-from pathlib import Path
 from persistence import Persistence
 from viewmodel import ViewModel
 import view.layout as layout
@@ -23,8 +22,8 @@ def parse_args(args):
     parser.add_argument('--output',
         type=Path,
         help='path to callgrind output-file')
-
     return parser.parse_args(args)
+
 
 parsed_args = parse_args(sys.argv[1:])
 persistence = Persistence()
@@ -36,8 +35,14 @@ else:
     model.initialize_from_output(parsed_args.output, 'main')
 
 view_model = ViewModel(model)
-WEB_APP = WebApp(view_model)
+web_app = WebApp(view_model)
+
+
+@web_app.app.callback(Output('info-box', 'children'),
+              [Input('graph', 'tapNodeData')])
+def displayTapNodeData(data):
+    return json.dumps(data, indent=2)
 
 
 if __name__ == '__main__':
-    WEB_APP.app.run_server(debug=True)
+    web_app.app.run_server(debug=True)
