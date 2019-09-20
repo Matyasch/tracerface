@@ -17,16 +17,15 @@ import view.layout as layout
 from webapp import WebApp
 
 
-CALLGRIND_PURE_FILE = Path('assets/callgrind_pure')
-CALLGRIND_ANNOTATED_FILE = Path('assets/callgrind_annotated')
+CALLGRIND_OUT_FILE = Path('assets/callgrind_out')
 
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--binary-path',
+    parser.add_argument('--binary',
         type=Path,
         help='path to binary to be profiled')
-    parser.add_argument('--callgrind-out-file',
+    parser.add_argument('--output',
         type=Path,
         help='path to callgrind output-file')
 
@@ -35,27 +34,27 @@ def parse_args(args):
 
 def main(args):
     parsed_args = parse_args(args)
-    if parsed_args.binary_path:
+    if parsed_args.binary:
         subprocess.run([
             'valgrind',
             '--tool=callgrind',
             '--dump-instr=yes',
             '--dump-line=yes',
-            '--callgrind-out-file={}'.format(str(CALLGRIND_PURE_FILE)),
-            './{}'.format(str(parsed_args.binary_path))
+            '--callgrind-out-file={}'.format(str(CALLGRIND_OUT_FILE)),
+            './{}'.format(str(parsed_args.binary))
         ])
         pipe = subprocess.Popen([
             'callgrind_annotate',
             '--threshold=100',
             '--inclusive=yes',
             '--tree=caller',
-            str(CALLGRIND_PURE_FILE)
+            str(CALLGRIND_OUT_FILE)
         ], stdout=subprocess.PIPE)
         text = pipe.communicate()[0].decode("utf-8")
         Path('testout').write_text(text)
-        parsed_output = parser.parse_callgrind_output(text, 'main')
+        parsed_output = parser.parse_from_strng(text, 'main')
     else:
-        parsed_output = parser.parse_callgrind_output(parsed_args.callgrind_out_file, 'main')
+        parsed_output = parser.parse_from_file(parsed_args.output, 'main')
     data = Data(parsed_output)
     model = Model(data)
     view_model = ViewModel(model)

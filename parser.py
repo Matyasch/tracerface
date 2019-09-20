@@ -24,10 +24,15 @@ def get_calls(function_name, stacks):
     return called_functions
 
 
-def parse_callgrind_output(annotated_output, from_fn):
+def parse_from_file(file, from_fn):
+    text = file.read_text()
+    return parse_from_strng(text, from_fn)
+
+
+def parse_from_strng(text, from_fn):
     call_stack = [[from_fn, 'None']]
     searching = [from_fn]
-    stacks = annotated_output.split('\n\n')
+    stacks = text.split('\n\n')
 
     while searching:
         caller_function = searching.pop(0)
