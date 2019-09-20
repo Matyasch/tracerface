@@ -40,7 +40,8 @@ def graph_layout(view_model):
                         'shape': 'rectangle',
                         'border-color': 'black',
                         'background-color': 'white',
-                        'border-width': '1'
+                        'border-width': '1',
+                        'padding': '5px'
                     }
                 },
                 {
