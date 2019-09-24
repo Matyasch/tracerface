@@ -16,9 +16,6 @@ from webapp import WebApp
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--binary',
-        type=Path,
-        help='path to binary to be profiled')
     parser.add_argument('--output',
         type=Path,
         help='path to callgrind output-file')
@@ -29,10 +26,7 @@ parsed_args = parse_args(sys.argv[1:])
 persistence = Persistence()
 model = Model(persistence)
 
-if parsed_args.binary:
-    model.initialize_from_binary(parsed_args.binary, 'main')
-else:
-    model.initialize_from_output(parsed_args.output, 'main')
+model.initialize_from_output(parsed_args.output)
 
 view_model = ViewModel(model)
 web_app = WebApp(view_model)
