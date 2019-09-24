@@ -1,4 +1,4 @@
-# call-graph-visualisation
+# Visualisation tool for BCC trace
 An interactive web-app tool for call-graph visualisation
 
 
