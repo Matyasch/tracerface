@@ -5,7 +5,7 @@ class ViewModel():
 
 
     def get_nodes(self):
-        return [{'data': {'id': node, 'call_count': self.model.get_nodes()[node]}} for node in self.model.get_nodes()]
+        return [{'data': {'id': node}} for node in self.model.get_nodes()]
 
 
     def get_edges(self):
