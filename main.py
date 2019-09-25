@@ -10,7 +10,6 @@ from dash.dependencies import Input, Output, State
 from model import Model
 from persistence import Persistence
 from viewmodel import ViewModel
-import view.layout as layout
 from webapp import WebApp
 
 

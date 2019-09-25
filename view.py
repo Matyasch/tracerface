@@ -45,6 +45,34 @@ def graph_layout(view_model):
                     }
                 },
                 {
+                    'selector': '[count = 0]',
+                    'style': {
+                        'border-color': 'grey',
+                        'color': 'grey'
+                    }
+                },
+                {
+                    'selector': '[count > {}]'.format(view_model.green_count()),
+                    'style': {
+                        'border-color': 'green',
+                        'color': 'green'
+                    }
+                },
+                {
+                    'selector': '[count > {}]'.format(view_model.yellow_count()),
+                    'style': {
+                        'border-color': 'orange',
+                        'color': 'orange'
+                    }
+                },
+                {
+                    'selector': '[count > {}]'.format(view_model.red_count()),
+                    'style': {
+                        'border-color': 'red',
+                        'color': 'red'
+                    }
+                },
+                {
                     'selector': 'edge',
                     'style': {
                         'curve-style': 'bezier',
