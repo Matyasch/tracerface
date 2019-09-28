@@ -1,14 +1,17 @@
-import itertools
-from pathlib import Path
+from queue import Queue, Empty
 import subprocess
+import threading
+
+import pexpect
 
 from parser import Parser
 
 # Manages logic and persistence
-class Model():
+class Model:
     def __init__(self, persistence):
         self.persistence = persistence
         self.parser = Parser()
+        self.thread = threading.Thread()
 
     # Returns a list of nodes and their call count
     def get_nodes(self):
@@ -28,6 +31,27 @@ class Model():
         return int(self.persistence.max_count*2/3)
 
     def initialize_from_output(self, output_file):
-        self.parser.parse(output_file.read_text())
+        self.parser.parse_from_text(output_file.read_text())
         self.persistence.load_edges(self.parser.edges)
         self.persistence.load_nodes(self.parser.nodes)
+
+    def run_command(self, cmd):
+        child = pexpect.spawn(cmd, timeout=None)
+        stack = []
+        while True:
+            try:
+                child.expect('\n')
+                call = child.before.decode("utf-8")
+                if call == '\r':
+                    self.parser.parse_from_list(stack)
+                    self.persistence.load_edges(self.parser.edges)
+                    self.persistence.load_nodes(self.parser.nodes)
+                    stack.clear()
+                else:
+                    stack.append(call)
+            except pexpect.EOF:
+                break
+
+    def start_trace(self):
+        thread = threading.Thread(target=self.run_command, args=['trace-bpfcc -UK c:printf c:sleep'])
+        thread.start()

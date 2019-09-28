@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output, State
 import view
 
 
-class WebApp():
+class WebApp:
     def __init__(self, view_model):
         self.app = dash.Dash(__name__)
         self.app.layout = html.Div([

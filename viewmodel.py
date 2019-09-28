@@ -1,5 +1,5 @@
 # Transforms data into format usable by the layout
-class ViewModel():
+class ViewModel:
     def __init__(self, model):
         self.model = model
 

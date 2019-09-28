@@ -6,6 +6,7 @@ import sys
 
 import dash
 from dash.dependencies import Input, Output, State
+import dash_core_components as dcc
 
 from model import Model
 from persistence import Persistence
@@ -25,16 +26,24 @@ parsed_args = parse_args(sys.argv[1:])
 persistence = Persistence()
 model = Model(persistence)
 
-model.initialize_from_output(parsed_args.output)
+if parsed_args.output:
+    model.initialize_from_output(parsed_args.output)
+else:
+    model.start_trace()
 
 view_model = ViewModel(model)
 web_app = WebApp(view_model)
 
 
 @web_app.app.callback(Output('info-box', 'children'),
-              [Input('graph', 'tapNodeData')])
-def displayTapNodeData(data):
-    return json.dumps(data, indent=2)
+              [Input('interval-component', 'n_intervals')])
+def update_metrics(n):
+    return json.dumps(view_model.get_nodes()+[persistence.max_count], indent=2)
+
+@web_app.app.callback(Output('graph', 'elements'),
+              [Input('interval-component', 'n_intervals')])
+def update_elements(n):
+    return view_model.get_nodes() + view_model.get_edges()
 
 
 if __name__ == '__main__':

@@ -101,6 +101,11 @@ def dashboard():
                     id='info-box',
                     style=styles['pre']
                 )
-            ])
+            ]),
+            dcc.Interval(
+                id='interval-component',
+                interval=1*500, # in milliseconds
+                n_intervals=0
+            )
         ]
     )
