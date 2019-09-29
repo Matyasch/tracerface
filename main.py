@@ -16,9 +16,17 @@ from webapp import WebApp
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output',
+    subparsers = parser.add_subparsers(help='Modes of usage', dest='mode')
+    static_parser = subparsers.add_parser("static", help='Create call graph from output')
+    realtime_parser = subparsers.add_parser("realtime", help='Profile given functions dinamically')
+    static_parser.add_argument('--output',
         type=Path,
-        help='path to callgrind output-file')
+        help='Path to callgrind output-file'
+    )
+    realtime_parser.add_argument('--functions',
+        help='Functions to profile',
+        nargs='+'
+    )
     return parser.parse_args(args)
 
 
@@ -26,10 +34,10 @@ parsed_args = parse_args(sys.argv[1:])
 persistence = Persistence()
 model = Model(persistence)
 
-if parsed_args.output:
+if parsed_args.mode == 'static':
     model.initialize_from_output(parsed_args.output)
 else:
-    model.start_trace()
+    model.start_trace(parsed_args.functions)
 
 view_model = ViewModel(model)
 web_app = WebApp(view_model)

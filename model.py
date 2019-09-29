@@ -52,6 +52,7 @@ class Model:
             except pexpect.EOF:
                 break
 
-    def start_trace(self):
-        thread = threading.Thread(target=self.run_command, args=['trace-bpfcc -UK c:printf c:sleep'])
+    def start_trace(self, functions):
+        cmd = ['trace-bpfcc', '-UK'] + functions
+        thread = threading.Thread(target=self.run_command, args=[' '.join(cmd)])
         thread.start()
