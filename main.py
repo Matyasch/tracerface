@@ -11,6 +11,7 @@ import dash_core_components as dcc
 from model import Model
 from persistence import Persistence
 from viewmodel import ViewModel
+from view import View
 from webapp import WebApp
 
 
@@ -21,11 +22,13 @@ def parse_args(args):
     realtime_parser = subparsers.add_parser("realtime", help='Profile given functions dinamically')
     static_parser.add_argument('--output',
         type=Path,
-        help='Path to callgrind output-file'
+        help='Path to callgrind output-file',
+        required=True
     )
     realtime_parser.add_argument('--functions',
         help='Functions to profile',
-        nargs='+'
+        nargs='+',
+        required=True
     )
     return parser.parse_args(args)
 
@@ -36,17 +39,22 @@ model = Model(persistence)
 
 if parsed_args.mode == 'static':
     model.initialize_from_output(parsed_args.output)
-else:
+elif parsed_args.mode == 'realtime':
     model.start_trace(parsed_args.functions)
+else:
+    print('Please choose a mode')
+    sys.exit(1)
 
 view_model = ViewModel(model)
-web_app = WebApp(view_model)
+view = View(view_model)
+web_app = WebApp(view)
 
 
 @web_app.app.callback(Output('info-box', 'children'),
               [Input('interval-component', 'n_intervals')])
 def update_metrics(n):
     return json.dumps(view_model.get_nodes()+[persistence.max_count], indent=2)
+
 
 @web_app.app.callback(Output('graph', 'elements'),
               [Input('interval-component', 'n_intervals')])
