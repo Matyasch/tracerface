@@ -5,8 +5,9 @@ from pathlib import Path
 import sys
 
 import dash
-from dash.dependencies import Input, Output, State
 import dash_core_components as dcc
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 
 from model import Model
 from persistence import Persistence
@@ -17,18 +18,9 @@ from webapp import WebApp
 
 def parse_args(args):
     parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(help='Modes of usage', dest='mode')
-    static_parser = subparsers.add_parser("static", help='Create call graph from output')
-    realtime_parser = subparsers.add_parser("realtime", help='Profile given functions dinamically')
-    static_parser.add_argument('--output',
-        type=Path,
-        help='Path to callgrind output-file',
-        required=True
-    )
-    realtime_parser.add_argument('--functions',
+    parser.add_argument('--functions',
         help='Functions to profile',
         nargs='+',
-        required=True
     )
     return parser.parse_args(args)
 
@@ -37,13 +29,8 @@ parsed_args = parse_args(sys.argv[1:])
 persistence = Persistence()
 model = Model(persistence)
 
-if parsed_args.mode == 'static':
-    model.initialize_from_output(parsed_args.output)
-elif parsed_args.mode == 'realtime':
+if parsed_args.functions:
     model.start_trace(parsed_args.functions)
-else:
-    print('Please choose a mode')
-    sys.exit(1)
 
 view_model = ViewModel(model)
 view = View(view_model)
@@ -51,14 +38,24 @@ web_app = WebApp(view)
 
 
 @web_app.app.callback(Output('info-box', 'children'),
-              [Input('interval-component', 'n_intervals')])
-def update_metrics(n):
+    [Input('output-button', 'n_clicks')],
+    [State('output-textarea', 'value')])
+def update_info(n, value):
+    if not n:
+        raise PreventUpdate
+    else:
+        model.initialize_from_text(value)
     return json.dumps(view_model.get_nodes()+[persistence.max_count], indent=2)
 
 
 @web_app.app.callback(Output('graph', 'elements'),
-              [Input('interval-component', 'n_intervals')])
-def update_elements(n):
+    [Input('output-button', 'n_clicks'), Input('interval-component', 'n_intervals')],
+    [State('output-textarea', 'value')])
+def update_elements(n_click, n_int, value):
+    if not n_click:
+        raise PreventUpdate
+    else:
+        model.initialize_from_text(value)
     return view_model.get_nodes() + view_model.get_edges()
 
 

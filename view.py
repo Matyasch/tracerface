@@ -95,6 +95,11 @@ class View:
         return html.Div(
             className='small column',
             children=[
+                dcc.Tabs(id="tabs", value='static-tab', children=[
+                    dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
+                    dcc.Tab(label='Static mode', value='static-tab',children=[self.output_tab()]),
+                ]),
+                html.Div(id='tabs-content'),
                 dcc.Tab(children=[
                     html.P(
                         children=f'Info',
@@ -107,14 +112,9 @@ class View:
                 ]),
                 dcc.Interval(
                     id='interval-component',
-                    interval=1*500, # in milliseconds
+                    interval=5000*500, # in milliseconds
                     n_intervals=0
-                ),
-                dcc.Tabs(id="tabs", value='tab-1', children=[
-                    dcc.Tab(label='Tab one', value='tab-1'),
-                    dcc.Tab(label='Tab two', value='tab-2'),
-                ]),
-                html.Div(id='tabs-content')
+                )
             ]
         )
 
@@ -123,3 +123,21 @@ class View:
             self.graph_layout(),
             self.dashboard()
         ])
+
+    def realtime_tab(self):
+        return html.Div([
+            html.P('realtime mode')
+        ])
+
+    def output_tab(self):
+        return html.Div(
+            children=[
+                html.P('Trace output'),
+                dcc.Textarea(
+                    id='output-textarea',
+                    placeholder='Enter trace output',
+                    style={'width': '100%'},
+                ),
+                html.Button('Submit', id='output-button')
+            ]
+        )

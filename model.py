@@ -30,8 +30,8 @@ class Model:
     def red_count(self):
         return int(self.persistence.max_count*2/3)
 
-    def initialize_from_output(self, output_file):
-        self.parser.parse_from_text(output_file.read_text())
+    def initialize_from_text(self, raw_text):
+        self.parser.parse_from_text(raw_text)
         self.persistence.load_edges(self.parser.edges)
         self.persistence.load_nodes(self.parser.nodes)
 
