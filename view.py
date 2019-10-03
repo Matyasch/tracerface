@@ -3,7 +3,7 @@ import dash
 from callback_manager import CallbackManager
 from layout import Layout
 
-class WebApp:
+class View:
     def __init__(self, view_model):
         self.view_model=view_model
         self.layout = Layout(self.view_model)

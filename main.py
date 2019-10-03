@@ -7,7 +7,7 @@ import sys
 from model import Model
 from persistence import Persistence
 from viewmodel import ViewModel
-from webapp import WebApp
+from view import View
 
 
 def parse_args(args):
