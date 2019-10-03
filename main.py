@@ -27,8 +27,8 @@ if parsed_args.functions:
     model.start_trace(parsed_args.functions)
 
 view_model = ViewModel(model)
-web_app = WebApp(view_model)
+view = View(view_model)
 
 
 if __name__ == '__main__':
-    web_app.app.run_server(debug=True)
+    view.app.run_server(debug=True)
