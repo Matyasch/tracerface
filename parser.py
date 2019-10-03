@@ -1,43 +1,48 @@
-import sys
-import re
+from collections import namedtuple
 from pathlib import Path
+import re
+import sys
 
 FUNCTION_PATTERN = '^\s+(.+)\+.*\s\[(.+)\]'
 
-class Parser:
-    def __init__(self):
-        self.edges = {}
-        self.nodes = {}
+Graph = namedtuple('Graph', 'nodes edges')
 
-    def expand_edges(self, called, caller):
+class Parser:
+    def expand_edges(self, called, caller, edges):
         if called:
             edge = (called.group(1), caller.group(1))
-            if edge in self.edges:
-                self.edges[edge] +=1
+            if edge in edges:
+                edges[edge] +=1
             else:
-                self.edges[edge] = 1
+                edges[edge] = 1
 
-    def expand_nodes(self, called, caller):
+    def expand_nodes(self, called, caller, nodes):
         caller_name = caller.group(1)
-        if caller_name not in self.nodes:
-            self.nodes[caller_name] = 0
+        if caller_name not in nodes:
+            nodes[caller_name] = 0
         if not called:
-            self.nodes[caller_name] += 1
+            nodes[caller_name] += 1
 
-    def process_call_list(self, calls):
+    def process_call_list(self, calls, nodes, edges):
         called = None
         for call in calls:
             caller = re.search(FUNCTION_PATTERN, call)
             if caller:
-                self.expand_edges(called, caller)
-                self.expand_nodes(called, caller)
+                self.expand_edges(called, caller, edges)
+                self.expand_nodes(called, caller, nodes)
                 called = caller
 
     def parse_from_text(self, output):
+        nodes = {}
+        edges = {}
         stacks = output.split('\n\n')
         for stack in stacks:
             calls = stack.split('\n')
-            self.process_call_list(calls)
+            self.process_call_list(calls, nodes, edges)
+        return Graph(nodes=nodes, edges=edges)
 
     def parse_from_list(self, stack):
-        self.process_call_list(stack)
+        nodes = {}
+        edges = {}
+        self.process_call_list(stack, nodes, edges)
+        return Graph(nodes=nodes, edges=edges)

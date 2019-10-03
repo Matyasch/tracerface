@@ -12,7 +12,6 @@ from dash.exceptions import PreventUpdate
 from model import Model
 from persistence import Persistence
 from viewmodel import ViewModel
-from view import View
 from webapp import WebApp
 
 
@@ -33,30 +32,7 @@ if parsed_args.functions:
     model.start_trace(parsed_args.functions)
 
 view_model = ViewModel(model)
-view = View(view_model)
-web_app = WebApp(view)
-
-
-@web_app.app.callback(Output('info-box', 'children'),
-    [Input('output-button', 'n_clicks')],
-    [State('output-textarea', 'value')])
-def update_info(n, value):
-    if not n:
-        raise PreventUpdate
-    else:
-        model.initialize_from_text(value)
-    return json.dumps(view_model.get_nodes()+[persistence.max_count], indent=2)
-
-
-@web_app.app.callback(Output('graph', 'elements'),
-    [Input('output-button', 'n_clicks'), Input('interval-component', 'n_intervals')],
-    [State('output-textarea', 'value')])
-def update_elements(n_click, n_int, value):
-    if not n_click:
-        raise PreventUpdate
-    else:
-        model.initialize_from_text(value)
-    return view_model.get_nodes() + view_model.get_edges()
+web_app = WebApp(view_model)
 
 
 if __name__ == '__main__':

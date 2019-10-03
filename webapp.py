@@ -1,10 +1,15 @@
-import json
-
 import dash
-import dash_html_components as html
-from dash.dependencies import Input, Output, State
+
+from callback_manager import CallbackManager
+from layout import Layout
 
 class WebApp:
-    def __init__(self, view):
+    def __init__(self, view_model):
+        self.view_model=view_model
+        self.layout = Layout(self.view_model)
+
         self.app = dash.Dash(__name__)
-        self.app.layout = view.app_layout()
+        self.app.layout = self.layout.app_layout()
+
+        self.callback_manager = CallbackManager(self.app, self.view_model)
+        self.callback_manager.setup_callbacks()

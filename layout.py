@@ -14,7 +14,7 @@ styles = {
 }
 
 
-class View:
+class Layout:
     def __init__(self, view_model):
         self.view_model = view_model
 
@@ -111,9 +111,10 @@ class View:
                     )
                 ]),
                 dcc.Interval(
-                    id='interval-component',
-                    interval=5000*500, # in milliseconds
-                    n_intervals=0
+                    id='refresh-interval',
+                    interval=1*500, # in milliseconds
+                    n_intervals=0,
+                    disabled=True
                 )
             ]
         )
@@ -136,7 +137,7 @@ class View:
                 dcc.Textarea(
                     id='output-textarea',
                     placeholder='Enter trace output',
-                    style={'width': '100%'},
+                    style={'width': '100%', 'height': '600px'},
                 ),
                 html.Button('Submit', id='output-button')
             ]

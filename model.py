@@ -4,7 +4,7 @@ import threading
 
 import pexpect
 
-from parser import Parser
+from parser import Graph, Parser
 
 # Manages logic and persistence
 class Model:
@@ -31,9 +31,10 @@ class Model:
         return int(self.persistence.max_count*2/3)
 
     def initialize_from_text(self, raw_text):
-        self.parser.parse_from_text(raw_text)
-        self.persistence.load_edges(self.parser.edges)
-        self.persistence.load_nodes(self.parser.nodes)
+        self.persistence.clear()
+        graph = self.parser.parse_from_text(raw_text)
+        self.persistence.load_edges(graph.edges)
+        self.persistence.load_nodes(graph.nodes)
 
     def run_command(self, cmd):
         child = pexpect.spawn(cmd, timeout=None)
@@ -43,9 +44,9 @@ class Model:
                 child.expect('\n')
                 call = child.before.decode("utf-8")
                 if call == '\r':
-                    self.parser.parse_from_list(stack)
-                    self.persistence.load_edges(self.parser.edges)
-                    self.persistence.load_nodes(self.parser.nodes)
+                    graph = self.parser.parse_from_list(stack)
+                    self.persistence.load_edges(graph.edges)
+                    self.persistence.load_nodes(graph.nodes)
                     stack.clear()
                 else:
                     stack.append(call)
@@ -55,4 +56,3 @@ class Model:
     def start_trace(self, functions):
         cmd = ['trace-bpfcc', '-UK'] + functions
         thread = threading.Thread(target=self.run_command, args=[' '.join(cmd)])
-        thread.start()

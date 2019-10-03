@@ -13,3 +13,8 @@ class Persistence:
 
     def load_edges(self, edges):
         self.edges = {**self.edges, **edges}
+
+    def clear(self):
+        self.nodes = {}
+        self.edges = {}
+        self.max_count = 0

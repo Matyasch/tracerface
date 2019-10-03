@@ -17,3 +17,6 @@ class ViewModel:
 
     def red_count(self):
         return self.model.red_count()
+
+    def output_submit_button_clicked(self, text):
+        self.model.initialize_from_text(text)
