@@ -4,11 +4,6 @@ import json
 from pathlib import Path
 import sys
 
-import dash
-import dash_core_components as dcc
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-
 from model import Model
 from persistence import Persistence
 from viewmodel import ViewModel
