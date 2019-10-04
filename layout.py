@@ -134,6 +134,7 @@ class Layout:
                 id='functions',
                 type='text',
                 placeholder='input functions',
+                style={'width': '97%'}
             ),
             daq.PowerButton(
                 id='trace-button',
