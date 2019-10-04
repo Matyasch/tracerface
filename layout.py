@@ -1,4 +1,5 @@
 import dash_core_components as dcc
+import dash_daq as daq
 import dash_html_components as html
 
 import dash_cytoscape as cyto
@@ -95,7 +96,7 @@ class Layout:
         return html.Div(
             className='small column',
             children=[
-                dcc.Tabs(id="tabs", value='static-tab', children=[
+                dcc.Tabs(id='mode-tabs', value='realtime-tab', children=[
                     dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
                     dcc.Tab(label='Static mode', value='static-tab',children=[self.output_tab()]),
                 ]),
@@ -126,19 +127,28 @@ class Layout:
         ])
 
     def realtime_tab(self):
-        return html.Div([
-            html.P('realtime mode')
+        return html.Div(children=[
+            html.P('List functions to trace'),
+            html.P('Separated with spcaes'),
+            dcc.Input(
+                id='functions',
+                type='text',
+                placeholder='input functions',
+            ),
+            daq.PowerButton(
+                id='trace-button',
+                on=False,
+                color='#00FF00'
+            )
         ])
 
     def output_tab(self):
-        return html.Div(
-            children=[
-                html.P('Trace output'),
-                dcc.Textarea(
-                    id='output-textarea',
-                    placeholder='Enter trace output',
-                    style={'width': '100%', 'height': '600px'},
-                ),
-                html.Button('Submit', id='output-button')
-            ]
-        )
+        return html.Div(children=[
+            html.P('Trace output'),
+            dcc.Textarea(
+                id='output-textarea',
+                placeholder='Enter trace output',
+                style={'width': '100%', 'height': '600px'},
+            ),
+            html.Button('Submit', id='output-button', n_clicks_timestamp=0)
+        ])

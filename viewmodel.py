@@ -18,5 +18,12 @@ class ViewModel:
     def red_count(self):
         return self.model.red_count()
 
-    def output_submit_button_clicked(self, text):
+    def output_submit_btn_clicked(self, text):
         self.model.initialize_from_text(text)
+
+    def trace_btn_turned_on(self, functions):
+        function_list = functions.split(' ')
+        self.model.start_trace(function_list)
+
+    def trace_btn_turned_off(self):
+        self.model.stop_trace()

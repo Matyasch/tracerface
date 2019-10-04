@@ -12,6 +12,7 @@ class Model:
         self.persistence = persistence
         self.parser = Parser()
         self.thread = threading.Thread()
+        self.thread_enabled = False
 
     # Returns a list of nodes and their call count
     def get_nodes(self):
@@ -25,10 +26,10 @@ class Model:
         return 0
 
     def yellow_count(self):
-        return int(self.persistence.max_count/3)
+        return int(self.persistence.get_max_calls()/3)
 
     def red_count(self):
-        return int(self.persistence.max_count*2/3)
+        return int(self.persistence.get_max_calls()*2/3)
 
     def initialize_from_text(self, raw_text):
         self.persistence.clear()
@@ -40,9 +41,13 @@ class Model:
         child = pexpect.spawn(cmd, timeout=None)
         stack = []
         while True:
+            if not self.thread_enabled:
+                child.close()
+                break
             try:
                 child.expect('\n')
-                call = child.before.decode("utf-8")
+                raw = child.before
+                call = raw.decode("utf-8")
                 if call == '\r':
                     graph = self.parser.parse_from_list(stack)
                     self.persistence.load_edges(graph.edges)
@@ -54,5 +59,11 @@ class Model:
                 break
 
     def start_trace(self, functions):
+        self.persistence.clear()
         cmd = ['trace-bpfcc', '-UK'] + functions
+        self.thread_enabled = True
         thread = threading.Thread(target=self.run_command, args=[' '.join(cmd)])
+        thread.start()
+
+    def stop_trace(self):
+        self.thread_enabled = False
