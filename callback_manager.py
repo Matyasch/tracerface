@@ -15,9 +15,10 @@ class CallbackManager:
 
     def setup_update_info(self):
         @self.app.callback(Output('info-box', 'children'),
-            [Input('refresh-interval', 'n_intervals')])
-        def update_info(n):
-            return n #json.dumps(self.view_model.get_nodes()+[self.view_model.red_count()], indent=2)
+            [Input('output-button', 'n_clicks'),
+            Input('refresh-interval', 'n_intervals')])
+        def update_info(n_clicks, n_intervals):
+            return json.dumps(self.view_model.get_nodes()+[self.view_model.red_count()], indent=2)
 
     def setup_update_elements(self):
         @self.app.callback(Output('graph', 'elements'),
@@ -39,6 +40,7 @@ class CallbackManager:
             [Input('trace-button', 'on')],
             [State('functions', 'value')])
         def switch_refresh_timer(trace_on, functions):
+            # TODO: if no functions, don't let turn on
             if trace_on:
                 self.view_model.trace_btn_turned_on(functions)
                 return False

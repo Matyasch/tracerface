@@ -33,23 +33,22 @@ class Model:
 
     def initialize_from_text(self, raw_text):
         self.persistence.clear()
-        graph = self.parser.parse_from_text(raw_text)
-        self.persistence.load_edges(graph.edges)
-        self.persistence.load_nodes(graph.nodes)
+        stacks = self.parser.parse_text_to_stack_list(raw_text)
+        for stack in stacks:
+            graph = self.parser.process_call_stack(stack)
+            self.persistence.load_edges(graph.edges)
+            self.persistence.load_nodes(graph.nodes)
 
     def run_command(self, cmd):
         child = pexpect.spawn(cmd, timeout=None)
         stack = []
-        while True:
-            if not self.thread_enabled:
-                child.close()
-                break
+        while self.thread_enabled:
             try:
                 child.expect('\n')
                 raw = child.before
                 call = raw.decode("utf-8")
                 if call == '\r':
-                    graph = self.parser.parse_from_list(stack)
+                    graph = self.parser.process_call_stack(stack)
                     self.persistence.load_edges(graph.edges)
                     self.persistence.load_nodes(graph.nodes)
                     stack.clear()
@@ -57,6 +56,7 @@ class Model:
                     stack.append(call)
             except pexpect.EOF:
                 break
+        child.close()
 
     def start_trace(self, functions):
         self.persistence.clear()
