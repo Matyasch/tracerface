@@ -19,6 +19,62 @@ class Layout:
     def __init__(self, view_model):
         self.view_model = view_model
 
+    def graph_stylesheet(self):
+        [
+            {
+                'selector': 'node',
+                'style': {
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                    'width': 'label',
+                    'height': 'label',
+                    'shape': 'rectangle',
+                    'border-color': 'black',
+                    'background-color': 'white',
+                    'border-width': '1',
+                    'padding': '5px'
+                }
+            },
+            {
+                'selector': '[count = 0]',
+                'style': {
+                    'border-color': 'grey',
+                    'color': 'grey'
+                }
+            },
+            {
+                'selector': self.view_model.green_selector(),
+                'style': {
+                    'border-color': 'green',
+                    'color': 'green'
+                }
+            },
+            {
+                'selector': self.view_model.yellow_selector(),
+                'style': {
+                    'border-color': 'orange',
+                    'color': 'orange'
+                }
+            },
+            {
+                'selector': self.view_model.red_selector(),
+                'style': {
+                    'border-color': 'red',
+                    'color': 'red'
+                }
+            },
+            {
+                'selector': 'edge',
+                'style': {
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle',
+                    'target-arrow-color': '#ccc',
+                    'label': 'data(params)',
+                    'line-color': '#ccc'
+                }
+            },
+        ]
+
     def render_graph_layout(self):
         return [cyto.Cytoscape(
             id='graph',
@@ -31,60 +87,7 @@ class Layout:
                 'height': '95vh'
             },
             elements= self.view_model.get_nodes() + self.view_model.get_edges(),
-            stylesheet=[
-                {
-                    'selector': 'node',
-                    'style': {
-                        'content': 'data(id)',
-                        'text-valign': 'center',
-                        'width': 'label',
-                        'height': 'label',
-                        'shape': 'rectangle',
-                        'border-color': 'black',
-                        'background-color': 'white',
-                        'border-width': '1',
-                        'padding': '5px'
-                    }
-                },
-                {
-                    'selector': '[count = 0]',
-                    'style': {
-                        'border-color': 'grey',
-                        'color': 'grey'
-                    }
-                },
-                {
-                    'selector': self.view_model.green_selector(),
-                    'style': {
-                        'border-color': 'green',
-                        'color': 'green'
-                    }
-                },
-                {
-                    'selector': self.view_model.yellow_selector(),
-                    'style': {
-                        'border-color': 'orange',
-                        'color': 'orange'
-                    }
-                },
-                {
-                    'selector': self.view_model.red_selector(),
-                    'style': {
-                        'border-color': 'red',
-                        'color': 'red'
-                    }
-                },
-                {
-                    'selector': 'edge',
-                    'style': {
-                        'curve-style': 'bezier',
-                        'target-arrow-shape': 'triangle',
-                        'target-arrow-color': '#ccc',
-                        'label': 'data(params)',
-                        'line-color': '#ccc'
-                    }
-                },
-            ]
+            stylesheet=self.graph_stylesheet()
         )]
 
     def graph_layout(self):
