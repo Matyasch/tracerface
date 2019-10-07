@@ -11,5 +11,5 @@ class View:
         self.app = Dash(__name__)
         self.app.layout = self.layout.app_layout()
 
-        self.callback_manager = CallbackManager(self.app, self.view_model)
+        self.callback_manager = CallbackManager(self.app, self.view_model, self.layout)
         self.callback_manager.setup_callbacks()

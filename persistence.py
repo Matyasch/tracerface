@@ -6,7 +6,11 @@ class Persistence:
         self.edges = {}
 
     def load_nodes(self, nodes):
-        self.nodes = {**self.nodes, **nodes}
+        for node in nodes:
+            if node in self.nodes:
+                self.nodes[node] += nodes[node]
+            else:
+                self.nodes[node] = nodes[node]
 
     def load_edges(self, edges):
         self.edges = {**self.edges, **edges}

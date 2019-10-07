@@ -22,14 +22,11 @@ class Model:
     def get_edges(self):
         return self.persistence.edges
 
-    def green_count(self):
-        return 0
-
     def yellow_count(self):
-        return int(self.persistence.get_max_calls()/3)
+        return self.persistence.get_max_calls()*33/100
 
     def red_count(self):
-        return int(self.persistence.get_max_calls()*2/3)
+        return self.persistence.get_max_calls()*66/100
 
     def initialize_from_text(self, raw_text):
         self.persistence.clear()
