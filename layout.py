@@ -20,7 +20,7 @@ class Layout:
         self.view_model = view_model
 
     def graph_stylesheet(self):
-        [
+        return [
             {
                 'selector': 'node',
                 'style': {
