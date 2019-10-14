@@ -13,16 +13,19 @@ class CallbackManager:
         self.setup_update_info()
         self.setup_update_graph()
         self.setup_switch_refresher()
+        self.setup_slider_button_event()
+        self.setup_update_colors()
 
     def setup_update_info(self):
         @self.app.callback(Output('info-box', 'children'),
             [Input('output-button', 'n_clicks'),
-            Input('refresh-interval', 'n_intervals')])
-        def update_info(n_clicks, n_intervals):
-            return json.dumps(self.view_model.get_nodes()+[self.view_model.green_selector()], indent=2)
+            Input('refresh-interval', 'n_intervals'),
+            Input('slider', 'value')])
+        def update_info(n_clicks, n_intervals, value):
+            return self.layout.yellow_selector() + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model.persistence.red)
 
     def setup_update_graph(self):
-        @self.app.callback(Output('graph_layout', 'children'),
+        @self.app.callback(Output('graph_div', 'children'),
             [Input('output-button', 'n_clicks'),
             Input('refresh-interval', 'n_intervals')],
             [State('output-textarea', 'value'),
@@ -32,7 +35,7 @@ class CallbackManager:
                 raise PreventUpdate
             elif not trace_on and out_btn and out_btn:
                 self.view_model.output_submit_btn_clicked(output)
-            return  self.layout.render_graph_layout()
+            return self.layout.graph_layout()
 
     def setup_switch_refresher(self):
         @self.app.callback(Output('refresh-interval', 'disabled'),
@@ -46,3 +49,23 @@ class CallbackManager:
             else:
                 self.view_model.trace_btn_turned_off()
                 return True
+
+    def setup_slider_button_event(self):
+        @self.app.callback(Output('slider-tab', 'children'),
+            [Input('slider-button', 'n_clicks')],
+            [State('trace-button', 'on')])
+        def activate_slider(btn, trace_on):
+            if trace_on:
+                raise PreventUpdate
+            elif btn:
+                return self.layout.slider()
+
+    def setup_update_colors(self):
+        @self.app.callback(Output('graph', 'stylesheet'),
+            [Input('slider', 'value')],
+            [State('trace-button', 'on')])
+        def update_output(value, trace_on):
+            if trace_on:
+                raise PreventUpdate
+            self.view_model.set_range(value[0], value[1])
+            return self.layout.graph_stylesheet()

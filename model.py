@@ -22,13 +22,13 @@ class Model:
         return self.persistence.edges
 
     def yellow_count(self):
-        return self.persistence.get_max_calls()*33/100
+        return self.persistence.get_range().yellow
 
     def red_count(self):
-        return self.persistence.get_max_calls()*66/100
+        return self.persistence.get_range().red
 
     def max_count(self):
-        return self.persistence.get_max_calls()
+        return self.persistence.get_range().top
 
     def initialize_from_text(self, raw_text):
         self.persistence.clear()
@@ -37,6 +37,7 @@ class Model:
             graph = process_stack(stack)
             self.persistence.load_edges(graph.edges)
             self.persistence.load_nodes(graph.nodes)
+        self.persistence.init_colors()
 
     def run_command(self, cmd):
         child = pexpect.spawn(cmd, timeout=None)
@@ -66,3 +67,7 @@ class Model:
 
     def stop_trace(self):
         self.thread_enabled = False
+        self.persistence.init_colors()
+
+    def set_range(self, yellow, red):
+        self.persistence.update_color_range(yellow, red)

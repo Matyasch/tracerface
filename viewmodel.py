@@ -9,14 +9,14 @@ class ViewModel:
     def get_edges(self):
         return [{'data': {'source': edge[1], 'target': edge[0]}} for edge in self.model.get_edges()]
 
-    def green_selector(self):
-        return '[count > 0][count <= {}]'.format(self.model.yellow_count())
+    def yellow_count(self):
+        return round(self.model.yellow_count())
 
-    def yellow_selector(self):
-        return '[count > {}][count <= {}]'.format(self.model.yellow_count(), self.model.red_count())
+    def red_count(self):
+        return round(self.model.red_count())
 
-    def red_selector(self):
-        return '[count > {}]'.format(self.model.red_count())
+    def max_count(self):
+        return self.model.max_count()
 
     def output_submit_btn_clicked(self, text):
         self.model.initialize_from_text(text)
@@ -27,3 +27,6 @@ class ViewModel:
 
     def trace_btn_turned_off(self):
         self.model.stop_trace()
+
+    def set_range(self, range_bottom, range_top):
+        self.model.set_range(range_bottom, range_top)

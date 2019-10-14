@@ -19,6 +19,15 @@ class Layout:
     def __init__(self, view_model):
         self.view_model = view_model
 
+    def red_selector(self):
+        return '[count >= {}]'.format(self.view_model.red_count())
+
+    def yellow_selector(self):
+        return '[count >= {}][count < {}]'.format(self.view_model.yellow_count(), self.view_model.red_count())
+
+    def green_selector(self):
+        return '[count > 0][count < {}]'.format(self.view_model.yellow_count())
+
     def graph_stylesheet(self):
         return [
             {
@@ -43,21 +52,21 @@ class Layout:
                 }
             },
             {
-                'selector': self.view_model.green_selector(),
+                'selector': self.green_selector(),
                 'style': {
                     'border-color': 'green',
                     'color': 'green'
                 }
             },
             {
-                'selector': self.view_model.yellow_selector(),
+                'selector': self.yellow_selector(),
                 'style': {
                     'border-color': 'orange',
                     'color': 'orange'
                 }
             },
             {
-                'selector': self.view_model.red_selector(),
+                'selector': self.red_selector(),
                 'style': {
                     'border-color': 'red',
                     'color': 'red'
@@ -75,7 +84,7 @@ class Layout:
             },
         ]
 
-    def render_graph_layout(self):
+    def graph_layout(self):
         return [cyto.Cytoscape(
             id='graph',
             layout={
@@ -90,22 +99,42 @@ class Layout:
             stylesheet=self.graph_stylesheet()
         )]
 
-    def graph_layout(self):
+    def graph_div(self):
         return html.Div(
-        className='large column',
-        id='graph_layout',
-        children=self.render_graph_layout()
+            className='large column',
+            id='graph_div',
+            children=self.graph_layout()
         )
+
+    def slider(self):
+        return [
+            dcc.RangeSlider(
+                id='slider',
+                min=1,
+                max=self.view_model.max_count(),
+                value=[round(self.view_model.model.yellow_count()), round(self.view_model.model.red_count())],
+                pushable=1
+            )
+        ]
 
     def dashboard(self):
         return html.Div(
             className='small column',
+            id='dashboard',
             children=[
-                dcc.Tabs(id='mode-tabs', value='realtime-tab', children=[
-                    dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
-                    dcc.Tab(label='Static mode', value='static-tab',children=[self.output_tab()]),
-                ]),
-                html.Div(id='tabs-content'),
+                dcc.Tabs(
+                    id='mode-tabs',
+                    value='realtime-tab',
+                    children=[
+                        dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
+                        dcc.Tab(label='Static mode', value='static-tab',children=[self.output_tab()]),
+                    ]
+                ),
+                html.Button('Update coloring', id='slider-button'),
+                dcc.Tab(
+                    id='slider-tab',
+                    children=self.slider()
+                ),
                 dcc.Tab(children=[
                     html.P(
                         children=f'Info',
@@ -124,12 +153,6 @@ class Layout:
                 )
             ]
         )
-
-    def app_layout(self):
-        return html.Div([
-            self.graph_layout(),
-            self.dashboard()
-        ])
 
     def realtime_tab(self):
         return html.Div(children=[
@@ -154,7 +177,13 @@ class Layout:
             dcc.Textarea(
                 id='output-textarea',
                 placeholder='Enter trace output',
-                style={'width': '100%', 'height': '600px'},
+                style={'width': '100%', 'height': '400px'},
             ),
             html.Button('Submit', id='output-button', n_clicks_timestamp=0)
+        ])
+
+    def app_layout(self):
+        return html.Div([
+            self.graph_div(),
+            self.dashboard()
         ])
