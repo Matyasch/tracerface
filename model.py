@@ -4,13 +4,12 @@ import threading
 
 import pexpect
 
-from parser import Graph, Parser
+from parser import text_to_stacks, process_stack
 
 # Manages logic and persistence
 class Model:
     def __init__(self, persistence):
         self.persistence = persistence
-        self.parser = Parser()
         self.thread = threading.Thread()
         self.thread_enabled = False
 
@@ -28,11 +27,14 @@ class Model:
     def red_count(self):
         return self.persistence.get_max_calls()*66/100
 
+    def max_count(self):
+        return self.persistence.get_max_calls()
+
     def initialize_from_text(self, raw_text):
         self.persistence.clear()
-        stacks = self.parser.parse_text_to_stack_list(raw_text)
+        stacks = text_to_stacks(raw_text)
         for stack in stacks:
-            graph = self.parser.process_call_stack(stack)
+            graph = process_stack(stack)
             self.persistence.load_edges(graph.edges)
             self.persistence.load_nodes(graph.nodes)
 
@@ -45,7 +47,7 @@ class Model:
                 raw = child.before
                 call = raw.decode("utf-8")
                 if call == '\r':
-                    graph = self.parser.process_call_stack(stack)
+                    graph = process_stack(stack)
                     self.persistence.load_edges(graph.edges)
                     self.persistence.load_nodes(graph.nodes)
                     stack.clear()
