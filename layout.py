@@ -126,9 +126,9 @@ class Layout:
                     id='mode-tabs',
                     value='realtime-tab',
                     children=[
-                        dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
-                        dcc.Tab(label='Static mode', value='static-tab',children=[self.static_tab()]),
-                        dcc.Tab(label='Configure', value='configure-tab',children=[self.configure_tab()]),
+                        dcc.Tab(label='Realtime mode', value='realtime-tab', id='realtime-tab', children=[self.realtime_tab()]),
+                        dcc.Tab(label='Static mode', value='static-tab', id='static-tab', children=[self.static_tab()]),
+                        dcc.Tab(label='Configure', value='configure-tab', id='configure-tab', children=[self.configure_tab()]),
                     ]
                 ),
                 html.Hr(),

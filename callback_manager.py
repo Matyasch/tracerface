@@ -17,6 +17,7 @@ class CallbackManager:
         self.setup_slider_button_event()
         self.setup_update_colors()
         self.setup_save_config_event()
+        self.setup_disable_static_tab()
 
     def setup_update_info(self):
         @self.app.callback(Output('info-box', 'children'),
@@ -62,12 +63,18 @@ class CallbackManager:
             elif btn:
                 return self.layout.slider()
 
+    def setup_disable_static_tab(self):
+        @self.app.callback(Output('static-tab', 'disabled'),
+            [Input('trace-button', 'on')])
+        def trace_turned_on(trace_on,):
+            return trace_on
+
     def setup_save_config_event(self):
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks'),
             Input('mode-tabs', 'value')],
             [State('bcc-command', 'value')])
-        def activate_slider(save_btn, tab, bcc_command):
+        def save_clicked(save_btn, tab, bcc_command):
             context = dash.callback_context
             if context.triggered:
                 id = context.triggered[0]['prop_id'].split('.')[0]
