@@ -31,12 +31,13 @@ class CallbackManager:
         @self.app.callback(Output('graph_div', 'children'),
             [Input('output-button', 'n_clicks'),
             Input('refresh-interval', 'n_intervals')],
-            [State('output-textarea', 'value'),
-            State('trace-button', 'on')])
-        def update_graph(out_btn, n_int, output, trace_on):
-            if not trace_on and not out_btn:
+            [State('output-textarea', 'value')])
+        def update_graph(out_btn, n_int, output):
+            context = dash.callback_context
+            if not context.triggered:
                 raise PreventUpdate
-            elif not trace_on and out_btn and out_btn:
+            id = context.triggered[0]['prop_id'].split('.')[0]
+            if id == 'output-button':
                 self.view_model.output_submit_btn_clicked(output)
             return self.layout.graph_layout()
 
