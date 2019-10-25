@@ -76,13 +76,14 @@ class CallbackManager:
             [State('bcc-command', 'value')])
         def save_clicked(save_btn, tab, bcc_command):
             context = dash.callback_context
-            if context.triggered:
-                id = context.triggered[0]['prop_id'].split('.')[0]
-                if id == 'save-config-button':
-                    self.view_model.save_config(bcc_command)
-                    return 'Saved'
-                else:
-                    return ''
+            if not context.triggered:
+                raise PreventUpdate
+            id = context.triggered[0]['prop_id'].split('.')[0]
+            if id == 'save-config-button':
+                self.view_model.save_config(bcc_command)
+                return 'Saved'
+            else:
+                return ''
 
     def setup_update_colors(self):
         @self.app.callback(Output('graph', 'stylesheet'),
