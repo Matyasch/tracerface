@@ -5,6 +5,7 @@ import threading
 import pexpect
 
 from parser import text_to_stacks, process_stack
+from configuration import Configuration
 
 # Manages logic and persistence
 class Model:
@@ -12,6 +13,7 @@ class Model:
         self.persistence = persistence
         self.thread = threading.Thread()
         self.thread_enabled = False
+        self.configuration = Configuration()
 
     # Returns a list of nodes and their call count
     def get_nodes(self):
@@ -60,7 +62,7 @@ class Model:
 
     def start_trace(self, functions):
         self.persistence.clear()
-        cmd = ['trace-bpfcc', '-UK'] + functions
+        cmd = [self.configuration.bcc_command, '-UK'] + functions
         self.thread_enabled = True
         thread = threading.Thread(target=self.run_command, args=[' '.join(cmd)])
         thread.start()
@@ -71,3 +73,6 @@ class Model:
 
     def set_range(self, yellow, red):
         self.persistence.update_color_range(yellow, red)
+
+    def save_config(self, bcc_command):
+        self.configuration = Configuration(bcc_command=bcc_command)

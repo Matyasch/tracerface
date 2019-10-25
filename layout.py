@@ -127,9 +127,11 @@ class Layout:
                     value='realtime-tab',
                     children=[
                         dcc.Tab(label='Realtime mode', value='realtime-tab', children=[self.realtime_tab()]),
-                        dcc.Tab(label='Static mode', value='static-tab',children=[self.output_tab()]),
+                        dcc.Tab(label='Static mode', value='static-tab',children=[self.static_tab()]),
+                        dcc.Tab(label='Configure', value='configure-tab',children=[self.configure_tab()]),
                     ]
                 ),
+                html.Hr(),
                 html.Button('Update coloring', id='slider-button'),
                 dcc.Tab(
                     id='slider-tab',
@@ -171,15 +173,36 @@ class Layout:
             )
         ])
 
-    def output_tab(self):
+    def static_tab(self):
         return html.Div(children=[
-            html.P('Trace output'),
+            'Trace output',
             dcc.Textarea(
                 id='output-textarea',
                 placeholder='Enter trace output',
                 style={'width': '100%', 'height': '400px'},
             ),
             html.Button('Submit', id='output-button', n_clicks_timestamp=0)
+        ])
+
+    def configure_tab(self):
+        return html.Div(children=[
+            'Configuration',
+            html.Div(
+                children=[
+                    'command for bcc: ',
+                    dcc.Input(
+                        id='bcc-command',
+                        type='text',
+                        value='trace-bpfcc',
+                        placeholder='command',
+                    )
+                ],
+                style={'display': 'inline-block'}
+            ),
+            html.Div(children=[
+                html.Button('Save', id='save-config-button', n_clicks_timestamp=0),
+                html.Div(id='save-config-notification', children='')
+                ])
         ])
 
     def app_layout(self):

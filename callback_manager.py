@@ -1,5 +1,6 @@
 import json
 
+import dash
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
@@ -15,6 +16,7 @@ class CallbackManager:
         self.setup_switch_refresher()
         self.setup_slider_button_event()
         self.setup_update_colors()
+        self.setup_save_config_event()
 
     def setup_update_info(self):
         @self.app.callback(Output('info-box', 'children'),
@@ -59,6 +61,21 @@ class CallbackManager:
                 raise PreventUpdate
             elif btn:
                 return self.layout.slider()
+
+    def setup_save_config_event(self):
+        @self.app.callback(Output('save-config-notification', 'children'),
+            [Input('save-config-button', 'n_clicks'),
+            Input('mode-tabs', 'value')],
+            [State('bcc-command', 'value')])
+        def activate_slider(save_btn, tab, bcc_command):
+            context = dash.callback_context
+            if context.triggered:
+                id = context.triggered[0]['prop_id'].split('.')[0]
+                if id == 'save-config-button':
+                    self.view_model.save_config(bcc_command)
+                    return 'Saved'
+                else:
+                    return ''
 
     def setup_update_colors(self):
         @self.app.callback(Output('graph', 'stylesheet'),

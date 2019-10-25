@@ -30,3 +30,6 @@ class ViewModel:
 
     def set_range(self, range_bottom, range_top):
         self.model.set_range(range_bottom, range_top)
+
+    def save_config(self, bcc_command):
+        self.model.save_config(bcc_command)
