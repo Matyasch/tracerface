@@ -96,7 +96,7 @@ class View:
 
     def search_div(self):
         return [
-            'Search node: ',
+            'Search function: ',
             dcc.Input(
                 id='searchbar',
                 type='text',
@@ -106,14 +106,18 @@ class View:
 
     def slider_div(self, disabled=False):
         return [
-            'Update coloring',
             dcc.RangeSlider(
                 id='slider',
                 min=1,
                 max=self.view_model.max_count(),
                 value=[round(self.view_model.model.yellow_count()), round(self.view_model.model.red_count())],
                 pushable=1,
-                disabled=disabled
+                disabled=disabled,
+                marks={
+                    1: {'label': '1', 'style': {'color': 'green'}},
+                    self.view_model.max_count(): {'label': '{}'.format(self.view_model.max_count()), 'style': {'color': 'red'}}
+                },
+                tooltip = { 'always_visible': True }
             )
         ]
 
@@ -177,13 +181,16 @@ class View:
 
     def utilities_tab(self):
         return html.Div(children=[
+            'Update coloring',
             html.Div(
                 id='slider-div',
-                children=self.slider_div()
+                children=self.slider_div(),
+                style={'padding-top': '40px', 'padding': '10px'}
             ),
             html.Div(
                 id='search-div',
-                children=self.search_div()
+                children=self.search_div(),
+                style={'padding': '10px'}
             )
         ])
 
