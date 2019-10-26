@@ -14,10 +14,11 @@ class CallbackManager:
         self.setup_update_info()
         self.setup_update_graph()
         self.setup_switch_refresher()
-        self.setup_slider_button_event()
+        self.setup_slider_visible()
         self.setup_update_colors()
         self.setup_save_config_event()
-        self.setup_disable_static_tab()
+        self.disable_static_tab_on_trace()
+        self.disable_utilities_tab_on_trace()
 
     def setup_update_info(self):
         @self.app.callback(Output('info-box', 'children'),
@@ -57,20 +58,24 @@ class CallbackManager:
                 self.view_model.trace_btn_turned_off()
             return not trace_on
 
-    def setup_slider_button_event(self):
+    def setup_slider_visible(self):
         @self.app.callback(Output('slider-tab', 'children'),
-            [Input('slider-button', 'n_clicks')],
-            [State('trace-button', 'on')])
-        def activate_slider(btn, trace_on):
-            if trace_on:
-                raise PreventUpdate
-            elif btn:
+            [Input('mode-tabs', 'value')])
+        def show_slider(tab):
+            if self.view_model.max_count() > 0:
                 return self.layout.slider()
+            return None
 
-    def setup_disable_static_tab(self):
+    def disable_static_tab_on_trace(self):
         @self.app.callback(Output('static-tab', 'disabled'),
             [Input('trace-button', 'on')])
-        def trace_turned_on(trace_on,):
+        def disable_static_tab(trace_on,):
+            return trace_on
+
+    def disable_utilities_tab_on_trace(self):
+        @self.app.callback(Output('utilities-tab', 'disabled'),
+            [Input('trace-button', 'on')])
+        def disable_utilities_tab(trace_on,):
             return trace_on
 
     def setup_save_config_event(self):

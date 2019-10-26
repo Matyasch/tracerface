@@ -108,6 +108,7 @@ class View:
 
     def slider(self):
         return [
+            'Update coloring',
             dcc.RangeSlider(
                 id='slider',
                 min=1,
@@ -124,20 +125,14 @@ class View:
             children=[
                 dcc.Tabs(
                     id='mode-tabs',
-                    value='realtime-tab',
                     children=[
-                        dcc.Tab(label='Realtime mode', value='realtime-tab', id='realtime-tab', children=[self.realtime_tab()]),
-                        dcc.Tab(label='Static mode', value='static-tab', id='static-tab', children=[self.static_tab()]),
+                        dcc.Tab(label='Realtime', value='realtime-tab', id='realtime-tab', children=[self.realtime_tab()]),
+                        dcc.Tab(label='Static', value='static-tab', id='static-tab', children=[self.static_tab()]),
+                        dcc.Tab(label='Utilities', value='utilities-tab', id='utilities-tab', children=[self.utilities_tab()]),
                         dcc.Tab(label='Configure', value='configure-tab', id='configure-tab', children=[self.configure_tab()]),
                     ]
                 ),
-                html.Hr(),
-                html.Button('Update coloring', id='slider-button'),
-                dcc.Tab(
-                    id='slider-tab',
-                    children=self.slider()
-                ),
-                dcc.Tab(children=[
+                html.Div(children=[
                     html.P(
                         children=f'Info',
                         style={'margin-left': '3px'}
@@ -146,13 +141,7 @@ class View:
                         id='info-box',
                         style=styles['pre']
                     )
-                ]),
-                dcc.Interval(
-                    id='refresh-interval',
-                    interval=1*500, # in milliseconds
-                    n_intervals=0,
-                    disabled=True
-                )
+                ])
             ]
         )
 
@@ -184,6 +173,14 @@ class View:
             html.Button('Submit', id='output-button', n_clicks_timestamp=0)
         ])
 
+    def utilities_tab(self):
+        return html.Div(children=[
+            html.Div(
+                id='slider-tab',
+                children=self.slider()
+            )
+        ])
+
     def configure_tab(self):
         return html.Div(children=[
             'Configuration',
@@ -196,8 +193,7 @@ class View:
                         value='trace-bpfcc',
                         placeholder='command',
                     )
-                ],
-                style={'display': 'inline-block'}
+                ]
             ),
             html.Div(children=[
                 html.Button('Save', id='save-config-button', n_clicks_timestamp=0),
@@ -208,5 +204,11 @@ class View:
     def layout(self):
         return html.Div([
             self.graph_div(),
-            self.dashboard()
+            self.dashboard(),
+            dcc.Interval(
+                id='refresh-interval',
+                interval=1*500, # in milliseconds
+                n_intervals=0,
+                disabled=True
+            )
         ])
