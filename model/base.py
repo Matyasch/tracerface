@@ -1,5 +1,5 @@
-from configuration import Configuration
-from persistence import Persistence
+from persistence.configuration import Configuration
+from persistence.persistence import Persistence
 
 # Manages logic and persistence
 class BaseModel:
