@@ -1,18 +1,10 @@
 import dash_core_components as dcc
+import dash_cytoscape as cyto
 import dash_daq as daq
 import dash_html_components as html
 
-import dash_cytoscape as cyto
 
 cyto.load_extra_layouts()
-
-
-styles = {
-    'pre': {
-        'border': 'thin lightgrey solid',
-        'overflowX': 'scroll'
-    }
-}
 
 
 class View:
@@ -145,7 +137,10 @@ class View:
                     ),
                     html.Pre(
                         id='info-box',
-                        style=styles['pre']
+                        style={
+                            'border': 'thin lightgrey solid',
+                            'overflowX': 'scroll'
+                        }
                     )
                 ])
             ]
