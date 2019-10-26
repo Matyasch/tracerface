@@ -25,7 +25,7 @@ class CallbackManager:
             Input('refresh-interval', 'n_intervals'),
             Input('slider', 'value')])
         def update_info(n_clicks, n_intervals, value):
-            return self.layout.yellow_selector() + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model.persistence.red)
+            return self.layout.yellow_selector() + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model._persistence.red)
 
     def setup_update_graph(self):
         @self.app.callback(Output('graph_div', 'children'),
@@ -44,15 +44,18 @@ class CallbackManager:
     def setup_switch_refresher(self):
         @self.app.callback(Output('refresh-interval', 'disabled'),
             [Input('trace-button', 'on')],
-            [State('functions', 'value')])
-        def switch_refresh_timer(trace_on, functions):
+            [State('functions', 'value'),
+            State('refresh-interval', 'disabled')])
+        def switch_refresh_timer(trace_on, functions, disabled):
             # TODO: if no functions, don't let turn on
+            context = dash.callback_context
+            if not context.triggered:
+                raise PreventUpdate
             if trace_on:
                 self.view_model.trace_btn_turned_on(functions)
-                return False
-            else:
+            elif not disabled:
                 self.view_model.trace_btn_turned_off()
-                return True
+            return not trace_on
 
     def setup_slider_button_event(self):
         @self.app.callback(Output('slider-tab', 'children'),

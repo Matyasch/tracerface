@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 
-from model import Model
+from model.base import BaseModel
 from persistence import Persistence
 from viewmodel import ViewModel
 from view import View
 
 def main():
-    persistence = Persistence()
-    model = Model(persistence)
-    view_model = ViewModel(model)
+    view_model = ViewModel()
     view = View(view_model)
     view.app.run_server(debug=True)
 
