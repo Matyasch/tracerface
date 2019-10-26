@@ -38,7 +38,7 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'output-button':
+            if id == 'output-button' and output:
                 self.view_model.output_submit_btn_clicked(output)
             return self.layout.graph_layout()
 
@@ -75,7 +75,7 @@ class CallbackManager:
     def utilities_tab_disabled_callback(self):
         @self.app.callback(Output('utilities-tab', 'disabled'),
             [Input('trace-button', 'on')])
-        def disable_utilities_tab(trace_on,):
+        def disable_utilities_tab(trace_on):
             return trace_on
 
     def config_save_notification_callback(self):
