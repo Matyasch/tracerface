@@ -15,7 +15,7 @@ styles = {
 }
 
 
-class Layout:
+class View:
     def __init__(self, view_model):
         self.view_model = view_model
 
@@ -205,7 +205,7 @@ class Layout:
                 ])
         ])
 
-    def app_layout(self):
+    def layout(self):
         return html.Div([
             self.graph_div(),
             self.dashboard()
