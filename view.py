@@ -206,7 +206,7 @@ class View:
             self.graph_div(),
             self.dashboard(),
             dcc.Interval(
-                id='refresh-interval',
+                id='timer',
                 interval=1*500, # in milliseconds
                 n_intervals=0,
                 disabled=True

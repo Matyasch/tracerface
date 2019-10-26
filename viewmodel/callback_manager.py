@@ -11,27 +11,27 @@ class CallbackManager:
         self.layout = layout
 
     def setup_callbacks(self):
-        self.setup_update_info()
-        self.setup_update_graph()
-        self.setup_switch_refresher()
-        self.setup_slider_visible()
-        self.setup_update_colors()
-        self.setup_save_config_event()
-        self.disable_static_tab_on_trace()
-        self.disable_utilities_tab_on_trace()
+        self.info_box_value_callback()
+        self.graph_value_callback()
+        self.timer_disabled_callback()
+        self.slider_visibility_callback()
+        self.graph_stylesheet_callback()
+        self.config_save_notification_callback()
+        self.static_tab_disabled_callback()
+        self.utilities_tab_disabled_callback()
 
-    def setup_update_info(self):
+    def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
             [Input('output-button', 'n_clicks'),
-            Input('refresh-interval', 'n_intervals'),
+            Input('timer', 'n_intervals'),
             Input('slider', 'value')])
         def update_info(n_clicks, n_intervals, value):
             return self.layout.yellow_selector() + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model._persistence.red)
 
-    def setup_update_graph(self):
+    def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
             [Input('output-button', 'n_clicks'),
-            Input('refresh-interval', 'n_intervals')],
+            Input('timer', 'n_intervals')],
             [State('output-textarea', 'value')])
         def update_graph(out_btn, n_int, output):
             context = dash.callback_context
@@ -42,12 +42,12 @@ class CallbackManager:
                 self.view_model.output_submit_btn_clicked(output)
             return self.layout.graph_layout()
 
-    def setup_switch_refresher(self):
-        @self.app.callback(Output('refresh-interval', 'disabled'),
+    def timer_disabled_callback(self):
+        @self.app.callback(Output('timer', 'disabled'),
             [Input('trace-button', 'on')],
             [State('functions', 'value'),
-            State('refresh-interval', 'disabled')])
-        def switch_refresh_timer(trace_on, functions, disabled):
+            State('timer', 'disabled')])
+        def switch_timer_state(trace_on, functions, disabled):
             # TODO: if no functions, don't let turn on
             context = dash.callback_context
             if not context.triggered:
@@ -58,7 +58,7 @@ class CallbackManager:
                 self.view_model.trace_btn_turned_off()
             return not trace_on
 
-    def setup_slider_visible(self):
+    def slider_visibility_callback(self):
         @self.app.callback(Output('slider-tab', 'children'),
             [Input('mode-tabs', 'value')])
         def show_slider(tab):
@@ -66,19 +66,19 @@ class CallbackManager:
                 return self.layout.slider()
             return None
 
-    def disable_static_tab_on_trace(self):
+    def static_tab_disabled_callback(self):
         @self.app.callback(Output('static-tab', 'disabled'),
             [Input('trace-button', 'on')])
         def disable_static_tab(trace_on,):
             return trace_on
 
-    def disable_utilities_tab_on_trace(self):
+    def utilities_tab_disabled_callback(self):
         @self.app.callback(Output('utilities-tab', 'disabled'),
             [Input('trace-button', 'on')])
         def disable_utilities_tab(trace_on,):
             return trace_on
 
-    def setup_save_config_event(self):
+    def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks'),
             Input('mode-tabs', 'value')],
@@ -94,7 +94,7 @@ class CallbackManager:
             else:
                 return ''
 
-    def setup_update_colors(self):
+    def graph_stylesheet_callback(self):
         @self.app.callback(Output('graph', 'stylesheet'),
             [Input('slider', 'value')],
             [State('trace-button', 'on')])
