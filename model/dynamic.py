@@ -3,7 +3,7 @@ import threading
 import pexpect
 
 from model.base import BaseModel
-from parser import process_stack
+from model.parser import process_stack
 
 # Manages logic and persistence
 class DynamicModel(BaseModel):
