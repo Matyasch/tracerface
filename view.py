@@ -104,7 +104,7 @@ class View:
             )
         ]
 
-    def slider_div(self):
+    def slider_div(self, disabled=False):
         return [
             'Update coloring',
             dcc.RangeSlider(
@@ -112,7 +112,8 @@ class View:
                 min=1,
                 max=self.view_model.max_count(),
                 value=[round(self.view_model.model.yellow_count()), round(self.view_model.model.red_count())],
-                pushable=1
+                pushable=1,
+                disabled=disabled
             )
         ]
 

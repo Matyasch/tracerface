@@ -19,6 +19,7 @@ class CallbackManager:
         self.config_save_notification_callback()
         self.static_tab_disabled_callback()
         self.utilities_tab_disabled_callback()
+        self.searchbar_disabled_callback()
 
     def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
@@ -62,15 +63,22 @@ class CallbackManager:
         @self.app.callback(Output('slider-div', 'children'),
             [Input('mode-tabs', 'value')])
         def show_slider(tab):
-            if tab == 'utilities-tab' and self.view_model.max_count() > 0:
-                return self.layout.slider_div()
+            disabled = not self.view_model.max_count() > 0
+            if tab == 'utilities-tab':
+                return self.layout.slider_div(disabled)
             return None
 
     def static_tab_disabled_callback(self):
         @self.app.callback(Output('static-tab', 'disabled'),
             [Input('trace-button', 'on')])
-        def disable_static_tab(trace_on,):
+        def disable_static_tab(trace_on):
             return trace_on
+
+    def searchbar_disabled_callback(self):
+        @self.app.callback(Output('searchbar', 'disabled'),
+            [Input('mode-tabs', 'value')])
+        def disable_searchbar(tab):
+            return tab == 'utilities-tab' and not self.view_model.max_count() > 0
 
     def utilities_tab_disabled_callback(self):
         @self.app.callback(Output('utilities-tab', 'disabled'),
