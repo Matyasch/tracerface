@@ -1,8 +1,8 @@
 from dash import Dash
 
-from callback_manager import CallbackManager
 from view import View
-from viewmodel import ViewModel
+from viewmodel.callback_manager import CallbackManager
+from viewmodel.viewmodel import ViewModel
 
 class App:
     def __init__(self):
