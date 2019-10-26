@@ -19,16 +19,18 @@ class View:
     def __init__(self, view_model):
         self.view_model = view_model
 
-    def red_selector(self):
-        return '[count >= {}]'.format(self.view_model.red_count())
+    def red_selector(self, search):
+        return '[count >= {}][id *= "{}"]'.format(self.view_model.red_count(), search)
 
-    def yellow_selector(self):
-        return '[count >= {}][count < {}]'.format(self.view_model.yellow_count(), self.view_model.red_count())
+    def yellow_selector(self, search):
+        return '[count >= {}][count < {}][id *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search)
 
-    def green_selector(self):
-        return '[count > 0][count < {}]'.format(self.view_model.yellow_count())
+    def green_selector(self, search):
+        return '[count > 0][count < {}][id *= "{}"]'.format(self.view_model.yellow_count(), search)
 
-    def graph_stylesheet(self):
+    def graph_stylesheet(self, search=''):
+        if not search:
+            search = ''
         return [
             {
                 'selector': 'node',
@@ -38,35 +40,29 @@ class View:
                     'width': 'label',
                     'height': 'label',
                     'shape': 'rectangle',
-                    'border-color': 'black',
+                    'border-color': 'grey',
+                    'color': 'grey',
                     'background-color': 'white',
                     'border-width': '1',
                     'padding': '5px'
                 }
             },
             {
-                'selector': '[count = 0]',
-                'style': {
-                    'border-color': 'grey',
-                    'color': 'grey'
-                }
-            },
-            {
-                'selector': self.green_selector(),
+                'selector': self.green_selector(search),
                 'style': {
                     'border-color': 'green',
                     'color': 'green'
                 }
             },
             {
-                'selector': self.yellow_selector(),
+                'selector': self.yellow_selector(search),
                 'style': {
                     'border-color': 'orange',
                     'color': 'orange'
                 }
             },
             {
-                'selector': self.red_selector(),
+                'selector': self.red_selector(search),
                 'style': {
                     'border-color': 'red',
                     'color': 'red'
@@ -106,7 +102,17 @@ class View:
             children=self.graph_layout()
         )
 
-    def slider(self):
+    def search_div(self):
+        return [
+            'Search node: ',
+            dcc.Input(
+                id='searchbar',
+                type='text',
+                placeholder='function name'
+            )
+        ]
+
+    def slider_div(self):
         return [
             'Update coloring',
             dcc.RangeSlider(
@@ -176,14 +182,17 @@ class View:
     def utilities_tab(self):
         return html.Div(children=[
             html.Div(
-                id='slider-tab',
-                children=self.slider()
+                id='slider-div',
+                children=self.slider_div()
+            ),
+            html.Div(
+                id='search-div',
+                children=self.search_div()
             )
         ])
 
     def configure_tab(self):
         return html.Div(children=[
-            'Configuration',
             html.Div(
                 children=[
                     'command for bcc: ',

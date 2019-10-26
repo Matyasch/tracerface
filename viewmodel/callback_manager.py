@@ -26,7 +26,7 @@ class CallbackManager:
             Input('timer', 'n_intervals'),
             Input('slider', 'value')])
         def update_info(n_clicks, n_intervals, value):
-            return self.layout.yellow_selector() + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model._persistence.red)
+            return self.layout.yellow_selector('') + ' {} - {} - {}'.format(value[0], value[1], self.view_model.model._persistence.red)
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
@@ -59,11 +59,11 @@ class CallbackManager:
             return not trace_on
 
     def slider_visibility_callback(self):
-        @self.app.callback(Output('slider-tab', 'children'),
+        @self.app.callback(Output('slider-div', 'children'),
             [Input('mode-tabs', 'value')])
         def show_slider(tab):
-            if self.view_model.max_count() > 0:
-                return self.layout.slider()
+            if tab == 'utilities-tab' and self.view_model.max_count() > 0:
+                return self.layout.slider_div()
             return None
 
     def static_tab_disabled_callback(self):
@@ -96,10 +96,11 @@ class CallbackManager:
 
     def graph_stylesheet_callback(self):
         @self.app.callback(Output('graph', 'stylesheet'),
-            [Input('slider', 'value')],
+            [Input('slider', 'value'),
+            Input('searchbar', 'value')],
             [State('trace-button', 'on')])
-        def update_output(value, trace_on):
+        def update_output(slider, search, trace_on):
             if trace_on:
                 raise PreventUpdate
-            self.view_model.set_range(value[0], value[1])
-            return self.layout.graph_stylesheet()
+            self.view_model.set_range(slider[0], slider[1])
+            return self.layout.graph_stylesheet(search)
