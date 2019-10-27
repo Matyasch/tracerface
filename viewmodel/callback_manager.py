@@ -23,9 +23,10 @@ class CallbackManager:
         self.searchbar_disabled_callback()
         self.add_app_callback()
         self.open_app_dialog_callback()
-        self.change_app_dialog_content_callback()
         self.add_func_callback()
+        self.change_app_dialog_content_callback()
         self.output_load_notification_callback()
+        self.add_app_notification_callback()
         self.info_box_value_callback()
 
     def info_box_value_callback(self):
@@ -113,12 +114,26 @@ class CallbackManager:
         @self.app.callback(Output('load-output-notification', 'children'),
             [Input('submit-button', 'n_clicks')],
             [State('output-textarea', 'value')])
-        def save_clicked(click, content):
+        def submit_clicked(click, content):
             if click:
                 if content:
                     return self.layout.load_output_alert(success=True)
                 else:
                     return self.layout.load_output_alert(success=False)
+            else:
+                return ''
+
+    def add_app_notification_callback(self):
+        @self.app.callback(Output('add-app-notification', 'children'),
+            [Input('add-app-button', 'n_clicks')],
+            [State('application-path', 'value'),
+            State('applications-select', 'options')])
+        def add_app_clicked(click, path, apps):
+            if click:
+                if path and path not in [app['value'] for app in apps]:
+                    return self.layout.add_app_alert(success=True, app=path)
+                else:
+                    return self.layout.add_app_alert(success=False)
             else:
                 return ''
 

@@ -117,6 +117,15 @@ class View:
             color = 'danger'
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
+    def add_app_alert(self, success, app=''):
+        if success:
+            message = '{} was added successfully'.format(app)
+            color = 'success'
+        else:
+            message = 'There was an error adding the path!'
+            color = 'danger'
+        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
+
     def slider_div(self, disabled=False):
         return [
             dcc.RangeSlider(
@@ -213,7 +222,11 @@ class View:
                         className='mr-1'),
                     width=2)
                 ]),
-                dbc.FormText('Write path to runnable and click add')
+                dbc.FormText('Write path to runnable and click add'),
+                html.Div(
+                    id='add-app-notification',
+                    children=None,
+                    style=self.button_style())
             ]),
             dbc.FormGroup([
                 dbc.Label('Manage applications'),
