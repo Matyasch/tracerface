@@ -105,8 +105,11 @@ class CallbackManager:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'save-config-button':
-                self.view_model.save_config(bcc_command)
-                return self.layout.save_config_alert(success=True)
+                if bcc_command:
+                    self.view_model.save_config(bcc_command)
+                    return self.layout.save_config_alert(success=True)
+                else:
+                    return self.layout.save_config_alert(success=False)
             else:
                 return ''
 

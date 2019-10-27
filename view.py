@@ -103,7 +103,7 @@ class View:
         if success:
             return dbc.Alert('Configuration saved!', color='success')
         else:
-            return dbc.Alert('Could not save configuration', color='danger')
+            return dbc.Alert('Could not save configuration!', color='danger')
 
     def slider_div(self, disabled=False):
         return [
@@ -284,7 +284,8 @@ class View:
                 className="mr-1"),
             html.Div(
                 id='save-config-notification',
-                children=None)
+                children=None,
+                style=self.button_style())
         ],
         style=self.tab_style())
 
