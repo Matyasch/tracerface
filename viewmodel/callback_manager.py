@@ -61,7 +61,7 @@ class CallbackManager:
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
-            [Input('mode-tabs', 'value')])
+            [Input('tabs', 'active_tab')])
         def show_slider(tab):
             disabled = not self.view_model.max_count() > 0
             if tab == 'utilities-tab':
@@ -76,7 +76,7 @@ class CallbackManager:
 
     def searchbar_disabled_callback(self):
         @self.app.callback(Output('searchbar', 'disabled'),
-            [Input('mode-tabs', 'value')])
+            [Input('tabs', 'active_tab')])
         def disable_searchbar(tab):
             return tab == 'utilities-tab' and not self.view_model.max_count() > 0
 
@@ -89,7 +89,7 @@ class CallbackManager:
     def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks'),
-            Input('mode-tabs', 'value')],
+            Input('tabs', 'active_tab')],
             [State('bcc-command', 'value')])
         def save_clicked(save_btn, tab, bcc_command):
             context = dash.callback_context
@@ -98,7 +98,7 @@ class CallbackManager:
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'save-config-button':
                 self.view_model.save_config(bcc_command)
-                return 'Saved'
+                return self.layout.save_config_alert(success=True)
             else:
                 return ''
 

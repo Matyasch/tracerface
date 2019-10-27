@@ -88,22 +88,17 @@ class View:
             stylesheet=self.graph_stylesheet()
         )]
 
-    def graph_div(self):
-        return html.Div(
-            className='large column',
-            id='graph_div',
-            children=self.graph_layout()
-        )
-
     def search_div(self):
-        return [
-            'Search function: ',
-            dcc.Input(
-                id='searchbar',
-                type='text',
-                placeholder='function name'
-            )
-        ]
+        return dbc.Input(
+            id='searchbar',
+            type='text',
+            placeholder='function name')
+
+    def save_config_alert(self, success):
+        if success:
+            return dbc.Alert('Configuration saved!', color='success')
+        else:
+            return dbc.Alert("Couldn't save configuration", color="danger")
 
     def slider_div(self, disabled=False):
         return [
@@ -122,46 +117,57 @@ class View:
             )
         ]
 
+    def graph_div(self):
+        return dbc.Col(
+            html.Div(
+                id='graph_div',
+                children=self.graph_layout()
+            )
+        )
+
     def dashboard(self):
-        return html.Div(
-            className='small column',
-            id='dashboard',
-            children=[
-                dcc.Tabs(
-                    id='mode-tabs',
-                    children=[
-                        dcc.Tab(label='Realtime', value='realtime-tab', id='realtime-tab', children=[self.realtime_tab()]),
-                        dcc.Tab(label='Static', value='static-tab', id='static-tab', children=[self.static_tab()]),
-                        dcc.Tab(label='Utilities', value='utilities-tab', id='utilities-tab', children=[self.utilities_tab()]),
-                        dcc.Tab(label='Configure', value='configure-tab', id='configure-tab', children=[self.configure_tab()]),
-                    ]
-                ),
-                html.Div(children=[
-                    html.P(
-                        children=f'Info',
-                        style={'margin-left': '3px'}
+        return dbc.Col(
+            html.Div(
+                id='dashboard',
+                children=[
+                    dbc.Tabs(
+                        id='tabs',
+                        children=[
+                            dbc.Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime_tab()], tab_style={"margin-left": "auto"}),
+                            dbc.Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static_tab()]),
+                            dbc.Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.utilities_tab()]),
+                            dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure_tab()]),
+                        ]
                     ),
-                    html.Pre(
-                        id='info-box',
-                        style={
-                            'border': 'thin lightgrey solid',
-                            'overflowX': 'scroll'
-                        }
-                    )
-                ])
-            ]
+                    html.Div(children=[
+                        html.P(
+                            children=f'Info',
+                            style={'margin-left': '3px'}
+                        ),
+                        html.Pre(
+                            id='info-box',
+                            style={
+                                'border': 'thin lightgrey solid',
+                                'overflowX': 'scroll'
+                            }
+                        )
+                    ])
+                ]
+            ),
+            width=3
         )
 
     def realtime_tab(self):
         return html.Div(children=[
-            html.P('List functions to trace'),
-            html.P('Separated with spcaes'),
-            dcc.Input(
-                id='functions',
-                type='text',
-                placeholder='input functions',
-                style={'width': '97%'}
-            ),
+            dbc.FormGroup([
+                dbc.Label('List functions to trace'),
+                dbc.Input(
+                    id='functions',
+                    type='text',
+                    placeholder='input functions'
+                ),
+                dbc.FormText('Separated with spcaes')
+            ]),
             daq.PowerButton(
                 id='trace-button',
                 on=False,
@@ -172,52 +178,67 @@ class View:
     def static_tab(self):
         return html.Div(children=[
             'Trace output',
-            dcc.Textarea(
+            dbc.Textarea(
                 id='output-textarea',
                 placeholder='Enter trace output',
-                style={'width': '100%', 'height': '400px'},
-            ),
-            html.Button('Submit', id='output-button', n_clicks_timestamp=0)
+                style={'height': '400px'}),
+            dbc.Button('Submit',
+                id='output-button',
+                n_clicks_timestamp=0,
+                color='primary',
+                className='mr-1')
         ])
 
     def utilities_tab(self):
         return html.Div(children=[
-            'Update coloring:',
-            html.Div(
-                id='slider-div',
-                children=self.slider_div(),
-                style={'padding': '40px 20px 20px 20px'}
-            ),
-            html.Div(
-                id='search-div',
-                children=self.search_div(),
-                style={'padding': '20px 20px 20px 20px'}
-            )
+            dbc.FormGroup([
+                dbc.Label('Update coloring'),
+                html.Div(
+                    id='slider-div',
+                    children=self.slider_div(),
+                    style={'padding': '40px 0px 20px 0px'}
+                )]),
+            dbc.FormGroup([
+                dbc.Label('Search function', width=4),
+                dbc.Col(
+                    html.Div(
+                        id='search-div',
+                        children=[self.search_div()]),
+                    width=8)
+            ],
+            row=True)
         ])
 
     def configure_tab(self):
         return html.Div(children=[
-            html.Div(
-                children=[
-                    'command for bcc: ',
-                    dcc.Input(
+            dbc.FormGroup([
+                dbc.Label('command for bcc: ', width=4),
+                dbc.Col(
+                    dbc.Input(
                         id='bcc-command',
                         type='text',
                         value='trace-bpfcc',
                         placeholder='command',
-                    )
-                ]
-            ),
-            html.Div(children=[
-                html.Button('Save', id='save-config-button', n_clicks_timestamp=0),
-                html.Div(id='save-config-notification', children='')
-                ])
+                    ),
+                    width=8)
+                ],
+                row=True),
+            dbc.Button('Save',
+                id='save-config-button',
+                n_clicks_timestamp=0,
+                color='primary',
+                className="mr-1"),
+            html.Div(
+                id='save-config-notification',
+                children=None)
         ])
 
     def layout(self):
         return html.Div([
-            self.graph_div(),
-            self.dashboard(),
+            dbc.Row([
+                self.graph_div(),
+                self.dashboard()
+            ]),
             dcc.Interval(
                 id='timer',
                 interval=1*500, # in milliseconds
