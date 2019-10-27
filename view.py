@@ -250,7 +250,7 @@ class View:
                     placeholder='Enter trace output',
                     style={'height': '400px'}),
                 dbc.Button('Submit',
-                    id='output-button',
+                    id='submit-button',
                     color='primary',
                     className='mr-1',
                     style=self.button_style()),

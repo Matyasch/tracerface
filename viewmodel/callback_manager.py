@@ -41,7 +41,7 @@ class CallbackManager:
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
-            [Input('output-button', 'n_clicks'),
+            [Input('submit-button', 'n_clicks'),
             Input('timer', 'n_intervals')],
             [State('output-textarea', 'value')])
         def update_graph(out_btn, n_int, output):
@@ -49,7 +49,7 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'output-button' and output:
+            if id == 'submit-button' and output:
                 self.view_model.output_submit_btn_clicked(output)
             return self.layout.graph_layout()
 
@@ -111,7 +111,7 @@ class CallbackManager:
 
     def output_load_notification_callback(self):
         @self.app.callback(Output('load-output-notification', 'children'),
-            [Input('output-button', 'n_clicks')],
+            [Input('submit-button', 'n_clicks')],
             [State('output-textarea', 'value')])
         def save_clicked(click, content):
             if click:
