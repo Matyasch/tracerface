@@ -1,8 +1,12 @@
 .rc-slider-handle-1{
     background-color: orange;
 }
-
 .rc-slider-handle-2{
     background-color: red;
 
+}
+
+.scrollable{
+  overflow-y: auto;
+  max-height: 240px;
 }

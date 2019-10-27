@@ -27,9 +27,8 @@ class ViewModel:
         self.model.load_text(text)
 
     def trace_btn_turned_on(self, functions):
-        function_list = functions.split(' ')
         self.model = DynamicModel()
-        self.model.start_trace(function_list)
+        self.model.start_trace(functions)
 
     def trace_btn_turned_off(self):
         self.model.stop_trace()

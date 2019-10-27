@@ -73,6 +73,12 @@ class View:
             },
         ]
 
+    def button_style(self):
+        return {'margin-top': '10px'}
+
+    def tab_style(self):
+        return {'padding': '0px 20px 0px 20px'}
+
     def graph_layout(self):
         return [cyto.Cytoscape(
             id='graph',
@@ -81,7 +87,6 @@ class View:
                 'spacingFactor': '3',
             },
             style={
-                'width': '100%',
                 'height': '95vh'
             },
             elements= self.view_model.get_nodes() + self.view_model.get_edges(),
@@ -98,7 +103,7 @@ class View:
         if success:
             return dbc.Alert('Configuration saved!', color='success')
         else:
-            return dbc.Alert("Couldn't save configuration", color="danger")
+            return dbc.Alert('Could not save configuration', color='danger')
 
     def slider_div(self, disabled=False):
         return [
@@ -118,62 +123,111 @@ class View:
         ]
 
     def graph_div(self):
-        return dbc.Col(
-            html.Div(
+        return html.Div(
                 id='graph_div',
                 children=self.graph_layout()
             )
-        )
 
     def dashboard(self):
-        return dbc.Col(
-            html.Div(
-                id='dashboard',
-                children=[
-                    dbc.Tabs(
-                        id='tabs',
-                        children=[
-                            dbc.Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime_tab()], tab_style={"margin-left": "auto"}),
-                            dbc.Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static_tab()]),
-                            dbc.Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.utilities_tab()]),
-                            dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure_tab()]),
-                        ]
+        return html.Div(
+            id='dashboard',
+            children=[
+                dbc.Tabs(
+                    id='tabs',
+                    children=[
+                        dbc.Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime_tab()], tab_style={"margin-left": "auto"}),
+                        dbc.Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static_tab()]),
+                        dbc.Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.utilities_tab()]),
+                        dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure_tab()]),
+                    ]
+                ),
+                html.Div(children=[
+                    html.P(
+                        children=f'Info',
+                        style={'margin-left': '3px'}
                     ),
-                    html.Div(children=[
-                        html.P(
-                            children=f'Info',
-                            style={'margin-left': '3px'}
-                        ),
-                        html.Pre(
-                            id='info-box',
-                            style={
-                                'border': 'thin lightgrey solid',
-                                'overflowX': 'scroll'
-                            }
-                        )
-                    ])
-                ]
-            ),
-            width=3
+                    html.Pre(
+                        id='info-box',
+                        style={
+                            'border': 'thin lightgrey solid',
+                            'overflowX': 'scroll'
+                        }
+                    )
+                ])
+            ]
         )
+
+    def manage_application_dialog(self, app='', options=[]):
+        return [
+            dbc.ModalHeader('Add functions to {}'.format(app)),
+            dbc.ModalBody([
+                dbc.FormGroup([
+                    dbc.Label('Add functions to trace'),
+                    dbc.Row([
+                        dbc.Col(dbc.Input(
+                            id='function-name',
+                            type='text',
+                            placeholder='function name'
+                        )),
+                        dbc.Col(
+                            dbc.Button('Add',
+                                id='add-func-button',
+                                color='primary',
+                                className='mr-1'),
+                            width=2)]),
+                    dbc.FormText('Write name of the function and click add')]),
+                dbc.FormGroup([
+                    dbc.Label('Manage functions'),
+                    dbc.Select(
+                        id='functions-select',
+                        options=[{"label": name, "value": name} for name in options])])
+            ]),
+            dbc.ModalFooter(
+                dbc.Button('Close', id='close-app-dialog', className='ml-auto'))]
 
     def realtime_tab(self):
         return html.Div(children=[
             dbc.FormGroup([
-                dbc.Label('List functions to trace'),
-                dbc.Input(
-                    id='functions',
-                    type='text',
-                    placeholder='input functions'
-                ),
-                dbc.FormText('Separated with spcaes')
+                dbc.Label('Add application to trace'),
+                dbc.Row([
+                    dbc.Col(dbc.Input(
+                        id='application-path',
+                        type='text',
+                        placeholder='/path/to/binary'
+                    )),
+                    dbc.Col(dbc.Button('Add',
+                        id='add-app-button',
+                        color='primary',
+                        className='mr-1'),
+                    width=2)
+                ]),
+                dbc.FormText('Write path to runnable and click add')
             ]),
+            dbc.FormGroup([
+                dbc.Label('Manage applications'),
+                dbc.Select(
+                    id='applications-select',
+                    options=[]),
+                dbc.Button('Add functions',
+                    id='add-function-button',
+                    color='success',
+                    className='mr-1',
+                    style=self.button_style()),
+                dbc.Button('Remove application',
+                    id='remove-app-button',
+                    color='danger',
+                    className='mr-1',
+                    style=self.button_style())
+                ]),
             daq.PowerButton(
                 id='trace-button',
                 on=False,
-                color='#00FF00'
-            )
-        ])
+                color='#00FF00'),
+            dbc.Modal(children=self.manage_application_dialog(),
+                id='app-dialog',
+                scrollable=True)
+        ],
+        style=self.tab_style())
 
     def static_tab(self):
         return html.Div(children=[
@@ -184,10 +238,11 @@ class View:
                 style={'height': '400px'}),
             dbc.Button('Submit',
                 id='output-button',
-                n_clicks_timestamp=0,
                 color='primary',
-                className='mr-1')
-        ])
+                className='mr-1',
+                style=self.button_style())
+        ],
+        style=self.tab_style())
 
     def utilities_tab(self):
         return html.Div(children=[
@@ -207,37 +262,37 @@ class View:
                     width=8)
             ],
             row=True)
-        ])
+        ],
+        style=self.tab_style())
 
     def configure_tab(self):
         return html.Div(children=[
             dbc.FormGroup([
-                dbc.Label('command for bcc: ', width=4),
+                dbc.Label('command for bcc: ', width=5),
                 dbc.Col(
                     dbc.Input(
                         id='bcc-command',
                         type='text',
                         value='trace-bpfcc',
                         placeholder='command',
-                    ),
-                    width=8)
+                    ))
                 ],
                 row=True),
             dbc.Button('Save',
                 id='save-config-button',
-                n_clicks_timestamp=0,
                 color='primary',
                 className="mr-1"),
             html.Div(
                 id='save-config-notification',
                 children=None)
-        ])
+        ],
+        style=self.tab_style())
 
     def layout(self):
         return html.Div([
             dbc.Row([
-                self.graph_div(),
-                self.dashboard()
+                dbc.Col(self.graph_div()),
+                dbc.Col(self.dashboard(), width=3)
             ]),
             dcc.Interval(
                 id='timer',
