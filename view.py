@@ -1,3 +1,4 @@
+import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_cytoscape as cyto
 import dash_daq as daq
@@ -117,7 +118,7 @@ class View:
                     1: {'label': '1', 'style': {'color': 'green'}},
                     self.view_model.max_count(): {'label': '{}'.format(self.view_model.max_count()), 'style': {'color': 'red'}}
                 },
-                tooltip = { 'always_visible': True }
+                tooltip = { 'always_visible': not disabled }
             )
         ]
 
@@ -181,16 +182,16 @@ class View:
 
     def utilities_tab(self):
         return html.Div(children=[
-            'Update coloring',
+            'Update coloring:',
             html.Div(
                 id='slider-div',
                 children=self.slider_div(),
-                style={'padding-top': '40px', 'padding': '10px'}
+                style={'padding': '40px 20px 20px 20px'}
             ),
             html.Div(
                 id='search-div',
                 children=self.search_div(),
-                style={'padding': '10px'}
+                style={'padding': '20px 20px 20px 20px'}
             )
         ])
 
