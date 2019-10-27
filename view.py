@@ -101,9 +101,12 @@ class View:
 
     def save_config_alert(self, success):
         if success:
-            return dbc.Alert('Configuration saved!', color='success')
+            message = 'Configuration saved!'
+            color = 'success'
         else:
-            return dbc.Alert('Could not save configuration!', color='danger')
+            message = 'Could not save configuration!'
+            color = 'danger'
+        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
     def slider_div(self, disabled=False):
         return [

@@ -96,15 +96,10 @@ class CallbackManager:
 
     def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),
-            [Input('save-config-button', 'n_clicks'),
-            Input('tabs', 'active_tab')],
+            [Input('save-config-button', 'n_clicks')],
             [State('bcc-command', 'value')])
-        def save_clicked(save_btn, tab, bcc_command):
-            context = dash.callback_context
-            if not context.triggered:
-                raise PreventUpdate
-            id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'save-config-button':
+        def save_clicked(save_btn, bcc_command):
+            if save_btn:
                 if bcc_command:
                     self.view_model.save_config(bcc_command)
                     return self.layout.save_config_alert(success=True)
