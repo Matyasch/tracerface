@@ -108,6 +108,15 @@ class View:
             color = 'danger'
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
+    def load_output_alert(self, success):
+        if success:
+            message = 'Output successfully loaded'
+            color = 'success'
+        else:
+            message = 'There was an error loading this output!'
+            color = 'danger'
+        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
+
     def slider_div(self, disabled=False):
         return [
             dcc.RangeSlider(
@@ -233,17 +242,23 @@ class View:
         style=self.tab_style())
 
     def static_tab(self):
-        return html.Div(children=[
-            'Trace output',
-            dbc.Textarea(
-                id='output-textarea',
-                placeholder='Enter trace output',
-                style={'height': '400px'}),
-            dbc.Button('Submit',
-                id='output-button',
-                color='primary',
-                className='mr-1',
-                style=self.button_style())
+        return html.Div([
+            dbc.FormGroup([
+                dbc.Label('Trace output'),
+                dbc.Textarea(
+                    id='output-textarea',
+                    placeholder='Enter trace output',
+                    style={'height': '400px'}),
+                dbc.Button('Submit',
+                    id='output-button',
+                    color='primary',
+                    className='mr-1',
+                    style=self.button_style()),
+                html.Div(
+                    id='load-output-notification',
+                    children=None,
+                    style=self.button_style())
+            ])
         ],
         style=self.tab_style())
 

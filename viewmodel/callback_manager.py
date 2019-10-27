@@ -25,6 +25,7 @@ class CallbackManager:
         self.open_app_dialog_callback()
         self.change_app_dialog_content_callback()
         self.add_func_callback()
+        self.output_load_notification_callback()
         self.info_box_value_callback()
 
     def info_box_value_callback(self):
@@ -105,6 +106,19 @@ class CallbackManager:
                     return self.layout.save_config_alert(success=True)
                 else:
                     return self.layout.save_config_alert(success=False)
+            else:
+                return ''
+
+    def output_load_notification_callback(self):
+        @self.app.callback(Output('load-output-notification', 'children'),
+            [Input('output-button', 'n_clicks')],
+            [State('output-textarea', 'value')])
+        def save_clicked(click, content):
+            if click:
+                if content:
+                    return self.layout.load_output_alert(success=True)
+                else:
+                    return self.layout.load_output_alert(success=False)
             else:
                 return ''
 
