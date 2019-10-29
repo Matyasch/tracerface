@@ -201,7 +201,17 @@ class View:
                     dbc.Label('Manage functions'),
                     dbc.Select(
                         id='functions-select',
-                        options=[{"label": name, "value": name} for name in options])])
+                        options=[{"label": name, "value": name} for name in options]),
+                    dbc.Button('Add parameters',
+                        id='add-param-button',
+                        color='success',
+                        className='mr-1',
+                        style=self.button_style()),
+                    dbc.Button('Remove function',
+                        id='remove-func-button',
+                        color='danger',
+                        className='mr-1',
+                        style=self.button_style())])
             ]),
             dbc.ModalFooter(
                 dbc.Button('Close', id='close-app-dialog', className='ml-auto'))]

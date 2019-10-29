@@ -21,9 +21,9 @@ class CallbackManager:
         self.static_tab_disabled_callback()
         self.utilities_tab_disabled_callback()
         self.searchbar_disabled_callback()
-        self.add_app_callback()
+        self.change_app_options_callback()
+        self.change_func_options_callback()
         self.open_app_dialog_callback()
-        self.add_func_callback()
         self.change_app_dialog_content_callback()
         self.output_load_notification_callback()
         self.add_app_notification_callback()
@@ -148,21 +148,21 @@ class CallbackManager:
             self.view_model.set_range(slider[0], slider[1])
             return self.layout.graph_stylesheet(search)
 
-    def add_app_callback(self):
+    def change_app_options_callback(self):
         @self.app.callback(Output('applications-select', 'options'),
             [Input('add-app-button', 'n_clicks'),
             Input('remove-app-button', 'n_clicks')],
             [State('application-path', 'value'),
             State('applications-select', 'options'),
             State('applications-select', 'value')])
-        def add_application(add_app, remove, path, apps, selected_app):
+        def add_or_remove_app(add, remove, path, apps, selected_app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-app-button' and path and path not in [app['value'] for app in apps]:
+            if id == 'add-app-button' and add and path and path not in [app['value'] for app in apps]:
                 return apps + [{"label": Path(path).name, "value": path}]
-            elif id == 'remove-app-button' and selected_app:
+            elif id == 'remove-app-button' and remove and selected_app:
                 self.functions_to_trace = [func for func in self.functions_to_trace if func.split(':')[0] != selected_app]
                 return [app for app in apps if app['label'] != selected_app]
             return apps
@@ -194,15 +194,19 @@ class CallbackManager:
             functions = [func.split(':')[1] for func in self.functions_to_trace if func.split(':')[0] == app]
             return self.layout.manage_application_dialog(app, functions)
 
-    def add_func_callback(self):
+    def change_func_options_callback(self):
         @self.app.callback(Output('functions-select', 'options'),
-            [Input('add-func-button', 'n_clicks')],
+            [Input('add-func-button', 'n_clicks'),
+            Input('remove-func-button', 'n_clicks')],
             [State('function-name', 'value'),
-            State('functions-select', 'options')])
-        def add_function(add, name, functions):
+            State('functions-select', 'options'),
+            State('functions-select', 'value')])
+        def add_or_remove_function(add, remove, name, functions, selected_func):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-func-button':
+            if id == 'add-func-button' and name:
                 return functions + [{"label": name, "value": name}]
+            if id == 'remove-func-button' and selected_func:
+                return [func for func in functions if func['value'] != selected_func]
