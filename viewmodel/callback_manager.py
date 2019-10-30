@@ -27,6 +27,7 @@ class CallbackManager:
         self.change_app_dialog_content_callback()
         self.output_load_notification_callback()
         self.add_app_notification_callback()
+        self.change_app_select_value()
         self.info_box_value_callback()
 
     def info_box_value_callback(self):
@@ -36,7 +37,6 @@ class CallbackManager:
             State('applications-select', 'options')])
         def update_info(n_clicks, path, apps):
             if path:
-                app = Path(path).name
                 return str(['{}:{}'.format(app, func) for app, funcs in self.to_trace.items() for func in funcs])
             return apps
 
@@ -161,11 +161,22 @@ class CallbackManager:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'add-app-button' and add and path and path not in [app['value'] for app in apps]:
-                return apps + [{"label": Path(path).name, "value": path}]
+                return apps + [{"label": path, "value": path}]
             elif id == 'remove-app-button' and remove and selected_app:
-                del self.to_trace[selected_app]
                 return [app for app in apps if app['label'] != selected_app]
             return apps
+
+    def change_app_select_value(self):
+        @self.app.callback(Output('applications-select', 'value'),
+            [Input('remove-app-button', 'n_clicks')],
+            [State('applications-select', 'value'),
+            State('applications-select', 'options')])
+        def add_or_remove_app(remove, selected_app, apps):
+            if remove and selected_app:
+                if selected_app in self.to_trace:
+                    del self.to_trace[selected_app]
+                return None
+            raise PreventUpdate
 
     def open_app_dialog_callback(self):
         @self.app.callback(Output('app-dialog', 'is_open'),
@@ -178,9 +189,9 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-function-button':
+            if id == 'add-function-button' and open:
                 return True
-            elif id == 'close-app-dialog':
+            elif id == 'close-app-dialog' and close:
                 if functions:
                     self.to_trace[app] = [func['value'] for func in functions]
                 return False
@@ -191,7 +202,7 @@ class CallbackManager:
         def change_app_dialog(app):
             if not app:
                 raise PreventUpdate
-            functions = self.to_trace[app] if app in self.to_trace else[]
+            functions = self.to_trace[app] if app in self.to_trace else []
             return self.layout.manage_application_dialog(app, functions)
 
     def change_func_options_callback(self):
@@ -210,3 +221,15 @@ class CallbackManager:
                 return functions + [{"label": name, "value": name}]
             if id == 'remove-func-button' and selected_func:
                 return [func for func in functions if func['value'] != selected_func]
+
+    def change_func_select_value(self):
+        @self.app.callback(Output('functions-select', 'value'),
+            [Input('remove-func-button', 'n_clicks')],
+            [State('applications-select', 'value'),
+            State('functions-select', 'value')])
+        def add_or_remove_app(remove, selected_app, selected_func):
+            if remove and selected_func:
+                if selected_func in self.to_trace[selected_app]:
+                    self.to_trace[selected_app].remove(selected_func)
+                return None
+            raise PreventUpdate
