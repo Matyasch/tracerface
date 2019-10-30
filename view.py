@@ -4,6 +4,7 @@ import dash_cytoscape as cyto
 import dash_daq as daq
 import dash_html_components as html
 
+from utils import c_types
 
 cyto.load_extra_layouts()
 
@@ -71,6 +72,12 @@ class View:
                     'line-color': '#ccc'
                 }
             },
+            {
+                'selector': 'edge',
+                'style': {
+                    'label': 'data(params)'
+                }
+            }
         ]
 
     def button_style(self):
@@ -223,11 +230,13 @@ class View:
                 dbc.FormGroup([
                     dbc.Label('Add parameter to trace'),
                     dbc.Row([
+                        dbc.Col(dbc.Select(
+                                id='param-type',
+                                options=[{"label": c_type[0], "value": '{}:{}'.format(c_type[0], c_type[1])} for c_type in c_types()])),
                         dbc.Col(dbc.Input(
-                            id='param-name',
-                            type='text',
-                            placeholder='function name'
-                        )),
+                                id='param-index',
+                                type='number',
+                                min=1)),
                         dbc.Col(
                             dbc.Button('Add',
                                 id='add-param-button',

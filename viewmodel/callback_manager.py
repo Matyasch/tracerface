@@ -24,21 +24,23 @@ class CallbackManager:
         self.change_app_options_callback()
         self.change_func_options_callback()
         self.open_app_dialog_callback()
+        self.open_func_dialog_callback()
         self.change_app_dialog_content_callback()
+        self.change_func_dialog_content_callback()
+        self.change_params_options_callback()
         self.output_load_notification_callback()
         self.add_app_notification_callback()
         self.change_app_select_value()
+        self.change_param_select_value()
         self.info_box_value_callback()
 
     def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
-            [Input('add-app-button', 'n_clicks')],
+            [Input('timer', 'n_intervals')],
             [State('application-path', 'value'),
             State('applications-select', 'options')])
-        def update_info(n_clicks, path, apps):
-            if path:
-                return str(['{}:{}'.format(app, func) for app, funcs in self.to_trace.items() for func in funcs])
-            return apps
+        def update_info(interval, path, apps):
+            return str(self.layout.view_model.model.debug)
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
@@ -131,6 +133,7 @@ class CallbackManager:
         def add_app_clicked(click, path, apps):
             if click:
                 if path and path not in [app['value'] for app in apps]:
+                    self.to_trace[path] = {}
                     return self.layout.add_app_alert(success=True, app=path)
                 else:
                     return self.layout.add_app_alert(success=False)
@@ -189,11 +192,25 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-function-button' and open:
+            if id == 'add-function-button' and open and app:
                 return True
             elif id == 'close-app-dialog' and close:
-                if functions:
-                    self.to_trace[app] = [func['value'] for func in functions]
+                return False
+
+    def open_func_dialog_callback(self):
+        @self.app.callback(Output('func-dialog', 'is_open'),
+            [Input('add-params-button', 'n_clicks'),
+            Input('close-func-dialog', 'n_clicks')],
+            [State('functions-select', 'value'),
+            State('params-select', 'options')])
+        def open_app_dialog(open, close, app, params):
+            context = dash.callback_context
+            if not context.triggered:
+                raise PreventUpdate
+            id = context.triggered[0]['prop_id'].split('.')[0]
+            if id == 'add-params-button' and open:
+                return True
+            elif id == 'close-func-dialog' and close:
                 return False
 
     def change_app_dialog_content_callback(self):
@@ -202,8 +219,18 @@ class CallbackManager:
         def change_app_dialog(app):
             if not app:
                 raise PreventUpdate
-            functions = self.to_trace[app] if app in self.to_trace else []
+            functions = self.to_trace[app] or []
             return self.layout.manage_application_dialog(app, functions)
+
+    def change_func_dialog_content_callback(self):
+        @self.app.callback(Output('func-dialog', 'children'),
+            [Input('functions-select', 'value')],
+            [State('applications-select', 'value')])
+        def change_app_dialog(func, app):
+            if not func:
+                raise PreventUpdate
+            params = self.to_trace[app][func] or []
+            return self.layout.manage_function_dialog(func=func, options=[])
 
     def change_func_options_callback(self):
         @self.app.callback(Output('functions-select', 'options'),
@@ -211,16 +238,42 @@ class CallbackManager:
             Input('remove-func-button', 'n_clicks')],
             [State('function-name', 'value'),
             State('functions-select', 'options'),
-            State('functions-select', 'value')])
-        def add_or_remove_function(add, remove, name, functions, selected_func):
+            State('functions-select', 'value'),
+            State('applications-select', 'value')])
+        def add_or_remove_function(add, remove, name, functions, selected_func, app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-func-button' and name:
+            if id == 'add-func-button' and add and name and name not in [f['label'] for f in functions]:
+                self.to_trace[app][name] = {}
                 return functions + [{"label": name, "value": name}]
-            if id == 'remove-func-button' and selected_func:
+            if id == 'remove-func-button' and remove and selected_func:
+                del self.to_trace[app][name]
                 return [func for func in functions if func['value'] != selected_func]
+
+    def change_params_options_callback(self):
+        @self.app.callback(Output('params-select', 'options'),
+            [Input('add-param-button', 'n_clicks'),
+            Input('remove-param-button', 'n_clicks')],
+            [State('param-index', 'value'),
+            State('param-type', 'value'),
+            State('params-select', 'options'),
+            State('params-select', 'value'),
+            State('functions-select', 'value'),
+            State('applications-select', 'value')])
+        def add_or_remove_function(add, remove, index, c_type, params, selected_param, func, app):
+            context = dash.callback_context
+            if not context.triggered:
+                raise PreventUpdate
+            id = context.triggered[0]['prop_id'].split('.')[0]
+            if id == 'add-param-button' and add and c_type and index and index not in [p['label'] for p in params]:
+                self.to_trace[app][func]['arg{}'.format(index)] = c_type.split(':')[1]
+                return params + [{"label": 'arg{} : {}'.format(index, c_type.split(':')[0]), "value": (index, c_type)}]
+            if id == 'remove-param-button' and selected_param:
+                del self.to_trace[app][func]['arg{}'.format(index)]
+                return [param for param in params if param['label'] != selected_param[0]]
+            return params
 
     def change_func_select_value(self):
         @self.app.callback(Output('functions-select', 'value'),
@@ -231,5 +284,14 @@ class CallbackManager:
             if remove and selected_func:
                 if selected_func in self.to_trace[selected_app]:
                     self.to_trace[selected_app].remove(selected_func)
+                return None
+            raise PreventUpdate
+
+    def change_param_select_value(self):
+        @self.app.callback(Output('params-select', 'value'),
+            [Input('remove-param-button', 'n_clicks')],
+            [State('params-select', 'value')])
+        def add_or_remove_app(remove, selected_param):
+            if remove and selected_param:
                 return None
             raise PreventUpdate

@@ -8,10 +8,16 @@ class ViewModel:
         self.model = BaseModel()
 
     def get_nodes(self):
-        return [{'data': {'id': node, 'count': self.model.get_nodes()[node]}} for node in self.model.get_nodes()]
+        return [{'data': {'id': node, 'count': self.model.get_nodes()[node]['call_count']}} for node in self.model.get_nodes()]
 
     def get_edges(self):
-        return [{'data': {'source': edge[1], 'target': edge[0]}} for edge in self.model.get_edges()]
+        return [{
+                'data': {
+                    'source': edge[1],
+                    'target': edge[0],
+                    'params': str(self.model.get_edges()[edge]['params'])
+                }
+            } for edge in self.model.get_edges()]
 
     def yellow_count(self):
         return round(self.model.yellow_count())
@@ -26,9 +32,24 @@ class ViewModel:
         self.model = StaticModel()
         self.model.load_text(text)
 
+    def flatten_trace_dict(self, trace_dict):
+        trace_list = []
+        for app in trace_dict:
+            functions = trace_dict[app]
+            for function in functions:
+                func_formula = '{}:{}'.format(app, function)
+                params = trace_dict[app][function]
+                if params:
+                    func_formula = '{} "{}", {}'.format(
+                        func_formula,
+                        ' '.join([trace_dict[app][function][param] for param in params]),
+                        ', '.join([param for param in params]))
+                trace_list.append(func_formula)
+        return trace_list
+
     def trace_btn_turned_on(self, trace_dict):
         self.model = DynamicModel()
-        trace_list = ['{}:{}'.format(app, func) for app, funcs in trace_dict.items() for func in funcs]
+        trace_list = self.flatten_trace_dict(trace_dict)
         self.model.start_trace(trace_list)
 
     def trace_btn_turned_off(self):

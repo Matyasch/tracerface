@@ -13,13 +13,22 @@ class Persistence:
     def load_nodes(self, nodes):
         for node in nodes:
             if node in self.nodes:
-                self.nodes[node] += nodes[node]
+                self.nodes[node]['call_count'] += nodes[node]['call_count']
             else:
-                self.nodes[node] = nodes[node]
+                self.nodes[node] = {}
+                self.nodes[node]['call_count'] = nodes[node]['call_count']
         self.init_colors()
 
     def load_edges(self, edges):
-        self.edges = {**self.edges, **edges}
+        for edge in edges:
+            if edge in self.edges:
+                if edges[edge]['param']:
+                    self.edges[edge]['params'].append(edges[edge]['param'])
+            else:
+                self.edges[edge] = {}
+                self.edges[edge]['params'] = []
+                if edges[edge]['param']:
+                    self.edges[edge]['params'].append(edges[edge]['param'])
 
     def clear(self):
         self.nodes = {}
@@ -27,7 +36,7 @@ class Persistence:
 
     def max_calls(self):
         if self.nodes:
-            return max(self.nodes.values())
+            return max([node['call_count'] for node in self.nodes.values()])
         return 0
 
     def init_colors(self):

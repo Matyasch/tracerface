@@ -6,6 +6,7 @@ class BaseModel:
     def __init__(self):
         self._persistence = Persistence()
         self._configuration = Configuration()
+        self.debug = ''
 
     # Returns a list of nodes and their call count
     def get_nodes(self):
