@@ -203,7 +203,7 @@ class View:
                         id='functions-select',
                         options=[{"label": name, "value": name} for name in options]),
                     dbc.Button('Add parameters',
-                        id='add-param-button',
+                        id='add-params-button',
                         color='success',
                         className='mr-1',
                         style=self.button_style()),
@@ -215,6 +215,39 @@ class View:
             ]),
             dbc.ModalFooter(
                 dbc.Button('Close', id='close-app-dialog', className='ml-auto'))]
+
+    def manage_function_dialog(self, func='', options=[]):
+        return [
+            dbc.ModalHeader('Add parameters to {}'.format(func)),
+            dbc.ModalBody([
+                dbc.FormGroup([
+                    dbc.Label('Add parameter to trace'),
+                    dbc.Row([
+                        dbc.Col(dbc.Input(
+                            id='param-name',
+                            type='text',
+                            placeholder='function name'
+                        )),
+                        dbc.Col(
+                            dbc.Button('Add',
+                                id='add-param-button',
+                                color='primary',
+                                className='mr-1'),
+                            width=2)]),
+                    dbc.FormText('Write the name of the parameter as it is in the code')]),
+                dbc.FormGroup([
+                    dbc.Label('Manage parameters'),
+                    dbc.Select(
+                        id='params-select',
+                        options=[{"label": name, "value": name} for name in options]),
+                    dbc.Button('Remove parameter',
+                        id='remove-param-button',
+                        color='danger',
+                        className='mr-1',
+                        style=self.button_style())])
+            ]),
+            dbc.ModalFooter(
+                dbc.Button('Close', id='close-func-dialog', className='ml-auto'))]
 
     def realtime_tab(self):
         return html.Div(children=[
@@ -260,6 +293,9 @@ class View:
                 color='#00FF00'),
             dbc.Modal(children=self.manage_application_dialog(),
                 id='app-dialog',
+                scrollable=True),
+            dbc.Modal(children=self.manage_function_dialog(),
+                id='func-dialog',
                 scrollable=True)
         ],
         style=self.tab_style())

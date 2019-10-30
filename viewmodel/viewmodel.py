@@ -26,9 +26,10 @@ class ViewModel:
         self.model = StaticModel()
         self.model.load_text(text)
 
-    def trace_btn_turned_on(self, functions):
+    def trace_btn_turned_on(self, trace_dict):
         self.model = DynamicModel()
-        self.model.start_trace(functions)
+        trace_list = ['{}:{}'.format(app, func) for app, funcs in trace_dict.items() for func in funcs]
+        self.model.start_trace(trace_list)
 
     def trace_btn_turned_off(self):
         self.model.stop_trace()

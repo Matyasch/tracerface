@@ -10,7 +10,7 @@ class CallbackManager:
         self.app = app
         self.view_model = view_model
         self.layout = layout
-        self.functions_to_trace = []
+        self.to_trace = {}
 
     def setup_callbacks(self):
         self.graph_value_callback()
@@ -37,7 +37,7 @@ class CallbackManager:
         def update_info(n_clicks, path, apps):
             if path:
                 app = Path(path).name
-                return str(self.functions_to_trace)
+                return str(['{}:{}'.format(app, func) for app, funcs in self.to_trace.items() for func in funcs])
             return apps
 
     def graph_value_callback(self):
@@ -64,7 +64,7 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             if trace_on:
-                self.view_model.trace_btn_turned_on(self.functions_to_trace)
+                self.view_model.trace_btn_turned_on(self.to_trace)
             elif not disabled:
                 self.view_model.trace_btn_turned_off()
             return not trace_on
@@ -163,7 +163,7 @@ class CallbackManager:
             if id == 'add-app-button' and add and path and path not in [app['value'] for app in apps]:
                 return apps + [{"label": Path(path).name, "value": path}]
             elif id == 'remove-app-button' and remove and selected_app:
-                self.functions_to_trace = [func for func in self.functions_to_trace if func.split(':')[0] != selected_app]
+                del self.to_trace[selected_app]
                 return [app for app in apps if app['label'] != selected_app]
             return apps
 
@@ -182,7 +182,7 @@ class CallbackManager:
                 return True
             elif id == 'close-app-dialog':
                 if functions:
-                    self.functions_to_trace += ['{}:{}'.format(app, func['value']) for func in functions]
+                    self.to_trace[app] = [func['value'] for func in functions]
                 return False
 
     def change_app_dialog_content_callback(self):
@@ -191,7 +191,7 @@ class CallbackManager:
         def change_app_dialog(app):
             if not app:
                 raise PreventUpdate
-            functions = [func.split(':')[1] for func in self.functions_to_trace if func.split(':')[0] == app]
+            functions = self.to_trace[app] if app in self.to_trace else[]
             return self.layout.manage_application_dialog(app, functions)
 
     def change_func_options_callback(self):
