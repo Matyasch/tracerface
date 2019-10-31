@@ -3,7 +3,7 @@ import threading
 import pexpect
 
 from model.base import BaseModel
-from model.parser import process_stack
+from utils import parse_stack
 
 # Manages logic and persistence
 class DynamicModel(BaseModel):
@@ -23,7 +23,7 @@ class DynamicModel(BaseModel):
                 call = raw.decode("utf-8")
                 self.cmd.append(call)
                 if call == '\r':
-                    graph = process_stack(stack)
+                    graph = parse_stack(stack)
                     self._persistence.load_edges(graph.edges)
                     self._persistence.load_nodes(graph.nodes)
                     stack.clear()

@@ -2,6 +2,8 @@ from model.base import BaseModel
 from model.dynamic import DynamicModel
 from model.static import StaticModel
 
+from utils import flatten_trace_dict
+
 # Transforms data into format usable by the layout
 class ViewModel:
     def __init__(self):
@@ -32,24 +34,9 @@ class ViewModel:
         self.model = StaticModel()
         self.model.load_text(text)
 
-    def flatten_trace_dict(self, trace_dict):
-        trace_list = []
-        for app in trace_dict:
-            functions = trace_dict[app]
-            for function in functions:
-                func_formula = '{}:{}'.format(app, function)
-                params = trace_dict[app][function]
-                if params:
-                    func_formula = '{} "{}", {}'.format(
-                        func_formula,
-                        ' '.join([trace_dict[app][function][param] for param in params]),
-                        ', '.join([param for param in params]))
-                trace_list.append(func_formula)
-        return trace_list
-
     def trace_btn_turned_on(self, trace_dict):
         self.model = DynamicModel()
-        trace_list = self.flatten_trace_dict(trace_dict)
+        trace_list = flatten_trace_dict(trace_dict)
         self.model.start_trace(trace_list)
 
     def trace_btn_turned_off(self):

@@ -4,7 +4,7 @@ import dash_cytoscape as cyto
 import dash_daq as daq
 import dash_html_components as html
 
-from utils import c_types
+from utils import c_type_pairs
 
 cyto.load_extra_layouts()
 
@@ -232,7 +232,7 @@ class View:
                     dbc.Row([
                         dbc.Col(dbc.Select(
                                 id='param-type',
-                                options=[{"label": c_type[0], "value": '{}:{}'.format(c_type[0], c_type[1])} for c_type in c_types()])),
+                                options=[{"label": c_type[0], "value": '{}:{}'.format(c_type[0], c_type[1])} for c_type in c_type_pairs()])),
                         dbc.Col(dbc.Input(
                                 id='param-index',
                                 type='number',
