@@ -17,9 +17,13 @@ class ViewModel:
                 'data': {
                     'source': edge[1],
                     'target': edge[0],
-                    'params': str(self.model.get_edges()[edge]['params'])
+                    'params': str(self.model.get_edges()[edge]['params']) if len(self.model.get_edges()[edge]['params']) <= 1 else '...'
                 }
             } for edge in self.model.get_edges()]
+
+    def get_params_of_node(self, node_id):
+        params_by_functions = [self.model.get_edges()[edge]['params'] for edge in self.model.get_edges() if edge[0] == node_id]
+        return [params for calls in params_by_functions for params in calls]
 
     def yellow_count(self):
         return round(self.model.yellow_count())

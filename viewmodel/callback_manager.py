@@ -33,14 +33,21 @@ class CallbackManager:
         self.change_app_select_value()
         self.change_param_select_value()
         self.info_box_value_callback()
+        self.display_node_info_callback()
+
+    def display_node_info_callback(self):
+        @self.app.callback(Output('node-info-box', 'children'),
+            [Input('graph', 'tapNodeData')])
+        def update_node_info(data):
+            if data:
+                return self.layout.node_info_card_content(data)
 
     def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
-            [Input('timer', 'n_intervals')],
-            [State('application-path', 'value'),
-            State('applications-select', 'options')])
-        def update_info(interval, path, apps):
-            return str(self.layout.view_model.model.debug)
+            [Input('graph', 'tapNodeData'),
+            Input('submit-button', 'n_clicks')])
+        def update_info(data, click):
+            return ['{}:{}'.format(edge, self.layout.view_model.model._persistence.edges[edge]) for edge in self.layout.view_model.model._persistence.edges]
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),

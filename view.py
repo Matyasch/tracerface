@@ -150,6 +150,20 @@ class View:
             )
         ]
 
+    def node_info_card_content(self, node=None):
+        if node:
+            count_info = 'called {} times, with params:'.format(node['count']) if node['count'] > 0 else 'not traced'
+            params = self.view_model.get_params_of_node(node['id'])
+            return dbc.Card([
+                dbc.CardHeader(node['id']),
+                dbc.CardBody([
+                    count_info,
+                    dbc.ListGroup([dbc.ListGroupItem(', '.join(param)) for param in params], className='scrollable', style={'max-height': '100px'}),
+                ])],
+                color='light',
+                style={'margin': '20px'})
+        return None
+
     def graph_div(self):
         return html.Div(
                 id='graph_div',
@@ -169,6 +183,7 @@ class View:
                         dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure_tab()]),
                     ]
                 ),
+                html.Div(children=[], id='node-info-box'),
                 html.Div(children=[
                     html.P(
                         children=f'Info',
@@ -316,7 +331,7 @@ class View:
                 dbc.Textarea(
                     id='output-textarea',
                     placeholder='Enter trace output',
-                    style={'height': '400px'}),
+                    style={'height': '200px'}),
                 dbc.Button('Submit',
                     id='submit-button',
                     color='primary',

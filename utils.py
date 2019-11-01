@@ -32,6 +32,7 @@ def flatten_trace_dict(trace_dict):
 def parse_stack(stack):
     FUNCTION_PATTERN = '^\s+(.+)\+.*\s\[(.+)\]'
     PARAMS_PATTERN = '^\d+\s+\d+\s+\S+\s\S+\s+(.+)'
+    OUTPUT_START = '^PID\s+TID\s+COMM\s+FUNC'
 
     Graph = namedtuple('Graph', 'nodes edges')
 
@@ -55,13 +56,15 @@ def parse_stack(stack):
     def get_params(header):
         params = re.search(PARAMS_PATTERN, header)
         if params:
-            params = params.group(1).rstrip('\r').split(' ')
-        return params if params != [''] else None
+            return [param for param in params.group(1).rstrip('\r').split(' ') if param != '']
+        return None
 
     nodes = {}
     edges = {}
+    if re.search(OUTPUT_START, stack[0]):
+        stack.pop(0)
+    params = get_params(stack.pop(0))
     called = None
-    params = get_params(stack[0])
     for call in stack[1:]:
         caller = re.search(FUNCTION_PATTERN, call)
         if caller:
