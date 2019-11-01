@@ -1,4 +1,5 @@
 from collections import namedtuple
+from operator import itemgetter
 import re
 
 def c_type_pairs():
@@ -15,6 +16,11 @@ def c_type_pairs():
     ]
 
 def flatten_trace_dict(trace_dict):
+    def params_to_ordered_list_of_pairs(params):
+        param_list = [(param, params[param]) for param in params]
+        param_list.sort(key=itemgetter(0))
+        return param_list
+
     trace_list = []
     for app in trace_dict:
         functions = trace_dict[app]
@@ -22,10 +28,11 @@ def flatten_trace_dict(trace_dict):
             func_formula = '{}:{}'.format(app, function)
             params = trace_dict[app][function]
             if params:
+                param_list = params_to_ordered_list_of_pairs(params)
                 func_formula = '{} "{}", {}'.format(
                     func_formula,
-                    ' '.join([trace_dict[app][function][param] for param in params]),
-                    ', '.join([param for param in params]))
+                    ' '.join([param[1] for param in param_list]),
+                    ', '.join([param[0] for param in param_list]))
             trace_list.append(func_formula)
     return trace_list
 
