@@ -166,11 +166,23 @@ class View:
                     dbc.ListGroup(
                         [dbc.ListGroupItem(', '.join(param)) for param in params],
                         className='scrollable',
-                        style={'max-height': '100px'}),
+                        style={'max-height': '200px'})
                 ])],
                 color='light',
                 style={'margin': '20px'})
         return None
+
+    def edge_info_card_content(self, edge):
+        return dbc.Card([
+            dbc.CardHeader('Call(s) from {} to {}'.format(edge['source'], edge['target'])),
+            dbc.CardBody([
+                dbc.ListGroup(
+                    [dbc.ListGroupItem(', '.join(param)) for param in self.view_model.get_params_of_edge(edge['source'], edge['target'])],
+                    className='scrollable',
+                    style={'max-height': '200px'})
+            ])],
+            color='light',
+            style={'margin': '20px'})
 
     def graph_div(self):
         return html.Div(

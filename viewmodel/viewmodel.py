@@ -29,6 +29,9 @@ class ViewModel:
             return ', '.join(calls[0])
         return '...'
 
+    def get_params_of_edge(self, source, target):
+        return self.model.get_edges()[(target, source)]['params']
+
     def get_params_of_node(self, node_id):
         params_by_functions = [self.model.get_edges()[edge]['params'] for edge in self.model.get_edges() if edge[0] == node_id]
         return [params for calls in params_by_functions for params in calls]

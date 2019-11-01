@@ -37,17 +37,25 @@ class CallbackManager:
 
     def display_node_info_callback(self):
         @self.app.callback(Output('node-info-box', 'children'),
-            [Input('graph', 'tapNodeData')])
-        def update_node_info(data):
-            if data:
-                return self.layout.node_info_card_content(data)
+            [Input('graph', 'tapNodeData'),
+            Input('graph', 'tapEdgeData')])
+        def update_node_info(node_data, edge_data):
+            context = dash.callback_context
+            if not context.triggered:
+                raise PreventUpdate
+            id = context.triggered[0]['prop_id'].split('.')[1]
+            if id == 'tapNodeData' and node_data:
+                return self.layout.node_info_card_content(node_data)
+            elif id == 'tapEdgeData' and edge_data:
+                return self.layout.edge_info_card_content(edge_data)
+            raise PreventUpdate
 
     def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
-            [Input('graph', 'tapNodeData'),
+            [Input('graph', 'tapEdgeData'),
             Input('submit-button', 'n_clicks')])
         def update_info(data, click):
-            return ['{}:{}'.format(edge, self.layout.view_model.model._persistence.edges[edge]) for edge in self.layout.view_model.model._persistence.edges]
+            return str(self.view_model.model._persistence.edges)
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
