@@ -169,7 +169,7 @@ class View:
         call_count = node['count']
         params = self.view_model.get_params_of_node(node['id'])
         if call_count > 0:
-            node_info = 'called {} time(s)'.format(node['count'])
+            node_info = 'Called {} time(s)'.format(node['count'])
             if len(params) > 0:
                 node_info += ' with parameter(s):'
         else:
