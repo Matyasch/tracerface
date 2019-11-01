@@ -76,6 +76,7 @@ def parse_stack(stack):
             expand_nodes(called, caller, nodes)
             if called:
                 params = None
+                traced = False
             called = caller
     return Graph(nodes=nodes, edges=edges)
 
