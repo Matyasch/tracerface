@@ -152,13 +152,21 @@ class View:
 
     def node_info_card_content(self, node=None):
         if node:
-            count_info = 'called {} times, with params:'.format(node['count']) if node['count'] > 0 else 'not traced'
             params = self.view_model.get_params_of_node(node['id'])
+            if node['count'] > 0:
+                count_info = 'called {} times'.format(node['count'])
+                if len(params) > 0:
+                    count_info += ' with parameters:'
+            else:
+                count_info = 'not traced'
             return dbc.Card([
                 dbc.CardHeader(node['id']),
                 dbc.CardBody([
                     count_info,
-                    dbc.ListGroup([dbc.ListGroupItem(', '.join(param)) for param in params], className='scrollable', style={'max-height': '100px'}),
+                    dbc.ListGroup(
+                        [dbc.ListGroupItem(', '.join(param)) for param in params],
+                        className='scrollable',
+                        style={'max-height': '100px'}),
                 ])],
                 color='light',
                 style={'margin': '20px'})
