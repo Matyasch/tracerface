@@ -176,6 +176,7 @@ class View:
         return dbc.Card([
             dbc.CardHeader('Call(s) from {} to {}'.format(edge['source'], edge['target'])),
             dbc.CardBody([
+                'Call made {} times with parameters:'.format(self.view_model.get_count_of_edge(edge['source'], edge['target'])),
                 dbc.ListGroup(
                     [dbc.ListGroupItem(', '.join(param)) for param in self.view_model.get_params_of_edge(edge['source'], edge['target'])],
                     className='scrollable',

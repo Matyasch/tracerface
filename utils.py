@@ -36,14 +36,15 @@ def parse_stack(stack):
 
     Graph = namedtuple('Graph', 'nodes edges')
 
-    def expand_edges(called, caller, edges, params):
+    def expand_edges(called, caller, edges, params, traced):
         if called:
             edge = (called.group(1), caller.group(1))
-            if edge in edges:
-                pass
-            else:
+            if edge not in edges:
                 edges[edge] = {}
                 edges[edge]['param'] = params
+                edges[edge]['call_count'] = 0
+            if traced:
+                edges[edge]['call_count'] += 1
 
     def expand_nodes(called, caller, nodes):
         caller_name = caller.group(1)
@@ -61,14 +62,17 @@ def parse_stack(stack):
 
     nodes = {}
     edges = {}
+
     if re.search(OUTPUT_START, stack[0]):
         stack.pop(0)
     params = get_params(stack.pop(0))
+
     called = None
+    traced = True
     for call in stack[1:]:
         caller = re.search(FUNCTION_PATTERN, call)
         if caller:
-            expand_edges(called, caller, edges, params)
+            expand_edges(called, caller, edges, params, traced)
             expand_nodes(called, caller, nodes)
             if called:
                 params = None

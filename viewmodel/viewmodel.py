@@ -29,6 +29,9 @@ class ViewModel:
             return ', '.join(calls[0])
         return '...'
 
+    def get_count_of_edge(self, source, target):
+        return self.model.get_edges()[(target, source)]['call_count']
+
     def get_params_of_edge(self, source, target):
         return self.model.get_edges()[(target, source)]['params']
 

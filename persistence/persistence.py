@@ -24,11 +24,13 @@ class Persistence:
             if edge in self.edges:
                 if edges[edge]['param']:
                     self.edges[edge]['params'].append(edges[edge]['param'])
+                    self.edges[edge]['call_count'] += edges[edge]['call_count']
             else:
                 self.edges[edge] = {}
                 self.edges[edge]['params'] = []
                 if edges[edge]['param']:
                     self.edges[edge]['params'].append(edges[edge]['param'])
+                self.edges[edge]['call_count'] = edges[edge]['call_count']
 
     def clear(self):
         self.nodes = {}
