@@ -150,40 +150,43 @@ class View:
             )
         ]
 
-    def node_info_card_content(self, node=None):
-        if node:
-            params = self.view_model.get_params_of_node(node['id'])
-            if node['count'] > 0:
-                count_info = 'called {} times'.format(node['count'])
-                if len(params) > 0:
-                    count_info += ' with parameters:'
-            else:
-                count_info = 'not traced'
-            return dbc.Card([
-                dbc.CardHeader(node['id']),
-                dbc.CardBody([
-                    count_info,
-                    dbc.ListGroup(
-                        [dbc.ListGroupItem(', '.join(param)) for param in params],
-                        className='scrollable',
-                        style={'max-height': '200px'})
-                ])],
-                color='light',
-                style={'margin': '20px'})
-        return None
-
-    def edge_info_card_content(self, edge):
+    def info_card(self, header, info, params):
         return dbc.Card([
-            dbc.CardHeader('Call(s) from {} to {}'.format(edge['source'], edge['target'])),
+            dbc.CardHeader(header),
             dbc.CardBody([
-                'Call made {} times with parameters:'.format(self.view_model.get_count_of_edge(edge['source'], edge['target'])),
+                info,
                 dbc.ListGroup(
-                    [dbc.ListGroupItem(', '.join(param)) for param in self.view_model.get_params_of_edge(edge['source'], edge['target'])],
+                    [dbc.ListGroupItem(', '.join(param)) for param in params],
                     className='scrollable',
                     style={'max-height': '200px'})
             ])],
             color='light',
             style={'margin': '20px'})
+
+
+    def node_info_card_content(self, node):
+        header = node['id']
+        call_count = node['count']
+        params = self.view_model.get_params_of_node(node['id'])
+        if call_count > 0:
+            node_info = 'called {} time(s)'.format(node['count'])
+            if len(params) > 0:
+                node_info += ' with parameter(s):'
+        else:
+            node_info = 'not traced'
+        return self.info_card(header, node_info, params)
+
+    def edge_info_card_content(self, edge):
+        header = 'Call(s) from {} to {}'.format(edge['source'], edge['target'])
+        call_count = self.view_model.get_count_of_edge(edge['source'], edge['target'])
+        params = self.view_model.get_params_of_edge(edge['source'], edge['target'])
+        if call_count > 0:
+            edge_info = 'Call made {} time(s)'.format(call_count)
+            if len(params) > 0:
+                edge_info += ' with parameter(s):'
+        else:
+            edge_info = 'Not traced'
+        return self.info_card(header, edge_info, params)
 
     def graph_div(self):
         return html.Div(
