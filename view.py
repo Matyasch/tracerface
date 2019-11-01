@@ -226,10 +226,10 @@ class View:
 
     def manage_application_dialog(self, app='', options=[]):
         return [
-            dbc.ModalHeader('Add functions to {}'.format(app)),
+            dbc.ModalHeader('Manage functions of {}'.format(app)),
             dbc.ModalBody([
                 dbc.FormGroup([
-                    dbc.Label('Add functions to trace'),
+                    dbc.Label('Add function to trace'),
                     dbc.Row([
                         dbc.Col(dbc.Input(
                             id='function-name',
@@ -248,7 +248,7 @@ class View:
                     dbc.Select(
                         id='functions-select',
                         options=[{"label": name, "value": name} for name in options]),
-                    dbc.Button('Add parameters',
+                    dbc.Button('Manage parameters',
                         id='add-params-button',
                         color='success',
                         className='mr-1',
@@ -264,7 +264,7 @@ class View:
 
     def manage_function_dialog(self, func='', options=[]):
         return [
-            dbc.ModalHeader('Add parameters to {}'.format(func)),
+            dbc.ModalHeader('Manage parameters of {}'.format(func)),
             dbc.ModalBody([
                 dbc.FormGroup([
                     dbc.Label('Add parameter to trace'),
@@ -324,7 +324,7 @@ class View:
                 dbc.Select(
                     id='applications-select',
                     options=[]),
-                dbc.Button('Add functions',
+                dbc.Button('Manage functions',
                     id='add-function-button',
                     color='success',
                     className='mr-1',
