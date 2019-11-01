@@ -36,7 +36,7 @@ class CallbackManager:
         self.display_node_info_callback()
 
     def display_node_info_callback(self):
-        @self.app.callback(Output('node-info-box', 'children'),
+        @self.app.callback(Output('info-card', 'children'),
             [Input('graph', 'tapNodeData'),
             Input('graph', 'tapEdgeData')])
         def update_node_info(node_data, edge_data):

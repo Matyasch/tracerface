@@ -207,7 +207,7 @@ class View:
                         dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure_tab()]),
                     ]
                 ),
-                html.Div(children=[], id='node-info-box'),
+                html.Div(children=[], id='info-card'),
                 html.Div(children=[
                     html.P(
                         children=f'Info',
