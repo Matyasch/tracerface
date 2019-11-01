@@ -277,7 +277,7 @@ class CallbackManager:
             State('params-select', 'value'),
             State('functions-select', 'value'),
             State('applications-select', 'value')])
-        def add_or_remove_function(add, remove, index, c_type, params, selected_param, func, app):
+        def add_or_remove_parameter(add, remove, index, c_type, params, selected_param, func, app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
