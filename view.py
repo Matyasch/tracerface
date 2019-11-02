@@ -94,7 +94,7 @@ class View:
                 'spacingFactor': '3',
             },
             style={
-                'height': '95vh'
+                'height': '100vh'
             },
             elements= self.view_model.get_nodes() + self.view_model.get_edges(),
             stylesheet=self.graph_stylesheet()
@@ -417,9 +417,10 @@ class View:
     def layout(self):
         return html.Div([
             dbc.Row([
-                dbc.Col(self.graph_div()),
-                dbc.Col(self.dashboard(), width=3)
-            ]),
+                dbc.Col(self.graph_div(), width=9),
+                dbc.Col(self.dashboard())
+            ],
+            style={'width': '100%'}),
             dcc.Interval(
                 id='timer',
                 interval=1*500, # in milliseconds
