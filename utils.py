@@ -38,7 +38,7 @@ def flatten_trace_dict(trace_dict):
 
 def parse_stack(stack):
     FUNCTION_PATTERN = '^\s+(.+)\+.*\s\[(.+)\]'
-    PARAMS_PATTERN = '^\d+\s+\d+\s+\S+\s\S+\s+(.+)'
+    PARAMS_PATTERN = '^\d+\s+\d+\s+\S+\s+\S+\s+(.+)'
     OUTPUT_START = '^PID\s+TID\s+COMM\s+FUNC'
 
     Graph = namedtuple('Graph', 'nodes edges')
