@@ -10,14 +10,23 @@ class ViewModel:
         self.model = BaseModel()
 
     def get_nodes(self):
-        return [{'data': {'id': node, 'count': self.model.get_nodes()[node]['call_count']}} for node in self.model.get_nodes()]
+        return [{
+        'data': {
+            'id': node,
+            'name': self.model.get_nodes()[node]['name'],
+            'source': self.model.get_nodes()[node]['source'],
+            'count': self.model.get_nodes()[node]['call_count']}
+        } for node in self.model.get_nodes()]
 
     def get_edges(self):
         return [{
                 'data': {
-                    'source': edge[1],
-                    'target': edge[0],
-                    'params': self.get_param_visuals_for_edge(edge)
+                    'source': edge[0],
+                    'target': edge[1],
+                    'params': self.get_param_visuals_for_edge(edge),
+                    'call_count': self.model.get_edges()[edge]['call_count'],
+                    'caller_name': self.model.get_nodes()[edge[0]]['name'],
+                    'called_name': self.model.get_nodes()[edge[1]]['name']
                 }
             } for edge in self.model.get_edges()]
 
@@ -33,10 +42,10 @@ class ViewModel:
         return self.model.get_edges()[(target, source)]['call_count']
 
     def get_params_of_edge(self, source, target):
-        return self.model.get_edges()[(target, source)]['params']
+        return self.model.get_edges()[(source, target)]['params']
 
     def get_params_of_node(self, node_id):
-        params_by_functions = [self.model.get_edges()[edge]['params'] for edge in self.model.get_edges() if edge[0] == node_id]
+        params_by_functions = [self.model.get_edges()[edge]['params'] for edge in self.model.get_edges() if str(edge[1]) == node_id]
         return [params for calls in params_by_functions for params in calls]
 
     def yellow_count(self):

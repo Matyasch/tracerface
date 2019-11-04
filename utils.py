@@ -43,23 +43,30 @@ def parse_stack(stack):
 
     Graph = namedtuple('Graph', 'nodes edges')
 
-    def expand_edges(called, caller, edges, params, traced):
-        if called:
-            edge = (called.group(1), caller.group(1))
-            if edge not in edges:
-                edges[edge] = {}
-                edges[edge]['param'] = params
-                edges[edge]['call_count'] = 0
-            if traced:
-                edges[edge]['call_count'] += 1
+    def create_node(regex):
+        node_dict = {}
+        node_dict['name'] = regex.group(1)
+        node_dict['source'] = regex.group(2)
+        return node_dict
 
-    def expand_nodes(called, caller, nodes):
-        caller_name = caller.group(1)
-        if caller_name not in nodes:
-            nodes[caller_name] = {}
-            nodes[caller_name]['call_count'] = 0
+    def create_hash_for_node(node_dict):
+        return str(hash(frozenset(node_dict.items())))
+
+    def expand_edges(called, caller, edges, params, traced):
+        edge_id = (caller, called)
+        if edge_id not in edges:
+            edges[edge_id] = {}
+            edges[edge_id]['param'] = params
+            edges[edge_id]['call_count'] = 0
+        if traced:
+            edges[edge_id]['call_count'] += 1
+
+    def expand_nodes(node_dict, node_hash, nodes, called):
+        if node_hash not in nodes:
+            nodes[node_hash] = node_dict
+            nodes[node_hash]['call_count'] = 0
         if not called:
-            nodes[caller_name]['call_count'] += 1
+            nodes[node_hash]['call_count'] += 1
 
     def get_params(header):
         params = re.search(PARAMS_PATTERN, header)
@@ -74,17 +81,19 @@ def parse_stack(stack):
         stack.pop(0)
     params = get_params(stack.pop(0))
 
-    called = None
+    called_hash = None
     traced = True
     for call in stack[1:]:
         caller = re.search(FUNCTION_PATTERN, call)
         if caller:
-            expand_edges(called, caller, edges, params, traced)
-            expand_nodes(called, caller, nodes)
-            if called:
+            caller_node = create_node(caller)
+            caller_hash = create_hash_for_node(caller_node)
+            expand_nodes(caller_node, caller_hash, nodes, called_hash)
+            if called_hash:
+                expand_edges(called_hash, caller_hash, edges, params, traced)
                 params = None
                 traced = False
-            called = caller
+            called_hash = caller_hash
     return Graph(nodes=nodes, edges=edges)
 
 def text_to_stacks(text):

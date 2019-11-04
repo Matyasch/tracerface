@@ -15,8 +15,7 @@ class Persistence:
             if node in self.nodes:
                 self.nodes[node]['call_count'] += nodes[node]['call_count']
             else:
-                self.nodes[node] = {}
-                self.nodes[node]['call_count'] = nodes[node]['call_count']
+                self.nodes[node] = nodes[node]
         self.init_colors()
 
     def load_edges(self, edges):

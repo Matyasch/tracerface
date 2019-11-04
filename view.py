@@ -29,7 +29,7 @@ class View:
             {
                 'selector': 'node',
                 'style': {
-                    'content': 'data(id)',
+                    'content': 'data(name)',
                     'text-valign': 'center',
                     'width': 'label',
                     'height': 'label',
@@ -150,11 +150,10 @@ class View:
             )
         ]
 
-    def info_card(self, header, info, params):
+    def info_card(self, header, infos, params):
         return dbc.Card([
             dbc.CardHeader(header),
-            dbc.CardBody([
-                info,
+            dbc.CardBody([html.P(info) for info in infos] + [
                 dbc.ListGroup(
                     [dbc.ListGroupItem(', '.join(param)) for param in params],
                     className='scrollable',
@@ -165,28 +164,28 @@ class View:
 
 
     def node_info_card_content(self, node):
-        header = node['id']
+        header = node['name']
         call_count = node['count']
         params = self.view_model.get_params_of_node(node['id'])
+        info = ['Source: {}'.format(node['source'])]
         if call_count > 0:
-            node_info = 'Called {} time(s)'.format(node['count'])
+            info.append('Called {} times'.format(node['count']))
             if len(params) > 0:
-                node_info += ' with parameter(s):'
-        else:
-            node_info = 'not traced'
-        return self.info_card(header, node_info, params)
+                info.append('With parameters:')
+        return self.info_card(header, info, params)
 
     def edge_info_card_content(self, edge):
-        header = 'Call(s) from {} to {}'.format(edge['source'], edge['target'])
-        call_count = self.view_model.get_count_of_edge(edge['source'], edge['target'])
+        header = 'Call(s) from {} to {}'.format(edge['caller_name'], edge['called_name'])
+        call_count = edge['call_count']
         params = self.view_model.get_params_of_edge(edge['source'], edge['target'])
+        info = []
         if call_count > 0:
-            edge_info = 'Call made {} time(s)'.format(call_count)
+            info.append('Call made {} times'.format(call_count))
             if len(params) > 0:
-                edge_info += ' with parameter(s):'
+                info.append(' With parameters:')
         else:
-            edge_info = 'Not traced'
-        return self.info_card(header, edge_info, params)
+            edge_info.append('Not traced')
+        return self.info_card(header, info, params)
 
     def graph_div(self):
         return html.Div(
