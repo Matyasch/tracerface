@@ -92,6 +92,7 @@ class View:
             layout={
                 'name': 'dagre',
                 'spacingFactor': '3',
+                'animate': self.view_model.animate_config()
             },
             style={
                 'height': '100vh'
@@ -334,6 +335,22 @@ class View:
                     className='mr-1',
                     style=self.button_style())
                 ]),
+            dbc.Checklist(
+                options=[
+                    {"label": "Use config file instead", "value": 'config'}
+                ],
+                value=[],
+                id="use-config-file-switch",
+                switch=True,
+            ),
+            dbc.Collapse(
+                dbc.Input(
+                    id='config-file-path',
+                    type='text',
+                    placeholder='/path/to/config'
+                ),
+                id="config-fine-input-collapse",
+            ),
             daq.PowerButton(
                 id='trace-button',
                 on=False,
@@ -402,6 +419,14 @@ class View:
                     ))
                 ],
                 row=True),
+            dbc.Checklist(
+                options=[
+                    {"label": "Animate graph", "value": 'animate'}
+                ],
+                value=[],
+                id="animate-switch",
+                switch=True,
+            ),
             dbc.Button('Save',
                 id='save-config-button',
                 color='primary',

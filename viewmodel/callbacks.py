@@ -33,6 +33,7 @@ class CallbackManager:
         self.change_app_select_value()
         self.change_param_select_value()
         self.info_box_value_callback()
+        self.open_config_file_input()
         self.display_node_info_callback()
 
     def display_node_info_callback(self):
@@ -52,10 +53,9 @@ class CallbackManager:
 
     def info_box_value_callback(self):
         @self.app.callback(Output('info-box', 'children'),
-            [Input('graph', 'tapEdgeData'),
-            Input('submit-button', 'n_clicks')])
-        def update_info(data, click):
-            return str(self.view_model.model._persistence.edges)
+            [Input('tabs', 'active_tab')])
+        def update_info(data):
+            return json.dumps(self.to_trace, indent=2)
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph_div', 'children'),
@@ -74,14 +74,19 @@ class CallbackManager:
     def timer_disabled_callback(self):
         @self.app.callback(Output('timer', 'disabled'),
             [Input('trace-button', 'on')],
-            [State('timer', 'disabled')])
-        def switch_timer_state(trace_on, disabled):
+            [State('timer', 'disabled'),
+            State('config-fine-input-collapse', 'is_open'),
+            State('config-file-path', 'value')])
+        def switch_timer_state(trace_on, disabled, config_use, config_path):
             # TODO: if no functions, don't let turn on
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             if trace_on:
-                self.view_model.trace_btn_turned_on(self.to_trace)
+                if config_use:
+                    self.view_model.trace_with_config_file(config_path)
+                else:
+                    self.view_model.trace_with_ui_elements(self.to_trace)
             elif not disabled:
                 self.view_model.trace_btn_turned_off()
             return not trace_on
@@ -116,11 +121,13 @@ class CallbackManager:
     def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks')],
-            [State('bcc-command', 'value')])
-        def save_clicked(save_btn, bcc_command):
+            [State('bcc-command', 'value'),
+            State('animate-switch', 'value')])
+        def save_clicked(save_btn, bcc_command, animate_switch):
             if save_btn:
                 if bcc_command:
-                    self.view_model.save_config(bcc_command)
+                    animate = len(animate_switch) == 1
+                    self.view_model.save_config(bcc_command=bcc_command, animate=animate)
                     return self.layout.save_config_alert(success=True)
                 else:
                     return self.layout.save_config_alert(success=False)
@@ -310,3 +317,9 @@ class CallbackManager:
             if remove and selected_param:
                 return None
             raise PreventUpdate
+
+    def open_config_file_input(self):
+        @self.app.callback(Output('config-fine-input-collapse', 'is_open'),
+            [Input('use-config-file-switch', 'value')])
+        def open_config_collapse(open):
+            return len(open) == 1

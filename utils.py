@@ -1,6 +1,9 @@
 from collections import namedtuple
 from operator import itemgetter
+from pathlib import Path
 import re
+
+import yaml
 
 def c_type_pairs():
     return [
@@ -98,3 +101,23 @@ def parse_stack(stack):
 
 def text_to_stacks(text):
     return [stack.split('\n') for stack in text.split('\n\n')]
+
+def extract_config(config_path):
+    path = Path(config_path)
+    content = yaml.safe_load(path.read_text())
+    trace_list = []
+    for app in content:
+        print(app)
+        for func in content[app]:
+            if isinstance(func, dict):
+                params_specs = list(func.values())[0]
+                func_formula = '{}:{} "{}", {}'.format(
+                    app,
+                    list(func.keys())[0],
+                    ' '.join(params_specs),
+                    ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))])
+                )
+            else:
+                func_formula = '{}:{}'.format(app, func)
+            trace_list.append(func_formula)
+    return trace_list

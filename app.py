@@ -1,13 +1,15 @@
 from dash import Dash
 import dash_bootstrap_components as dbc
 
+from persistence.configuration import Configuration
 from view import View
-from viewmodel.callback_manager import CallbackManager
+from viewmodel.callbacks import CallbackManager
 from viewmodel.viewmodel import ViewModel
 
 class App:
     def __init__(self):
-        self._view_model=ViewModel()
+        self._configuration = Configuration()
+        self._view_model=ViewModel(self._configuration)
         self._view = View(self._view_model)
 
         self._app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])

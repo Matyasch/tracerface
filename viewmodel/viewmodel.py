@@ -2,12 +2,11 @@ from model.base import BaseModel
 from model.dynamic import DynamicModel
 from model.static import StaticModel
 
-from utils import flatten_trace_dict
-
 # Transforms data into format usable by the layout
 class ViewModel:
-    def __init__(self):
-        self.model = BaseModel()
+    def __init__(self, configuration):
+        self._configuration = configuration
+        self.model = BaseModel(configuration)
 
     def get_nodes(self):
         return [{
@@ -58,13 +57,16 @@ class ViewModel:
         return self.model.max_count()
 
     def output_submit_btn_clicked(self, text):
-        self.model = StaticModel()
+        self.model = StaticModel(self._configuration)
         self.model.load_text(text)
 
-    def trace_btn_turned_on(self, trace_dict):
-        self.model = DynamicModel()
-        trace_list = flatten_trace_dict(trace_dict)
-        self.model.start_trace(trace_list)
+    def trace_with_ui_elements(self, trace_dict):
+        self.model = DynamicModel(self._configuration)
+        self.model.trace_dict(trace_dict)
+
+    def trace_with_config_file(self, config_path):
+        self.model = DynamicModel(self._configuration)
+        self.model.trace_config_file(config_path)
 
     def trace_btn_turned_off(self):
         self.model.stop_trace()
@@ -72,5 +74,8 @@ class ViewModel:
     def set_range(self, range_bottom, range_top):
         self.model.set_range(range_bottom, range_top)
 
-    def save_config(self, bcc_command):
-        self.model.save_config(bcc_command)
+    def save_config(self, bcc_command, animate):
+        self.model.save_config(bcc_command, animate)
+
+    def animate_config(self):
+        return self._configuration.animate

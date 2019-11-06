@@ -3,12 +3,16 @@ import threading
 import pexpect
 
 from model.base import BaseModel
-from utils import parse_stack
+from utils import (
+    extract_config,
+    flatten_trace_dict,
+    parse_stack
+)
 
 # Manages logic and persistence
 class DynamicModel(BaseModel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, configuration):
+        super().__init__(configuration)
         self._thread = threading.Thread()
         self._thread_enabled = False
 
@@ -33,8 +37,18 @@ class DynamicModel(BaseModel):
                 break
         child.close()
 
-    def start_trace(self, functions):
+    def trace_dict(self, dict_to_trace):
         self._persistence.clear()
+        functions = flatten_trace_dict(dict_to_trace)
+        cmd = [self._configuration.bcc_command, '-UK'] + ['\'{}\''.format(function) for function in functions]
+        self.debug = ' '.join(cmd)
+        self._thread_enabled = True
+        thread = threading.Thread(target=self._run_command, args=[' '.join(cmd)])
+        thread.start()
+
+    def trace_config_file(self, config_path):
+        self._persistence.clear()
+        functions = extract_config(config_path)
         cmd = [self._configuration.bcc_command, '-UK'] + ['\'{}\''.format(function) for function in functions]
         self.debug = ' '.join(cmd)
         self._thread_enabled = True

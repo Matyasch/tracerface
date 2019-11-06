@@ -1,11 +1,10 @@
-from persistence.configuration import Configuration
 from persistence.persistence import Persistence
 
 # Manages logic and persistence
 class BaseModel:
-    def __init__(self):
+    def __init__(self, configuration):
         self._persistence = Persistence()
-        self._configuration = Configuration()
+        self._configuration = configuration
         self.debug = ''
 
     # Returns a list of nodes and their call count
@@ -28,5 +27,5 @@ class BaseModel:
     def set_range(self, yellow, red):
         self._persistence.update_color_range(yellow, red)
 
-    def save_config(self, bcc_command):
-        self._configuration = Configuration(bcc_command=bcc_command)
+    def save_config(self, bcc_command, animate):
+        self._configuration.update(bcc_command=bcc_command, animate=animate)

@@ -4,7 +4,7 @@ from utils import parse_stack, text_to_stacks
 # Manages logic and persistence
 class StaticModel(BaseModel):
     def __init__(self):
-         super().__init__()
+         super().__init__(configuration)
 
     def load_text(self, raw_text):
         self._persistence.clear()
