@@ -107,7 +107,6 @@ def extract_config(config_path):
     content = yaml.safe_load(path.read_text())
     trace_list = []
     for app in content:
-        print(app)
         for func in content[app]:
             if isinstance(func, dict):
                 params_specs = list(func.values())[0]
