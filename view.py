@@ -69,12 +69,47 @@ class View:
                 }
             }
 
+    def green_edge_style(self, search):
+        return {
+                'selector': '[call_count > 0][call_count < {}][called_name *= "{}"]'.format(self.view_model.yellow_count(), search),
+                'style': {
+                    'line-color': 'green',
+                    'target-arrow-color': 'green',
+                    'width': '1'
+                }
+            }
+
+    def yellow_edge_style(self, search):
+        return {
+                'selector': '[call_count >= {}][call_count < {}][called_name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search),
+                'style': {
+                    'line-color': 'orange',
+                    'target-arrow-color': 'orange',
+                    'width': '1'
+                }
+            }
+
+    def red_edge_style(self, search):
+        return {
+                'selector': '[call_count >= {}][called_name *= "{}"]'.format(self.view_model.red_count(), search),
+                'style': {
+                    'line-color': 'red',
+                    'target-arrow-color': 'red',
+                    'width': '1'
+                }
+            }
+
     def graph_stylesheet(self, search=''):
+        if not search:
+            search=''
         return [self.base_node_style(),
                 self.green_node_style(search),
                 self.yellow_node_style(search),
                 self.red_node_style(search),
-                self.base_edge_style()
+                self.base_edge_style(),
+                self.green_edge_style(search),
+                self.yellow_edge_style(search),
+                self.red_edge_style(search)
         ]
 
     def button_style(self):
