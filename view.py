@@ -14,13 +14,13 @@ class View:
         self.view_model = view_model
 
     def red_selector(self, search):
-        return '[count >= {}][id *= "{}"]'.format(self.view_model.red_count(), search)
+        return '[count >= {}][name *= "{}"]'.format(self.view_model.red_count(), search)
 
     def yellow_selector(self, search):
-        return '[count >= {}][count < {}][id *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search)
+        return '[count >= {}][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search)
 
     def green_selector(self, search):
-        return '[count > 0][count < {}][id *= "{}"]'.format(self.view_model.yellow_count(), search)
+        return '[count > 0][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), search)
 
     def graph_stylesheet(self, search=''):
         if not search:
@@ -70,12 +70,6 @@ class View:
                     'target-arrow-color': '#ccc',
                     'label': 'data(params)',
                     'line-color': '#ccc'
-                }
-            },
-            {
-                'selector': 'edge',
-                'style': {
-                    'label': 'data(params)'
                 }
             }
         ]
