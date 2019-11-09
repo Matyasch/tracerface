@@ -173,10 +173,9 @@ class CallbackManager:
     def graph_stylesheet_callback(self):
         @self.app.callback(Output('graph', 'stylesheet'),
             [Input('slider', 'value'),
-            Input('searchbar', 'value'),
-            Input('save-config-button', 'n_clicks')],
+            Input('searchbar', 'value')],
             [State('trace-button', 'on')])
-        def update_output(slider, search, config_save, trace_on):
+        def update_output(slider, search, trace_on):
             self.view_model.set_range(slider[0], slider[1])
             return self.layout.graph_stylesheet(search)
 
