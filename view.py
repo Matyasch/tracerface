@@ -150,7 +150,7 @@ class View:
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
     def trace_error_alert(self, message):
-        return dbc.Alert('There was an error during tracing: {}'.format(message), color='danger', duration=6000, dismissable=True)
+        return dbc.Alert([html.P('There was an error during tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)
 
     def load_output_alert(self, success):
         if success:
