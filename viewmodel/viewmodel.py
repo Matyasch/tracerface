@@ -5,8 +5,9 @@ from model.static import StaticModel
 
 # Transforms data into format usable by the layout
 class ViewModel:
-    def __init__(self):
-        self.model = BaseModel()
+    def __init__(self, configuration):
+        self.model = BaseModel(configuration)
+        self._configuration = configuration
 
     def get_nodes(self):
         return [{
@@ -57,15 +58,15 @@ class ViewModel:
         return self.model.max_count()
 
     def output_submit_btn_clicked(self, text):
-        self.model = StaticModel()
+        self.model = StaticModel(self._configuration)
         self.model.load_text(text)
 
     def trace_with_ui_elements(self, trace_dict):
-        self.model = DynamicModel()
+        self.model = DynamicModel(self._configuration)
         self.model.trace_dict(trace_dict)
 
     def trace_with_config_file(self, config_path):
-        self.model = DynamicModel()
+        self.model = DynamicModel(self._configuration)
         self.model.trace_config_file(config_path)
 
     def trace_btn_turned_off(self):
@@ -85,3 +86,6 @@ class ViewModel:
 
     def spacing_config(self):
         return self.model.get_spacing_config()
+
+    def trace_error(self):
+        return self.model.trace_error()

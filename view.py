@@ -149,6 +149,9 @@ class View:
             color = 'danger'
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
+    def trace_error_alert(self, message):
+        return dbc.Alert('There was an error during tracing\n{}'.format(message), color='danger', duration=6000, dismissable=True)
+
     def load_output_alert(self, success):
         if success:
             message = 'Output successfully loaded'
@@ -388,6 +391,10 @@ class View:
                 id='trace-button',
                 on=False,
                 color='#00FF00'),
+            html.Div(
+                id='trace-error-notification',
+                children=None,
+                style=self.button_style()),
             dbc.Modal(children=self.manage_application_dialog(),
                 id='app-dialog',
                 scrollable=True),

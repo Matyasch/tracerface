@@ -37,6 +37,7 @@ class CallbackManager:
         self.display_node_info_callback()
         self.configure_tab_disabled_callback()
         self.update_graph_layout_callback()
+        self.stop_trace_on_error()
 
     def display_node_info_callback(self):
         @self.app.callback(Output('info-card', 'children'),
@@ -73,6 +74,17 @@ class CallbackManager:
                 self.view_model.output_submit_btn_clicked(output)
             return self.layout.graph()
 
+    def stop_trace_on_error(self):
+        @self.app.callback([Output('trace-button', 'on'),
+            Output('trace-error-notification', 'children')],
+            [Input('timer', 'n_intervals')],
+            [State('trace-button', 'on')])
+        def stop_trace(timer_tick, trace_on):
+            pass
+            if timer_tick and trace_on and self.view_model.trace_error():
+                return False, self.layout.trace_error_alert(self.view_model.trace_error())
+            raise PreventUpdate
+
     def timer_disabled_callback(self):
         @self.app.callback(Output('timer', 'disabled'),
             [Input('trace-button', 'on')],
@@ -81,9 +93,6 @@ class CallbackManager:
             State('config-file-path', 'value')])
         def switch_timer_state(trace_on, disabled, config_use, config_path):
             # TODO: if no functions, don't let turn on
-            context = dash.callback_context
-            if not context.triggered:
-                raise PreventUpdate
             if trace_on:
                 if config_use:
                     self.view_model.trace_with_config_file(config_path)
