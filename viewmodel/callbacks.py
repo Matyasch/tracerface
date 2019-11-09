@@ -35,6 +35,7 @@ class CallbackManager:
         self.info_box_value_callback()
         self.open_config_file_input()
         self.display_node_info_callback()
+        self.configure_tab_disabled_callback()
 
     def display_node_info_callback(self):
         @self.app.callback(Output('info-card', 'children'),
@@ -116,6 +117,12 @@ class CallbackManager:
         @self.app.callback(Output('utilities-tab', 'disabled'),
             [Input('trace-button', 'on')])
         def disable_utilities_tab(trace_on):
+            return trace_on
+
+    def configure_tab_disabled_callback(self):
+        @self.app.callback(Output('configure-tab', 'disabled'),
+            [Input('trace-button', 'on')])
+        def disable_configure_tab(trace_on):
             return trace_on
 
     def config_save_notification_callback(self):

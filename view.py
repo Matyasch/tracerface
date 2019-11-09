@@ -455,7 +455,7 @@ class View:
                 options=[
                     {"label": "Animate graph", "value": 'animate'}
                 ],
-                value=[],
+                value=['animate'],
                 id="animate-switch",
                 switch=True),
             dbc.FormGroup([
