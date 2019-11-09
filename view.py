@@ -13,20 +13,8 @@ class View:
     def __init__(self, view_model):
         self.view_model = view_model
 
-    def red_selector(self, search):
-        return '[count >= {}][name *= "{}"]'.format(self.view_model.red_count(), search)
-
-    def yellow_selector(self, search):
-        return '[count >= {}][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search)
-
-    def green_selector(self, search):
-        return '[count > 0][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), search)
-
-    def graph_stylesheet(self, search=''):
-        if not search:
-            search = ''
-        return [
-            {
+    def base_node_style(self):
+        return {
                 'selector': 'node',
                 'style': {
                     'content': 'data(name)',
@@ -40,29 +28,37 @@ class View:
                     'border-width': '1',
                     'padding': '5px'
                 }
-            },
-            {
-                'selector': self.green_selector(search),
+            }
+
+    def green_node_style(self, search):
+        return {
+                'selector': '[count > 0][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), search),
                 'style': {
                     'border-color': 'green',
                     'color': 'green'
                 }
-            },
-            {
-                'selector': self.yellow_selector(search),
+            }
+
+    def yellow_node_style(self, search):
+        return {
+                'selector': '[count >= {}][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search),
                 'style': {
                     'border-color': 'orange',
                     'color': 'orange'
                 }
-            },
-            {
-                'selector': self.red_selector(search),
+            }
+
+    def red_node_style(self, search):
+        return {
+                'selector': '[count >= {}][name *= "{}"]'.format(self.view_model.red_count(), search),
                 'style': {
                     'border-color': 'red',
                     'color': 'red'
                 }
-            },
-            {
+            }
+
+    def base_edge_style(self):
+        return {
                 'selector': 'edge',
                 'style': {
                     'curve-style': 'bezier',
@@ -72,6 +68,13 @@ class View:
                     'line-color': '#ccc'
                 }
             }
+
+    def graph_stylesheet(self, search=''):
+        return [self.base_node_style(),
+                self.green_node_style(search),
+                self.yellow_node_style(search),
+                self.red_node_style(search),
+                self.base_edge_style()
         ]
 
     def button_style(self):
