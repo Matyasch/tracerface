@@ -28,8 +28,11 @@ class BaseModel:
     def set_range(self, yellow, red):
         self._persistence.update_color_range(yellow, red)
 
-    def save_config(self, bcc_command, animate, spacing):
-        self._configuration.update(bcc_command, animate, spacing)
+    def save_app_config(self, bcc_command):
+        self._configuration.update_command(bcc_command)
+
+    def save_layout_config(self, animate, spacing):
+        self._configuration.update_layout(animate, spacing)
 
     def get_spacing_config(self):
         return self._configuration.spacing

@@ -74,8 +74,11 @@ class ViewModel:
     def set_range(self, range_bottom, range_top):
         self.model.set_range(range_bottom, range_top)
 
-    def save_config(self, bcc_command, animate, spacing):
-        self.model.save_config(bcc_command, animate, spacing)
+    def save_app_config(self, bcc_command):
+        self.model.save_app_config(bcc_command)
+
+    def save_layout_config(self, animate, spacing):
+        self.model.save_layout_config(animate, spacing)
 
     def animate_config(self):
         return self.model.get_animate_config()

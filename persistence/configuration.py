@@ -6,7 +6,9 @@ class Configuration:
         self.animate = animate
         self.spacing = spacing
 
-    def update(self, bcc_command, animate, spacing):
+    def update_command(self, bcc_command):
         self.bcc_command = bcc_command
+
+    def update_layout(self, animate, spacing):
         self.animate = animate
         self.spacing = spacing

@@ -36,6 +36,7 @@ class CallbackManager:
         self.open_config_file_input()
         self.display_node_info_callback()
         self.configure_tab_disabled_callback()
+        self.update_graph_layout_callback()
 
     def display_node_info_callback(self):
         @self.app.callback(Output('info-card', 'children'),
@@ -70,7 +71,7 @@ class CallbackManager:
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'submit-button' and output:
                 self.view_model.output_submit_btn_clicked(output)
-            return self.layout.graph_layout()
+            return self.layout.graph()
 
     def timer_disabled_callback(self):
         @self.app.callback(Output('timer', 'disabled'),
@@ -128,19 +129,27 @@ class CallbackManager:
     def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks')],
-            [State('bcc-command', 'value'),
-            State('animate-switch', 'value'),
-            State('node-spacing-input', 'value')])
-        def save_clicked(save_btn, bcc_command, animate_switch, spacing):
+            [State('bcc-command', 'value')])
+        def save_clicked(save_btn, bcc_command):
             if save_btn:
                 if bcc_command:
-                    animate = len(animate_switch) == 1
-                    self.view_model.save_config(bcc_command=bcc_command, animate=animate, spacing=spacing)
+                    self.view_model.save_app_config(bcc_command)
                     return self.layout.save_config_alert(success=True)
                 else:
                     return self.layout.save_config_alert(success=False)
             else:
                 return ''
+
+    def update_graph_layout_callback(self):
+        @self.app.callback(Output('graph', 'layout'),
+            [Input('save-config-button', 'n_clicks')],
+            [State('animate-switch', 'value'),
+            State('node-spacing-input', 'value')])
+        def update_layout(save_btn, animate_switch, spacing):
+            if save_btn:
+                animate = len(animate_switch) == 1
+                self.view_model.save_layout_config(animate, spacing)
+            return self.layout.graph_layout()
 
     def output_load_notification_callback(self):
         @self.app.callback(Output('load-output-notification', 'children'),

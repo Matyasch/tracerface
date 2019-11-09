@@ -119,16 +119,17 @@ class View:
         return {'padding': '0px 20px 0px 20px'}
 
     def graph_layout(self):
+        return {
+            'name': 'dagre',
+            'spacingFactor': self.view_model.spacing_config(),
+            'animate': self.view_model.animate_config()
+        }
+
+    def graph(self):
         return [cyto.Cytoscape(
             id='graph',
-            layout={
-                'name': 'dagre',
-                'spacingFactor': self.view_model.spacing_config(),
-                'animate': self.view_model.animate_config()
-            },
-            style={
-                'height': '100vh'
-            },
+            layout=self.graph_layout(),
+            style={'height': '100vh'},
             elements= self.view_model.get_nodes() + self.view_model.get_edges(),
             stylesheet=self.graph_stylesheet()
         )]
@@ -223,7 +224,7 @@ class View:
     def graph_div(self):
         return html.Div(
                 id='graph_div',
-                children=self.graph_layout()
+                children=self.graph()
             )
 
     def dashboard(self):
