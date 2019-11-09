@@ -217,7 +217,7 @@ class View:
             if len(params) > 0:
                 info.append(' With parameters:')
         else:
-            edge_info.append('Not traced')
+            info.append('Not traced')
         return self.info_card(header, info, params)
 
     def graph_div(self):
