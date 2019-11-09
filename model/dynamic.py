@@ -63,3 +63,6 @@ class DynamicModel(BaseModel):
 
     def trace_error(self):
         return self._thread_error
+
+    def trace_active(self):
+        return self._thread_enabled

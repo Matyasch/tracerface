@@ -89,3 +89,6 @@ class ViewModel:
 
     def trace_error(self):
         return self.model.trace_error()
+
+    def trace_active(self):
+        return self.model.trace_active()

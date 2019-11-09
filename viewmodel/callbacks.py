@@ -81,8 +81,11 @@ class CallbackManager:
             [State('trace-button', 'on')])
         def stop_trace(timer_tick, trace_on):
             pass
-            if timer_tick and trace_on and self.view_model.trace_error():
-                return False, self.layout.trace_error_alert(self.view_model.trace_error())
+            if timer_tick and trace_on:
+                if self.view_model.trace_error():
+                    return False, self.layout.trace_error_alert(self.view_model.trace_error())
+                elif not self.view_model.trace_active():
+                    return False, self.layout.trace_error_alert('Tracing suddenly stopped')
             raise PreventUpdate
 
     def timer_disabled_callback(self):
