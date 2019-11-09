@@ -11,8 +11,8 @@ from utils import (
 
 # Manages logic and persistence
 class DynamicModel(BaseModel):
-    def __init__(self, configuration):
-        super().__init__(configuration)
+    def __init__(self):
+        super().__init__()
         self._thread = threading.Thread()
         self._thread_enabled = False
 

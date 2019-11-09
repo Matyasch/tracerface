@@ -123,7 +123,7 @@ class View:
             id='graph',
             layout={
                 'name': 'dagre',
-                'spacingFactor': '3',
+                'spacingFactor': self.view_model.spacing_config(),
                 'animate': self.view_model.animate_config()
             },
             style={
@@ -441,7 +441,7 @@ class View:
     def configure_tab(self):
         return html.Div(children=[
             dbc.FormGroup([
-                dbc.Label('command for bcc: ', width=5),
+                dbc.Label('Command for bcc: ', width=5),
                 dbc.Col(
                     dbc.Input(
                         id='bcc-command',
@@ -457,8 +457,17 @@ class View:
                 ],
                 value=[],
                 id="animate-switch",
-                switch=True,
-            ),
+                switch=True),
+            dbc.FormGroup([
+                dbc.Label('Spacing between nodes: ', width=7),
+                dbc.Col(
+                    dbc.Input(
+                        id='node-spacing-input',
+                        type='number',
+                        min=1,
+                        value=2))
+                ],
+                row=True),
             dbc.Button('Save',
                 id='save-config-button',
                 color='primary',

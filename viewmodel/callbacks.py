@@ -122,12 +122,13 @@ class CallbackManager:
         @self.app.callback(Output('save-config-notification', 'children'),
             [Input('save-config-button', 'n_clicks')],
             [State('bcc-command', 'value'),
-            State('animate-switch', 'value')])
-        def save_clicked(save_btn, bcc_command, animate_switch):
+            State('animate-switch', 'value'),
+            State('node-spacing-input', 'value')])
+        def save_clicked(save_btn, bcc_command, animate_switch, spacing):
             if save_btn:
                 if bcc_command:
                     animate = len(animate_switch) == 1
-                    self.view_model.save_config(bcc_command=bcc_command, animate=animate)
+                    self.view_model.save_config(bcc_command=bcc_command, animate=animate, spacing=spacing)
                     return self.layout.save_config_alert(success=True)
                 else:
                     return self.layout.save_config_alert(success=False)
