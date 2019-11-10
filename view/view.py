@@ -173,21 +173,18 @@ class View:
 
     def slider_div(self):
         disabled = self.view_model.max_count() < 1
-        return [
-            dcc.RangeSlider(
-                id='slider',
-                min=1,
-                max=self.view_model.max_count(),
-                value=[round(self.view_model.model.yellow_count()), round(self.view_model.model.red_count())],
-                pushable=1,
-                disabled=disabled,
-                marks={
-                    1: {'label': '1', 'style': {'color': 'green'}},
-                    self.view_model.max_count(): {'label': '{}'.format(self.view_model.max_count()), 'style': {'color': 'red'}}
-                },
-                tooltip = { 'always_visible': not disabled }
-            )
-        ]
+        return [dcc.RangeSlider(
+                    id='slider',
+                    min=1,
+                    max=self.view_model.max_count(),
+                    value=[round(self.view_model.model.yellow_count()), round(self.view_model.model.red_count())],
+                    pushable=1,
+                    disabled=disabled,
+                    marks={
+                        1: {'label': '1', 'style': {'color': 'green'}},
+                        self.view_model.max_count(): {'label': '{}'.format(self.view_model.max_count()), 'style': {'color': 'red'}}
+                    },
+                    tooltip = { 'always_visible': not disabled })]
 
     def info_card(self, header, infos, params):
         return dbc.Card([
