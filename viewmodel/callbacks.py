@@ -14,12 +14,10 @@ class CallbackManager:
 
     def setup_callbacks(self):
         self.graph_value_callback()
-        self.timer_disabled_callback()
+        self.trace_mode_callback()
         self.slider_visibility_callback()
         self.graph_stylesheet_callback()
         self.config_save_notification_callback()
-        self.static_tab_disabled_callback()
-        self.utilities_tab_disabled_callback()
         self.searchbar_disabled_callback()
         self.change_app_options_callback()
         self.change_func_options_callback()
@@ -35,7 +33,6 @@ class CallbackManager:
         self.info_box_value_callback()
         self.open_config_file_input()
         self.display_node_info_callback()
-        self.configure_tab_disabled_callback()
         self.update_graph_layout_callback()
         self.stop_trace_on_error()
 
@@ -89,8 +86,16 @@ class CallbackManager:
                     return False, self.layout.trace_error_alert('Tracing suddenly stopped, check your inputs')
             raise PreventUpdate
 
-    def timer_disabled_callback(self):
-        @self.app.callback(Output('timer', 'disabled'),
+    def trace_mode_callback(self):
+        @self.app.callback([Output('timer', 'disabled'),
+            Output('static-tab', 'disabled'),
+            Output('utilities-tab', 'disabled'),
+            Output('configure-tab', 'disabled'),
+            Output('add-app-button', 'disabled'),
+            Output('remove-app-button', 'disabled'),
+            Output('add-function-button', 'disabled'),
+            Output('use-config-file-switch', 'options'),
+            Output('config-file-path', 'disabled')],
             [Input('trace-button', 'on')],
             [State('timer', 'disabled'),
             State('config-fine-input-collapse', 'is_open'),
@@ -104,40 +109,23 @@ class CallbackManager:
                     self.view_model.trace_with_ui_elements(self.to_trace)
             elif not disabled:
                 self.view_model.trace_btn_turned_off()
-            return not trace_on
+            return not trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.disable_config_path_swtich(trace_on), trace_on
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
             [Input('tabs', 'active_tab')])
         def show_slider(tab):
-            disabled = not self.view_model.max_count() > 0
             if tab == 'utilities-tab':
-                return self.layout.slider_div(disabled)
+                return self.layout.slider_div()
             return None
-
-    def static_tab_disabled_callback(self):
-        @self.app.callback(Output('static-tab', 'disabled'),
-            [Input('trace-button', 'on')])
-        def disable_static_tab(trace_on):
-            return trace_on
 
     def searchbar_disabled_callback(self):
         @self.app.callback(Output('searchbar', 'disabled'),
             [Input('tabs', 'active_tab')])
         def disable_searchbar(tab):
-            return tab == 'utilities-tab' and not self.view_model.max_count() > 0
-
-    def utilities_tab_disabled_callback(self):
-        @self.app.callback(Output('utilities-tab', 'disabled'),
-            [Input('trace-button', 'on')])
-        def disable_utilities_tab(trace_on):
-            return trace_on
-
-    def configure_tab_disabled_callback(self):
-        @self.app.callback(Output('configure-tab', 'disabled'),
-            [Input('trace-button', 'on')])
-        def disable_configure_tab(trace_on):
-            return trace_on
+            if tab == 'utilities-tab':
+                return self.view_model.max_count() < 1
+            raise PreventUpdate
 
     def config_save_notification_callback(self):
         @self.app.callback(Output('save-config-notification', 'children'),

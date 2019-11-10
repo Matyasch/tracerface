@@ -170,7 +170,8 @@ class View:
             color = 'danger'
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
-    def slider_div(self, disabled=False):
+    def slider_div(self):
+        disabled = self.view_model.max_count() < 1
         return [
             dcc.RangeSlider(
                 id='slider',
@@ -229,6 +230,27 @@ class View:
                 id='graph_div',
                 children=self.graph()
             )
+
+    def disable_config_path_swtich(self, disabled=False):
+        return [{"label": "Use config file instead", "value": 'config', 'disabled': disabled}]
+
+    def config_path_div(self):
+        return [
+            dbc.Checklist(
+                options=self.disable_config_path_swtich(),
+                value=[],
+                id="use-config-file-switch",
+                switch=True,
+            ),
+            dbc.Collapse(
+                dbc.Input(
+                    id='config-file-path',
+                    type='text',
+                    placeholder='/path/to/config'
+                ),
+                id="config-fine-input-collapse",
+            )
+        ]
 
     def dashboard(self):
         return html.Div(
@@ -371,22 +393,10 @@ class View:
                     className='mr-1',
                     style=self.button_style())
                 ]),
-            dbc.Checklist(
-                options=[
-                    {"label": "Use config file instead", "value": 'config'}
-                ],
-                value=[],
-                id="use-config-file-switch",
-                switch=True,
-            ),
-            dbc.Collapse(
-                dbc.Input(
-                    id='config-file-path',
-                    type='text',
-                    placeholder='/path/to/config'
-                ),
-                id="config-fine-input-collapse",
-            ),
+            html.Div(
+                id='config-path-div',
+                children=self.config_path_div(),
+                style=self.button_style()),
             daq.PowerButton(
                 id='trace-button',
                 on=False,
