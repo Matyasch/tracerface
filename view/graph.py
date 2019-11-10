@@ -1,6 +1,10 @@
-from dash_cytoscape import Cytoscape
+from dash_cytoscape import Cytoscape, load_extra_layouts
 
 import view.styles as styles
+
+
+load_extra_layouts()
+
 
 class Graph:
     def __init__(self, view_model):

@@ -9,11 +9,10 @@ import view.alerts as alerts
 from view.dialogs import manage_application_dialog, manage_function_dialog
 
 class CallbackManager:
-    def __init__(self, app, view_model, layout, graph):
+    def __init__(self, app, view_model, layout):
         self.app = app
         self.view_model = view_model
         self.layout = layout
-        self.graph = graph
         self.to_trace = {}
 
     def setup_callbacks(self):
@@ -80,7 +79,7 @@ class CallbackManager:
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'submit-button' and output:
                 self.view_model.output_submit_btn_clicked(output)
-            return self.graph.representation()
+            return self.layout._graph.representation()
 
     def stop_trace_on_error(self):
         @self.app.callback([Output('trace-button', 'on'),
@@ -126,14 +125,14 @@ class CallbackManager:
         def switch_disables(timer_off):
             # TODO: if no functions, don't let turn on
             trace_on = not timer_off
-            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.config_path_swtich(trace_on)
+            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout._tabs.config_path_swtich(trace_on)
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
             [Input('tabs', 'active_tab')])
         def show_slider(tab):
             if tab == 'utilities-tab':
-                return self.layout.slider_div()
+                return self.layout._tabs.slider_div()
             return None
 
     def update_searchbar_callback(self):
@@ -141,7 +140,7 @@ class CallbackManager:
             [Input('tabs', 'active_tab')])
         def update_searchbar(tab):
             if tab == 'utilities-tab':
-                return self.layout.search_div()
+                return self.layout._tabs.search_div()
             raise PreventUpdate
 
     def config_save_notification_callback(self):
@@ -166,7 +165,7 @@ class CallbackManager:
             if save_btn:
                 animate = len(animate_switch) == 1
                 self.view_model.save_layout_config(animate, spacing)
-            return self.graph.layout()
+            return self.layout._graph.layout()
 
     def output_load_notification_callback(self):
         @self.app.callback(Output('load-output-notification', 'children'),
@@ -203,7 +202,7 @@ class CallbackManager:
             [State('trace-button', 'on')])
         def update_output(slider, search, trace_on):
             self.view_model.set_range(slider[0], slider[1])
-            return self.graph.stylesheet(search)
+            return self.layout._graph.stylesheet(search)
 
     def change_app_options_callback(self):
         @self.app.callback(Output('applications-select', 'options'),
