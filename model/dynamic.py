@@ -1,13 +1,13 @@
 import threading
 
 import pexpect
-from yaml.scanner import ScannerError
 
 from model.base import BaseModel
 from model.utils import (
     extract_config,
     flatten_trace_dict,
-    parse_stack
+    parse_stack,
+    ProcessEcception
 )
 
 # Manages logic and persistence
@@ -32,8 +32,6 @@ class DynamicModel(BaseModel):
             stack.append(call)
 
     def _run_command(self, cmd):
-        self._thread_error = None
-        self._thread_enabled = True
         try:
             child = pexpect.spawn(cmd, timeout=None)
             stack = []
@@ -48,21 +46,23 @@ class DynamicModel(BaseModel):
             self._thread_enabled = False
 
     def trace_dict(self, dict_to_trace):
-        functions = flatten_trace_dict(dict_to_trace)
-        self.start_trace(functions)
+        try:
+            functions = flatten_trace_dict(dict_to_trace)
+            self.start_trace(functions)
+        except ProcessEcception as e:
+            self._process_error = str(e)
 
     def trace_yaml(self, config_path):
         try:
             functions = extract_config(config_path)
             self.start_trace(functions)
-        except ScannerError:
-            self._process_error = 'Could not process configuration file'
-        except TypeError:
-            self._process_error = 'Please provide a path to the configuration file'
-        except FileNotFoundError:
-            self._process_error = 'Could not find configuration file at provided path'
+        except ProcessEcception as e:
+            self._process_error = str(e)
 
     def start_trace(self, functions):
+        self._thread_error = None
+        self._process_error = None
+        self._thread_enabled = True
         self._persistence.clear()
         cmd = [self._configuration.bcc_command, '-UK'] + ['\'{}\''.format(function) for function in functions]
         thread = threading.Thread(target=self._run_command, args=[' '.join(cmd)])

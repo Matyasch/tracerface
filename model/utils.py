@@ -5,6 +5,9 @@ import re
 
 import yaml
 
+class ProcessEcception(Exception):
+    pass
+
 def format_specs():
     return [
         ('char', '%c'),
@@ -37,6 +40,9 @@ def flatten_trace_dict(trace_dict):
                     ' '.join([param[1] for param in param_list]),
                     ', '.join([param[0] for param in param_list]))
             trace_list.append(func_formula)
+
+    if not trace_list:
+        raise ProcessEcception('No functions to trace')
     return trace_list
 
 def parse_stack(stack):
@@ -103,20 +109,35 @@ def text_to_stacks(text):
     return [stack.split('\n') for stack in text.split('\n\n')]
 
 def extract_config(config_path):
-    path = Path(config_path)
-    content = yaml.safe_load(path.read_text())
-    trace_list = []
-    for app in content:
-        for func in content[app]:
-            if isinstance(func, dict):
-                params_specs = list(func.values())[0]
-                func_formula = '{}:{} "{}", {}'.format(
-                    app,
-                    list(func.keys())[0],
-                    ' '.join(params_specs),
-                    ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))])
-                )
-            else:
-                func_formula = '{}:{}'.format(app, func)
-            trace_list.append(func_formula)
-    return trace_list
+    try:
+        path = Path(config_path)
+    except TypeError:
+        raise ProcessEcception('Please provide a path to the configuration file')
+
+    try:
+        content = yaml.safe_load(path.read_text())
+    except yaml.scanner.ScannerError:
+        raise ProcessEcception('Config file has to be YAML format')
+    except FileNotFoundError:
+        raise ProcessEcception('Could not find configuration file at provided path')
+
+    try:
+        trace_list = []
+        for app in content:
+            for func in content[app]:
+                if isinstance(func, dict):
+                    params_specs = list(func.values())[0]
+                    func_formula = '{}:{} "{}", {}'.format(
+                        app,
+                        list(func.keys())[0],
+                        ' '.join(params_specs),
+                        ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))])
+                    )
+                else:
+                    func_formula = '{}:{}'.format(app, func)
+                trace_list.append(func_formula)
+        if not trace_list:
+            raise ProcessEcception('No functions to trace')
+        return trace_list
+    except TypeError:
+        raise ProcessEcception('Could not process configuration file')
