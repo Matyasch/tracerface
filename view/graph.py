@@ -3,12 +3,10 @@ from dash_cytoscape import Cytoscape, load_extra_layouts
 import view.styles as styles
 
 
-load_extra_layouts()
-
-
 class Graph:
     def __init__(self, view_model):
         self.view_model = view_model
+        load_extra_layouts()
 
     def stylesheet(self, search=''):
         if not search:
@@ -31,7 +29,7 @@ class Graph:
             'animate': self.view_model.animate_config()
         }
 
-    def representation(self):
+    def graph(self):
         return [Cytoscape(
             id='graph',
             layout=self.layout(),

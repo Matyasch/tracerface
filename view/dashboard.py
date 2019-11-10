@@ -1,19 +1,13 @@
 import dash_bootstrap_components as dbc
-import dash_core_components as dcc
-import dash_cytoscape as cyto
-import dash_daq as daq
 import dash_html_components as html
 
-from view.graph import Graph
 from view.tabs import Tabs
-import view.styles as styles
 
 
-class View:
+class Dashboard:
     def __init__(self, view_model):
         self.view_model = view_model
-        self._graph = Graph(view_model)
-        self._tabs = Tabs(view_model)
+        self.tabs = Tabs(view_model)
 
     def info_card(self, header, infos, params):
         return dbc.Card([
@@ -51,11 +45,6 @@ class View:
             info.append('Not traced')
         return self.info_card(header, info, params)
 
-    def graph_div(self):
-        return html.Div(
-                id='graph-div',
-                children=self._graph.representation())
-
     def dashboard(self):
         return html.Div(
             id='dashboard',
@@ -63,10 +52,10 @@ class View:
                 dbc.Tabs(
                     id='tabs',
                     children=[
-                        dbc.Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self._tabs.realtime_tab()], tab_style={"margin-left": "auto"}),
-                        dbc.Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self._tabs.static_tab()]),
-                        dbc.Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self._tabs.utilities_tab()]),
-                        dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self._tabs.configure_tab()]),
+                        dbc.Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.tabs.realtime_tab()], tab_style={"margin-left": "auto"}),
+                        dbc.Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.tabs.static_tab()]),
+                        dbc.Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.tabs.utilities_tab()]),
+                        dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.tabs.configure_tab()]),
                     ]
                 ),
                 html.Div(children=[], id='info-card'),
@@ -85,18 +74,3 @@ class View:
                 ])
             ]
         )
-
-    def layout(self):
-        return html.Div([
-            dbc.Row([
-                dbc.Col(self.graph_div(), width=9),
-                dbc.Col(self.dashboard())
-            ],
-            style={'width': '100%'}),
-            dcc.Interval(
-                id='timer',
-                interval=1*500, # in milliseconds
-                n_intervals=0,
-                disabled=True
-            )
-        ])
