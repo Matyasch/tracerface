@@ -110,7 +110,7 @@ class CallbackManager:
             Output('configure-tab', 'disabled'),
             Output('add-app-button', 'disabled'),
             Output('remove-app-button', 'disabled'),
-            Output('add-function-button', 'disabled'),
+            Output('manage-functions-button', 'disabled'),
             Output('use-config-file-switch', 'options')],
             [Input('timer', 'disabled')])
         def switch_disables(timer_off):
@@ -228,7 +228,7 @@ class CallbackManager:
 
     def open_app_dialog_callback(self):
         @self.app.callback(Output('app-dialog', 'is_open'),
-            [Input('add-function-button', 'n_clicks'),
+            [Input('manage-functions-button', 'n_clicks'),
             Input('close-app-dialog', 'n_clicks')],
             [State('applications-select', 'value'),
             State('functions-select', 'options')])
@@ -237,14 +237,14 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-function-button' and open and app:
+            if id == 'manage-functions-button' and open and app:
                 return True
             elif id == 'close-app-dialog' and close:
                 return False
 
     def open_func_dialog_callback(self):
         @self.app.callback(Output('func-dialog', 'is_open'),
-            [Input('add-params-button', 'n_clicks'),
+            [Input('manage-params-button', 'n_clicks'),
             Input('close-func-dialog', 'n_clicks')],
             [State('functions-select', 'value'),
             State('params-select', 'options')])
@@ -253,7 +253,7 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-params-button' and open:
+            if id == 'manage-params-button' and open:
                 return True
             elif id == 'close-func-dialog' and close:
                 return False
@@ -279,18 +279,18 @@ class CallbackManager:
 
     def change_func_options_callback(self):
         @self.app.callback(Output('functions-select', 'options'),
-            [Input('add-func-button', 'n_clicks'),
+            [Input('add-function-button', 'n_clicks'),
             Input('remove-func-button', 'n_clicks')],
             [State('function-name', 'value'),
             State('functions-select', 'options'),
             State('functions-select', 'value'),
             State('applications-select', 'value')])
-        def add_or_remove_function(add, remove, name, functions, selected_func, app):
+        def add_or_remove_function(manage, remove, name, functions, selected_func, app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-func-button' and add and name and name not in [f['label'] for f in functions]:
+            if id == 'add-function-button' and manage and name and name not in [f['label'] for f in functions]:
                 self.to_trace[app][name] = {}
                 return functions + [{"label": name, "value": name}]
             if id == 'remove-func-button' and remove and selected_func:
