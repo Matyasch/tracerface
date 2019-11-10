@@ -2,7 +2,7 @@ from dash import Dash
 import dash_bootstrap_components as dbc
 
 from persistence.configuration import Configuration
-from view import View
+from view.view import View
 from viewmodel.callbacks import CallbackManager
 from viewmodel.viewmodel import ViewModel
 
