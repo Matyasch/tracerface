@@ -2,10 +2,8 @@ import dash_bootstrap_components as dbc
 import dash_html_components as html
 
 from model.utils import format_specs
+from view.styles import element_style
 
-
-def element_style():
-    return {'margin-top': '10px'}
 
 def manage_application_dialog(app='', options=[]):
     return [

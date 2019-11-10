@@ -5,6 +5,7 @@ import dash_daq as daq
 import dash_html_components as html
 
 from view.dialogs import manage_application_dialog, manage_function_dialog
+import view.styles as styles
 
 
 cyto.load_extra_layouts()
@@ -14,110 +15,19 @@ class View:
     def __init__(self, view_model):
         self.view_model = view_model
 
-    def base_node_style(self):
-        return {
-                'selector': 'node',
-                'style': {
-                    'content': 'data(name)',
-                    'text-valign': 'center',
-                    'width': 'label',
-                    'height': 'label',
-                    'shape': 'rectangle',
-                    'border-color': 'grey',
-                    'color': 'grey',
-                    'background-color': 'white',
-                    'border-width': '1',
-                    'padding': '5px'
-                }
-            }
-
-    def green_node_style(self, search):
-        return {
-                'selector': '[count > 0][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), search),
-                'style': {
-                    'border-color': 'green',
-                    'color': 'green'
-                }
-            }
-
-    def yellow_node_style(self, search):
-        return {
-                'selector': '[count >= {}][count < {}][name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search),
-                'style': {
-                    'border-color': 'orange',
-                    'color': 'orange'
-                }
-            }
-
-    def red_node_style(self, search):
-        return {
-                'selector': '[count >= {}][name *= "{}"]'.format(self.view_model.red_count(), search),
-                'style': {
-                    'border-color': 'red',
-                    'color': 'red'
-                }
-            }
-
-    def base_edge_style(self):
-        return {
-                'selector': 'edge',
-                'style': {
-                    'curve-style': 'bezier',
-                    'target-arrow-shape': 'triangle',
-                    'target-arrow-color': '#ccc',
-                    'label': 'data(params)',
-                    'line-color': '#ccc'
-                }
-            }
-
-    def green_edge_style(self, search):
-        return {
-                'selector': '[call_count > 0][call_count < {}][called_name *= "{}"]'.format(self.view_model.yellow_count(), search),
-                'style': {
-                    'line-color': 'green',
-                    'target-arrow-color': 'green',
-                    'width': '1'
-                }
-            }
-
-    def yellow_edge_style(self, search):
-        return {
-                'selector': '[call_count >= {}][call_count < {}][called_name *= "{}"]'.format(self.view_model.yellow_count(), self.view_model.red_count(), search),
-                'style': {
-                    'line-color': 'orange',
-                    'target-arrow-color': 'orange',
-                    'width': '1'
-                }
-            }
-
-    def red_edge_style(self, search):
-        return {
-                'selector': '[call_count >= {}][called_name *= "{}"]'.format(self.view_model.red_count(), search),
-                'style': {
-                    'line-color': 'red',
-                    'target-arrow-color': 'red',
-                    'width': '1'
-                }
-            }
-
     def graph_stylesheet(self, search=''):
         if not search:
             search=''
-        return [self.base_node_style(),
-                self.green_node_style(search),
-                self.yellow_node_style(search),
-                self.red_node_style(search),
-                self.base_edge_style(),
-                self.green_edge_style(search),
-                self.yellow_edge_style(search),
-                self.red_edge_style(search)
+        return [
+            styles.base_node_style(),
+            styles.green_node_style(self.view_model.yellow_count(), search),
+            styles.yellow_node_style(self.view_model.yellow_count(), self.view_model.red_count(), search),
+            styles.red_node_style(self.view_model.red_count(), search),
+            styles.base_edge_style(),
+            styles.green_edge_style(self.view_model.yellow_count(), search),
+            styles.yellow_edge_style(self.view_model.yellow_count(), self.view_model.red_count(), search),
+            styles.red_edge_style(self.view_model.red_count(), search)
         ]
-
-    def button_style(self):
-        return {'margin-top': '10px'}
-
-    def tab_style(self):
-        return {'padding': '0px 20px 0px 20px'}
 
     def graph_layout(self):
         return {
@@ -271,7 +181,7 @@ class View:
                 html.Div(
                     id='add-app-notification',
                     children=None,
-                    style=self.button_style())
+                    style=styles.button_style())
             ]),
             dbc.FormGroup([
                 dbc.Label('Manage applications'),
@@ -282,21 +192,21 @@ class View:
                     id='manage-functions-button',
                     color='success',
                     className='mr-1',
-                    style=self.button_style()),
+                    style=styles.button_style()),
                 dbc.Button('Remove application',
                     id='remove-app-button',
                     color='danger',
                     className='mr-1',
-                    style=self.button_style()),
+                    style=styles.button_style()),
                 html.Div(
                     id='manage-apps-notification',
                     children=None,
-                    style=self.button_style())
+                    style=styles.button_style())
                 ]),
             html.Div(
                 id='config-path-div',
                 children=self.config_path_div(),
-                style=self.button_style()),
+                style=styles.button_style()),
             daq.PowerButton(
                 id='trace-button',
                 on=False,
@@ -304,7 +214,7 @@ class View:
             html.Div(
                 id='trace-error-notification',
                 children=None,
-                style=self.button_style()),
+                style=styles.button_style()),
             dbc.Modal(children=manage_application_dialog(),
                 id='app-dialog',
                 scrollable=True),
@@ -312,7 +222,7 @@ class View:
                 id='func-dialog',
                 scrollable=True)
         ],
-        style=self.tab_style())
+        style=styles.tab_style())
 
     def static_tab(self):
         return html.Div([
@@ -326,14 +236,14 @@ class View:
                     id='submit-button',
                     color='primary',
                     className='mr-1',
-                    style=self.button_style()),
+                    style=styles.button_style()),
                 html.Div(
                     id='load-output-notification',
                     children=None,
-                    style=self.button_style())
+                    style=styles.button_style())
             ])
         ],
-        style=self.tab_style())
+        style=styles.tab_style())
 
     def utilities_tab(self):
         return html.Div(children=[
@@ -354,7 +264,7 @@ class View:
             ],
             row=True)
         ],
-        style=self.tab_style())
+        style=styles.tab_style())
 
     def configure_tab(self):
         return html.Div(children=[
@@ -393,9 +303,9 @@ class View:
             html.Div(
                 id='save-config-notification',
                 children=None,
-                style=self.button_style())
+                style=styles.button_style())
         ],
-        style=self.tab_style())
+        style=styles.tab_style())
 
     def layout(self):
         return html.Div([
