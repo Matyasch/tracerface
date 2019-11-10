@@ -9,7 +9,6 @@ import view.styles as styles
 
 class Layout:
     def __init__(self, view_model):
-        self.view_model = view_model
         self.graph = Graph(view_model)
         self.dashboard = Dashboard(view_model)
 

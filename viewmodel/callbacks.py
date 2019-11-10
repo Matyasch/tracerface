@@ -56,9 +56,9 @@ class CallbackManager:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[1]
             if id == 'tapNodeData' and node_data:
-                return self.layout.dashboard.node_info_card_content(node_data)
+                return self.layout.dashboard.info_card.node_card(node_data)
             elif id == 'tapEdgeData' and edge_data:
-                return self.layout.dashboard.edge_info_card_content(edge_data)
+                return self.layout.dashboard.info_card.edge_card(edge_data)
             raise PreventUpdate
 
     def info_box_value_callback(self):
@@ -125,14 +125,14 @@ class CallbackManager:
         def switch_disables(timer_off):
             # TODO: if no functions, don't let turn on
             trace_on = not timer_off
-            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.dashboard.tabs.config_path_swtich(trace_on)
+            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.dashboard.tabs.realtime_tab.config_path_swtich(trace_on)
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
             [Input('tabs', 'active_tab')])
         def show_slider(tab):
             if tab == 'utilities-tab':
-                return self.layout.dashboard.tabs.slider_div()
+                return self.layout.dashboard.tabs.utilities_tab.slider_div()
             return None
 
     def update_searchbar_callback(self):
@@ -140,7 +140,7 @@ class CallbackManager:
             [Input('tabs', 'active_tab')])
         def update_searchbar(tab):
             if tab == 'utilities-tab':
-                return self.layout.dashboard.tabs.search_div()
+                return self.layout.dashboard.tabs.utilities_tab.search_div()
             raise PreventUpdate
 
     def config_save_notification_callback(self):
