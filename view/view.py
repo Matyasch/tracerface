@@ -159,6 +159,9 @@ class View:
             color = 'danger'
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
+    def no_app_selected_alert(self):
+        return dbc.Alert('Please select an application first', color='danger', duration=4000, dismissable=True)
+
     def add_app_alert(self, success, app=''):
         if success:
             message = '{} was added successfully'.format(app)
@@ -386,6 +389,10 @@ class View:
                     id='remove-app-button',
                     color='danger',
                     className='mr-1',
+                    style=self.button_style()),
+                html.Div(
+                    id='manage-apps-notification',
+                    children=None,
                     style=self.button_style())
                 ]),
             html.Div(

@@ -36,6 +36,7 @@ class CallbackManager:
         self.display_node_info_callback()
         self.update_graph_layout_callback()
         self.stop_trace_on_error()
+        self.app_not_selected_alert()
 
     def display_node_info_callback(self):
         @self.app.callback(Output('info-card', 'children'),
@@ -240,6 +241,7 @@ class CallbackManager:
                 return True
             elif id == 'close-app-dialog' and close:
                 return False
+            raise PreventUpdate
 
     def open_func_dialog_callback(self):
         @self.app.callback(Output('func-dialog', 'is_open'),
@@ -256,6 +258,17 @@ class CallbackManager:
                 return True
             elif id == 'close-func-dialog' and close:
                 return False
+            raise PreventUpdate
+
+    def app_not_selected_alert(self):
+        @self.app.callback(Output('manage-apps-notification', 'children'),
+            [Input('manage-functions-button', 'n_clicks'),
+            Input('remove-app-button', 'n_clicks')],
+            [State('applications-select', 'value')])
+        def open_app_dialog(open_click, remove_click, app):
+            if (open_click or remove_click) and not app:
+                return self.layout.no_app_selected_alert()
+            raise PreventUpdate
 
     def change_app_dialog_content_callback(self):
         @self.app.callback(Output('app-dialog', 'children'),
