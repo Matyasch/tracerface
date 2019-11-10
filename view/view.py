@@ -141,60 +141,6 @@ class View:
             placeholder='function name',
             disabled=self.view_model.max_count() < 1)]
 
-    def save_config_success_alert(self):
-        return dbc.Alert('Configuration saved!', color='success', duration=4000, dismissable=True)
-
-    def empty_command_config_alert(self):
-        return dbc.Alert('Please provide a command', color='danger', duration=4000, dismissable=True)
-
-    def no_param_type_alert(self):
-        return dbc.Alert('Please provide the type of the parameter', color='danger', duration=4000, dismissable=True)
-
-    def no_param_index_alert(self):
-        return dbc.Alert('Please provide the position of the parameter', color='danger', duration=4000, dismissable=True)
-
-    def empty_function_name_alert(self):
-        return dbc.Alert('Please provide a function name', color='danger', duration=4000, dismissable=True)
-
-    def empty_app_name_alert(self):
-        return dbc.Alert('Please provide an application name', color='danger', duration=4000, dismissable=True)
-
-    def app_already_added_alert(self):
-        return dbc.Alert('Application already added', color='danger', duration=4000, dismissable=True)
-
-    def param_add_success_alert(self):
-        return dbc.Alert('Parameter successfully added', color='success', duration=4000, dismissable=True)
-
-    def func_add_success_alert(self):
-        return dbc.Alert('Function successfully added', color='success', duration=4000, dismissable=True)
-
-    def param_already_added_alert(self):
-        return dbc.Alert('Parameter already added to this position', color='danger', duration=4000, dismissable=True)
-
-    def function_already_added_alert(self):
-        return dbc.Alert('Function already added to this application', color='danger', duration=4000, dismissable=True)
-
-    def trace_error_alert(self, message):
-        return dbc.Alert([html.P('There was an error with tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)
-
-    def no_app_selected_alert(self):
-        return dbc.Alert('Please select an application first', color='danger', duration=4000, dismissable=True)
-
-    def no_func_selected_alert(self):
-        return dbc.Alert('Please select a function first', color='danger', duration=4000, dismissable=True)
-
-    def no_param_selected_alert(self):
-        return dbc.Alert('Please select a parameter first', color='danger', duration=4000, dismissable=True)
-
-    def load_output_success_alert(self):
-        return dbc.Alert('Output loaded', color='success', duration=4000, dismissable=True)
-
-    def output_empty_alert(self):
-        return dbc.Alert('Please provide the output of a BCC trace run', color='danger', duration=4000, dismissable=True)
-
-    def add_app_success_alert(self, app):
-        return dbc.Alert('{} was added successfully'.format(app), color='success', duration=4000, dismissable=True)
-
     def slider_div(self):
         disabled = self.view_model.max_count() < 1
         return [dcc.RangeSlider(

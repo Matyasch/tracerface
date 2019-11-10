@@ -5,6 +5,8 @@ import dash
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+import view.alerts as alerts
+
 class CallbackManager:
     def __init__(self, app, view_model, layout):
         self.app = app
@@ -86,11 +88,11 @@ class CallbackManager:
         def stop_trace(timer_tick, trace_on):
             if timer_tick and trace_on:
                 if self.view_model.thread_error():
-                    return False, self.layout.trace_error_alert(self.view_model.thread_error())
+                    return False, alerts.trace_error_alert(self.view_model.thread_error())
                 elif self.view_model.process_error():
-                    return False, self.layout.trace_error_alert(self.view_model.process_error())
+                    return False, alerts.trace_error_alert(self.view_model.process_error())
                 elif not self.view_model.trace_active():
-                    return False, self.layout.trace_error_alert('Tracing stopped unexpected')
+                    return False, alerts.trace_error_alert('Tracing stopped unexpected')
             raise PreventUpdate
 
     def manage_timer_callback(self):
@@ -148,9 +150,9 @@ class CallbackManager:
             if save_btn:
                 if bcc_command:
                     self.view_model.save_app_config(bcc_command)
-                    return self.layout.save_config_success_alert()
+                    return alerts.save_config_success_alert()
                 else:
-                    return self.layout.empty_command_config_alert()
+                    return alerts.empty_command_config_alert()
             raise PreventUpdate
 
     def update_graph_layout_callback(self):
@@ -171,9 +173,9 @@ class CallbackManager:
         def submit_clicked(click, content):
             if click:
                 if content:
-                    return self.layout.load_output_success_alert()
+                    return alerts.load_output_success_alert()
                 else:
-                    return self.layout.output_empty_alert()
+                    return alerts.output_empty_alert()
             raise PreventUpdate
 
     def add_app_notification_callback(self):
@@ -184,12 +186,12 @@ class CallbackManager:
         def add_app_clicked(click, path, apps):
             if click:
                 if not path:
-                    return self.layout.empty_app_name_alert()
+                    return alerts.empty_app_name_alert()
                 if path in [app['value'] for app in apps]:
-                    return self.layout.app_already_added_alert()
+                    return alerts.app_already_added_alert()
                 else:
                     self.to_trace[path] = {}
-                    return self.layout.add_app_success_alert(app=path)
+                    return alerts.add_app_success_alert(app=path)
             raise PreventUpdate
 
     def graph_stylesheet_callback(self):
@@ -281,7 +283,7 @@ class CallbackManager:
             [State('functions-select', 'value')])
         def show_manage_funcs_alert(open_click, remove_click, function):
             if (open_click or remove_click) and not function:
-                return self.layout.no_func_selected_alert()
+                return alerts.no_func_selected_alert()
             raise PreventUpdate
 
     def app_not_selected_alert_callback(self):
@@ -291,7 +293,7 @@ class CallbackManager:
             [State('applications-select', 'value')])
         def show_manage_apps_alert(open_click, remove_click, app):
             if (open_click or remove_click) and not app:
-                return self.layout.no_app_selected_alert()
+                return alerts.no_app_selected_alert()
             raise PreventUpdate
 
     def add_func_notification(self):
@@ -301,11 +303,11 @@ class CallbackManager:
             State('functions-select', 'options')])
         def show_add_func_alert(add_click, name, functions):
             if add_click and name and name not in [function['label'] for function in functions]:
-                return self.layout.func_add_success_alert()
+                return alerts.func_add_success_alert()
             elif add_click and name and name in [function['label'] for function in functions]:
-                return self.layout.function_already_added_alert()
+                return alerts.function_already_added_alert()
             elif add_click and not name:
-                return self.layout.empty_function_name_alert()
+                return alerts.empty_function_name_alert()
             raise PreventUpdate
 
     def change_app_dialog_content_callback(self):
@@ -356,13 +358,13 @@ class CallbackManager:
         def show_alert(add, index, format_spec, params):
             if add:
                 if not format_spec:
-                    return self.layout.no_param_type_alert()
+                    return alerts.no_param_type_alert()
                 elif not index:
-                    return self.layout.no_param_index_alert()
+                    return alerts.no_param_index_alert()
                 elif 'arg{}'.format(index) in [param['label'].split(' : ')[0] for param in params]:
-                    return self.layout.param_already_added_alert()
+                    return alerts.param_already_added_alert()
                 else:
-                    return self.layout.param_add_success_alert()
+                    return alerts.param_add_success_alert()
             raise PreventUpdate
 
     def remove_param_notification_callback(self):
@@ -371,7 +373,7 @@ class CallbackManager:
             [State('params-select', 'value')])
         def show_alert(remove, function):
             if remove and not function:
-                return self.layout.no_param_selected_alert()
+                return alerts.no_param_selected_alert()
             raise PreventUpdate
 
     def change_params_options_callback(self):
