@@ -67,7 +67,7 @@ class ViewModel:
 
     def trace_with_config_file(self, config_path):
         self.model = DynamicModel(self._configuration)
-        self.model.trace_config_file(config_path)
+        self.model.trace_yaml(config_path)
 
     def trace_btn_turned_off(self):
         self.model.stop_trace()
@@ -87,8 +87,11 @@ class ViewModel:
     def spacing_config(self):
         return self.model.get_spacing_config()
 
-    def trace_error(self):
-        return self.model.trace_error()
+    def thread_error(self):
+        return self.model.thread_error()
+
+    def process_error(self):
+        return self.model.process_error()
 
     def trace_active(self):
         return self.model.trace_active()

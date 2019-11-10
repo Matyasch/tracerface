@@ -1,5 +1,5 @@
 from model.base import BaseModel
-from utils import parse_stack, text_to_stacks
+from model.utils import parse_stack, text_to_stacks
 
 # Manages logic and persistence
 class StaticModel(BaseModel):

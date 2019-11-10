@@ -5,7 +5,7 @@ import re
 
 import yaml
 
-def c_type_pairs():
+def format_specs():
     return [
         ('char', '%c'),
         ('double/float', '%f'),

@@ -4,7 +4,7 @@ import dash_cytoscape as cyto
 import dash_daq as daq
 import dash_html_components as html
 
-from utils import c_type_pairs
+from model.utils import format_specs
 
 cyto.load_extra_layouts()
 
@@ -150,7 +150,7 @@ class View:
         return dbc.Alert(message, color=color, duration=4000, dismissable=True)
 
     def trace_error_alert(self, message):
-        return dbc.Alert([html.P('There was an error during tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)
+        return dbc.Alert([html.P('There was an error with tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)
 
     def load_output_alert(self, success):
         if success:
@@ -307,7 +307,7 @@ class View:
                     dbc.Row([
                         dbc.Col(dbc.Select(
                                 id='param-type',
-                                options=[{"label": c_type[0], "value": '{}:{}'.format(c_type[0], c_type[1])} for c_type in c_type_pairs()])),
+                                options=[{"label": format_spec[0], "value": '{}:{}'.format(format_spec[0], format_spec[1])} for format_spec in format_specs()])),
                         dbc.Col(dbc.Input(
                                 id='param-index',
                                 type='number',
