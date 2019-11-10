@@ -135,10 +135,11 @@ class View:
         )]
 
     def search_div(self):
-        return dbc.Input(
+        return [dbc.Input(
             id='searchbar',
             type='text',
-            placeholder='function name')
+            placeholder='function name',
+            disabled=self.view_model.max_count() < 1)]
 
     def save_config_alert(self, success):
         if success:
@@ -227,7 +228,7 @@ class View:
 
     def graph_div(self):
         return html.Div(
-                id='graph_div',
+                id='graph-div',
                 children=self.graph()
             )
 
@@ -449,7 +450,7 @@ class View:
                 dbc.Col(
                     html.Div(
                         id='search-div',
-                        children=[self.search_div()]),
+                        children=self.search_div()),
                     width=8)
             ],
             row=True)

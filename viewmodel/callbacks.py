@@ -19,7 +19,7 @@ class CallbackManager:
         self.slider_visibility_callback()
         self.graph_stylesheet_callback()
         self.config_save_notification_callback()
-        self.searchbar_disabled_callback()
+        self.update_searchbar_callback()
         self.change_app_options_callback()
         self.change_func_options_callback()
         self.open_app_dialog_callback()
@@ -59,7 +59,7 @@ class CallbackManager:
             return json.dumps(self.to_trace, indent=2)
 
     def graph_value_callback(self):
-        @self.app.callback(Output('graph_div', 'children'),
+        @self.app.callback(Output('graph-div', 'children'),
             [Input('submit-button', 'n_clicks'),
             Input('timer', 'n_intervals')],
             [State('output-textarea', 'value')])
@@ -126,12 +126,12 @@ class CallbackManager:
                 return self.layout.slider_div()
             return None
 
-    def searchbar_disabled_callback(self):
-        @self.app.callback(Output('searchbar', 'disabled'),
+    def update_searchbar_callback(self):
+        @self.app.callback(Output('search-div', 'children'),
             [Input('tabs', 'active_tab')])
-        def disable_searchbar(tab):
+        def update_searchbar(tab):
             if tab == 'utilities-tab':
-                return self.view_model.max_count() < 1
+                return self.layout.search_div()
             raise PreventUpdate
 
     def config_save_notification_callback(self):
