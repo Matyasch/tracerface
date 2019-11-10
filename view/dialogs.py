@@ -51,6 +51,7 @@ def manage_application_dialog(app='', options=[]):
         dbc.ModalFooter(
             dbc.Button('Close', id='close-app-dialog', className='ml-auto'))]
 
+
 def manage_function_dialog(func='', options=[]):
     return [
         dbc.ModalHeader('Manage parameters of {}'.format(func)),
