@@ -9,10 +9,11 @@ import view.alerts as alerts
 from view.dialogs import manage_application_dialog, manage_function_dialog
 
 class CallbackManager:
-    def __init__(self, app, view_model, layout):
+    def __init__(self, app, view_model, layout, graph):
         self.app = app
         self.view_model = view_model
         self.layout = layout
+        self.graph = graph
         self.to_trace = {}
 
     def setup_callbacks(self):
@@ -79,7 +80,7 @@ class CallbackManager:
             id = context.triggered[0]['prop_id'].split('.')[0]
             if id == 'submit-button' and output:
                 self.view_model.output_submit_btn_clicked(output)
-            return self.layout.graph()
+            return self.graph.representation()
 
     def stop_trace_on_error(self):
         @self.app.callback([Output('trace-button', 'on'),
@@ -165,7 +166,7 @@ class CallbackManager:
             if save_btn:
                 animate = len(animate_switch) == 1
                 self.view_model.save_layout_config(animate, spacing)
-            return self.layout.graph_layout()
+            return self.graph.layout()
 
     def output_load_notification_callback(self):
         @self.app.callback(Output('load-output-notification', 'children'),
@@ -202,7 +203,7 @@ class CallbackManager:
             [State('trace-button', 'on')])
         def update_output(slider, search, trace_on):
             self.view_model.set_range(slider[0], slider[1])
-            return self.layout.graph_stylesheet(search)
+            return self.graph.stylesheet(search)
 
     def change_app_options_callback(self):
         @self.app.callback(Output('applications-select', 'options'),

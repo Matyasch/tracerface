@@ -5,6 +5,7 @@ import dash_daq as daq
 import dash_html_components as html
 
 from view.dialogs import manage_application_dialog, manage_function_dialog
+from view.graph import Graph
 import view.styles as styles
 
 
@@ -12,38 +13,9 @@ cyto.load_extra_layouts()
 
 
 class View:
-    def __init__(self, view_model):
+    def __init__(self, view_model, graph):
         self.view_model = view_model
-
-    def graph_stylesheet(self, search=''):
-        if not search:
-            search=''
-        return [
-            styles.base_node_style(),
-            styles.green_node_style(self.view_model.yellow_count(), search),
-            styles.yellow_node_style(self.view_model.yellow_count(), self.view_model.red_count(), search),
-            styles.red_node_style(self.view_model.red_count(), search),
-            styles.base_edge_style(),
-            styles.green_edge_style(self.view_model.yellow_count(), search),
-            styles.yellow_edge_style(self.view_model.yellow_count(), self.view_model.red_count(), search),
-            styles.red_edge_style(self.view_model.red_count(), search)
-        ]
-
-    def graph_layout(self):
-        return {
-            'name': 'dagre',
-            'spacingFactor': self.view_model.spacing_config(),
-            'animate': self.view_model.animate_config()
-        }
-
-    def graph(self):
-        return [cyto.Cytoscape(
-            id='graph',
-            layout=self.graph_layout(),
-            style={'height': '100vh'},
-            elements= self.view_model.get_nodes() + self.view_model.get_edges(),
-            stylesheet=self.graph_stylesheet()
-        )]
+        self._graph = graph
 
     def search_div(self):
         return [dbc.Input(
@@ -107,7 +79,7 @@ class View:
     def graph_div(self):
         return html.Div(
                 id='graph-div',
-                children=self.graph()
+                children=self._graph.representation()
             )
 
     def config_path_swtich(self, disabled=False):
