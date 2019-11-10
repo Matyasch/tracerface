@@ -200,13 +200,13 @@ class View:
                 children=self.graph()
             )
 
-    def disable_config_path_swtich(self, disabled=False):
+    def config_path_swtich(self, disabled=False):
         return [{"label": "Use config file instead", "value": 'config', 'disabled': disabled}]
 
     def config_path_div(self):
         return [
             dbc.Checklist(
-                options=self.disable_config_path_swtich(),
+                options=self.config_path_swtich(),
                 value=[],
                 id="use-config-file-switch",
                 switch=True,

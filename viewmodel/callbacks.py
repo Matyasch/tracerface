@@ -125,7 +125,7 @@ class CallbackManager:
         def switch_disables(timer_off):
             # TODO: if no functions, don't let turn on
             trace_on = not timer_off
-            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.disable_config_path_swtich(trace_on)
+            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.config_path_swtich(trace_on)
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
