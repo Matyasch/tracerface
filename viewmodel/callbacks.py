@@ -14,6 +14,7 @@ class CallbackManager:
 
     def setup_callbacks(self):
         self.graph_value_callback()
+        self.manage_timer_callback()
         self.trace_mode_callback()
         self.slider_visibility_callback()
         self.graph_stylesheet_callback()
@@ -86,16 +87,8 @@ class CallbackManager:
                     return False, self.layout.trace_error_alert('Tracing suddenly stopped, check your inputs')
             raise PreventUpdate
 
-    def trace_mode_callback(self):
-        @self.app.callback([Output('timer', 'disabled'),
-            Output('static-tab', 'disabled'),
-            Output('utilities-tab', 'disabled'),
-            Output('configure-tab', 'disabled'),
-            Output('add-app-button', 'disabled'),
-            Output('remove-app-button', 'disabled'),
-            Output('add-function-button', 'disabled'),
-            Output('use-config-file-switch', 'options'),
-            Output('config-file-path', 'disabled')],
+    def manage_timer_callback(self):
+        @self.app.callback(Output('timer', 'disabled'),
             [Input('trace-button', 'on')],
             [State('timer', 'disabled'),
             State('config-fine-input-collapse', 'is_open'),
@@ -109,7 +102,21 @@ class CallbackManager:
                     self.view_model.trace_with_ui_elements(self.to_trace)
             elif not disabled:
                 self.view_model.trace_btn_turned_off()
-            return not trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.disable_config_path_swtich(trace_on), trace_on
+            return not trace_on
+
+    def trace_mode_callback(self):
+        @self.app.callback([Output('static-tab', 'disabled'),
+            Output('utilities-tab', 'disabled'),
+            Output('configure-tab', 'disabled'),
+            Output('add-app-button', 'disabled'),
+            Output('remove-app-button', 'disabled'),
+            Output('add-function-button', 'disabled'),
+            Output('use-config-file-switch', 'options')],
+            [Input('timer', 'disabled')])
+        def switch_disables(timer_off):
+            # TODO: if no functions, don't let turn on
+            trace_on = not timer_off
+            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.disable_config_path_swtich(trace_on)
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
