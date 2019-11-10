@@ -36,7 +36,12 @@ class CallbackManager:
         self.display_node_info_callback()
         self.update_graph_layout_callback()
         self.stop_trace_on_error()
-        self.app_not_selected_alert()
+        self.app_not_selected_alert_callback()
+        self.add_func_notification()
+        self.func_not_selected_alert_callback()
+        self.add_param_notification_callback()
+        self.remove_param_notification_callback()
+        self.change_func_select_value_callback()
 
     def display_node_info_callback(self):
         @self.app.callback(Output('info-card', 'children'),
@@ -217,12 +222,23 @@ class CallbackManager:
     def change_app_select_value(self):
         @self.app.callback(Output('applications-select', 'value'),
             [Input('remove-app-button', 'n_clicks')],
-            [State('applications-select', 'value'),
-            State('applications-select', 'options')])
-        def add_or_remove_app(remove, selected_app, apps):
+            [State('applications-select', 'value')])
+        def add_or_remove_app(remove, selected_app):
             if remove and selected_app:
                 if selected_app in self.to_trace:
                     del self.to_trace[selected_app]
+                return None
+            raise PreventUpdate
+
+    def change_func_select_value_callback(self):
+        @self.app.callback(Output('functions-select', 'value'),
+            [Input('remove-func-button', 'n_clicks')],
+            [State('functions-select', 'value'),
+            State('applications-select', 'value')])
+        def add_or_remove_function(remove, func, app):
+            if remove and func:
+                if func in self.to_trace[app]:
+                    del self.to_trace[app][func]
                 return None
             raise PreventUpdate
 
@@ -245,46 +261,71 @@ class CallbackManager:
     def open_func_dialog_callback(self):
         @self.app.callback(Output('func-dialog', 'is_open'),
             [Input('manage-params-button', 'n_clicks'),
-            Input('close-func-dialog', 'n_clicks')])
-        def open_app_dialog(open_click, close_click):
+            Input('close-func-dialog', 'n_clicks')],
+            [State('functions-select', 'value')])
+        def open_func_dialog(open_click, close_click, function):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'manage-params-button' and open_click:
+            if id == 'manage-params-button' and open_click and function:
                 return True
             elif id == 'close-func-dialog' and close_click:
                 return False
             raise PreventUpdate
 
-    def app_not_selected_alert(self):
+    def func_not_selected_alert_callback(self):
+        @self.app.callback(Output('manage-func-notification', 'children'),
+            [Input('manage-params-button', 'n_clicks'),
+            Input('remove-func-button', 'n_clicks')],
+            [State('functions-select', 'value')])
+        def show_manage_funcs_alert(open_click, remove_click, function):
+            if (open_click or remove_click) and not function:
+                return self.layout.no_func_selected_alert()
+            raise PreventUpdate
+
+    def app_not_selected_alert_callback(self):
         @self.app.callback(Output('manage-apps-notification', 'children'),
             [Input('manage-functions-button', 'n_clicks'),
             Input('remove-app-button', 'n_clicks')],
             [State('applications-select', 'value')])
-        def open_app_dialog(open_click, remove_click, app):
+        def show_manage_apps_alert(open_click, remove_click, app):
             if (open_click or remove_click) and not app:
                 return self.layout.no_app_selected_alert()
+            raise PreventUpdate
+
+    def add_func_notification(self):
+        @self.app.callback(Output('add-func-notification', 'children'),
+            [Input('add-function-button', 'n_clicks')],
+            [State('function-name', 'value'),
+            State('functions-select', 'options')])
+        def show_add_func_alert(add_click, name, functions):
+            if add_click and name and name not in [function['label'] for function in functions]:
+                return self.layout.func_add_success_alert()
+            elif add_click and name and name in [function['label'] for function in functions]:
+                return self.layout.function_already_added_alert()
+            elif add_click and not name:
+                return self.layout.empty_function_name_alert()
             raise PreventUpdate
 
     def change_app_dialog_content_callback(self):
         @self.app.callback(Output('app-dialog', 'children'),
             [Input('applications-select', 'value')])
         def change_app_dialog(app):
-            if not app:
-                raise PreventUpdate
-            functions = self.to_trace[app] or []
-            return self.layout.manage_application_dialog(app, functions)
+            if app:
+                functions = self.to_trace[app] or []
+                return self.layout.manage_application_dialog(app, functions)
+            raise PreventUpdate
 
     def change_func_dialog_content_callback(self):
         @self.app.callback(Output('func-dialog', 'children'),
             [Input('functions-select', 'value')],
             [State('applications-select', 'value')])
         def change_app_dialog(func, app):
-            if not func:
-                raise PreventUpdate
-            params = self.to_trace[app][func] or []
-            return self.layout.manage_function_dialog(func=func, options=[])
+            if func:
+                params = self.to_trace[app][func] or []
+                return self.layout.manage_function_dialog(func=func, options=['{} : {}'.format(param, params[param]) for param in params])
+            raise PreventUpdate
 
     def change_func_options_callback(self):
         @self.app.callback(Output('functions-select', 'options'),
@@ -299,12 +340,39 @@ class CallbackManager:
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-function-button' and manage and name and name not in [f['label'] for f in functions]:
+            if id == 'add-function-button' and manage and name and name not in [function['label'] for function in functions]:
                 self.to_trace[app][name] = {}
-                return functions + [{"label": name, "value": name}]
+                return functions + [{'label': name, 'value': name}]
             if id == 'remove-func-button' and remove and selected_func:
-                del self.to_trace[app][name]
                 return [func for func in functions if func['value'] != selected_func]
+            raise PreventUpdate
+
+    def add_param_notification_callback(self):
+        @self.app.callback(Output('add-param-notification', 'children'),
+            [Input('add-param-button', 'n_clicks')],
+            [State('param-index', 'value'),
+            State('param-type', 'value'),
+            State('params-select', 'options')])
+        def show_alert(add, index, format_spec, params):
+            if add:
+                if not format_spec:
+                    return self.layout.no_param_type_alert()
+                elif not index:
+                    return self.layout.no_param_index_alert()
+                elif 'arg{}'.format(index) in [param['label'].split(' : ')[0] for param in params]:
+                    return self.layout.param_already_added_alert()
+                else:
+                    return self.layout.param_add_success_alert()
+            raise PreventUpdate
+
+    def remove_param_notification_callback(self):
+        @self.app.callback(Output('remove-param-notification', 'children'),
+            [Input('remove-param-button', 'n_clicks')],
+            [State('params-select', 'value')])
+        def show_alert(remove, function):
+            if remove and not function:
+                return self.layout.no_param_selected_alert()
+            raise PreventUpdate
 
     def change_params_options_callback(self):
         @self.app.callback(Output('params-select', 'options'),
@@ -316,18 +384,18 @@ class CallbackManager:
             State('params-select', 'value'),
             State('functions-select', 'value'),
             State('applications-select', 'value')])
-        def add_or_remove_parameter(add, remove, index, c_type, params, selected_param, func, app):
+        def add_or_remove_parameter(add, remove, index, format_spec, params, selected_param, func, app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'add-param-button' and add and c_type and index and index not in [p['label'] for p in params]:
-                self.to_trace[app][func]['arg{}'.format(index)] = c_type.split(':')[1]
-                return params + [{"label": 'arg{} : {}'.format(index, c_type.split(':')[0]), "value": (index, c_type)}]
+            if id == 'add-param-button' and add and format_spec and index and 'arg{}'.format(index) not in [param['label'].split(' : ')[0] for param in params]:
+                self.to_trace[app][func]['arg{}'.format(index)] = format_spec.split(':')[1]
+                return params + [{'label': 'arg{} : {}'.format(index, format_spec.split(':')[1]), 'value': (index, format_spec)}]
             if id == 'remove-param-button' and selected_param:
-                del self.to_trace[app][func]['arg{}'.format(index)]
-                return [param for param in params if param['label'] != selected_param[0]]
-            return params
+                del self.to_trace[app][func]['arg{}'.format(selected_param[0])]
+                return [param for param in params if param['label'].split(' : ')[0] != 'arg{}'.format(selected_param[0])]
+            raise PreventUpdate
 
     def change_func_select_value(self):
         @self.app.callback(Output('functions-select', 'value'),
