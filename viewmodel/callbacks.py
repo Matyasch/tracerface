@@ -84,7 +84,7 @@ class CallbackManager:
                 elif self.view_model.process_error():
                     return False, self.layout.trace_error_alert(self.view_model.process_error())
                 elif not self.view_model.trace_active():
-                    return False, self.layout.trace_error_alert('Tracing suddenly stopped, check your inputs')
+                    return False, self.layout.trace_error_alert('Tracing stopped unexpected')
             raise PreventUpdate
 
     def manage_timer_callback(self):
