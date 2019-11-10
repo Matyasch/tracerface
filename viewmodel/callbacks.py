@@ -171,11 +171,10 @@ class CallbackManager:
         def submit_clicked(click, content):
             if click:
                 if content:
-                    return self.layout.load_output_alert(success=True)
+                    return self.layout.load_output_success_alert()
                 else:
-                    return self.layout.load_output_alert(success=False)
-            else:
-                return ''
+                    return self.layout.output_empty_alert()
+            raise PreventUpdate
 
     def add_app_notification_callback(self):
         @self.app.callback(Output('add-app-notification', 'children'),
@@ -184,13 +183,14 @@ class CallbackManager:
             State('applications-select', 'options')])
         def add_app_clicked(click, path, apps):
             if click:
-                if path and path not in [app['value'] for app in apps]:
-                    self.to_trace[path] = {}
-                    return self.layout.add_app_alert(success=True, app=path)
+                if not path:
+                    return self.layout.empty_app_name_alert()
+                if path in [app['value'] for app in apps]:
+                    return self.layout.app_already_added_alert()
                 else:
-                    return self.layout.add_app_alert(success=False)
-            else:
-                return ''
+                    self.to_trace[path] = {}
+                    return self.layout.add_app_success_alert(app=path)
+            raise PreventUpdate
 
     def graph_stylesheet_callback(self):
         @self.app.callback(Output('graph', 'stylesheet'),

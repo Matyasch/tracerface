@@ -156,6 +156,12 @@ class View:
     def empty_function_name_alert(self):
         return dbc.Alert('Please provide a function name', color='danger', duration=4000, dismissable=True)
 
+    def empty_app_name_alert(self):
+        return dbc.Alert('Please provide an application name', color='danger', duration=4000, dismissable=True)
+
+    def app_already_added_alert(self):
+        return dbc.Alert('Application already added', color='danger', duration=4000, dismissable=True)
+
     def param_add_success_alert(self):
         return dbc.Alert('Parameter successfully added', color='success', duration=4000, dismissable=True)
 
@@ -163,10 +169,10 @@ class View:
         return dbc.Alert('Function successfully added', color='success', duration=4000, dismissable=True)
 
     def param_already_added_alert(self):
-        return dbc.Alert('Parameter has benn already added to this position', color='danger', duration=4000, dismissable=True)
+        return dbc.Alert('Parameter already added to this position', color='danger', duration=4000, dismissable=True)
 
     def function_already_added_alert(self):
-        return dbc.Alert('Function has benn already added', color='danger', duration=4000, dismissable=True)
+        return dbc.Alert('Function already added to this application', color='danger', duration=4000, dismissable=True)
 
     def trace_error_alert(self, message):
         return dbc.Alert([html.P('There was an error with tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)
@@ -180,23 +186,14 @@ class View:
     def no_param_selected_alert(self):
         return dbc.Alert('Please select a parameter first', color='danger', duration=4000, dismissable=True)
 
-    def load_output_alert(self, success):
-        if success:
-            message = 'Output successfully loaded'
-            color = 'success'
-        else:
-            message = 'There was an error loading this output!'
-            color = 'danger'
-        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
+    def load_output_success_alert(self):
+        return dbc.Alert('Output loaded', color='success', duration=4000, dismissable=True)
 
-    def add_app_alert(self, success, app=''):
-        if success:
-            message = '{} was added successfully'.format(app)
-            color = 'success'
-        else:
-            message = 'There was an error adding the path!'
-            color = 'danger'
-        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
+    def output_empty_alert(self):
+        return dbc.Alert('Please provide the output of a BCC trace run', color='danger', duration=4000, dismissable=True)
+
+    def add_app_success_alert(self, app):
+        return dbc.Alert('{} was added successfully'.format(app), color='success', duration=4000, dismissable=True)
 
     def slider_div(self):
         disabled = self.view_model.max_count() < 1
