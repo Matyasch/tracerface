@@ -24,19 +24,4 @@ class Dashboard:
                         dbc.Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.tabs.configure()]),
                     ]
                 ),
-                html.Div(children=[], id='info-card'),
-                html.Div(children=[
-                    html.P(
-                        children=f'Info',
-                        style={'margin-left': '3px'}
-                    ),
-                    html.Pre(
-                        id='info-box',
-                        style={
-                            'border': 'thin lightgrey solid',
-                            'overflowX': 'scroll'
-                        }
-                    )
-                ])
-            ]
-        )
+                html.Div(children=[], id='info-card')])

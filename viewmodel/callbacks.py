@@ -34,7 +34,6 @@ class CallbackManager:
         self.add_app_notification_callback()
         self.change_app_select_value()
         self.change_param_select_value()
-        self.info_box_value_callback()
         self.open_config_file_input()
         self.display_node_info_callback()
         self.update_graph_layout_callback()
@@ -60,12 +59,6 @@ class CallbackManager:
             elif id == 'tapEdgeData' and edge_data:
                 return self.layout.dashboard.info_card.edge_card(edge_data)
             raise PreventUpdate
-
-    def info_box_value_callback(self):
-        @self.app.callback(Output('info-box', 'children'),
-            [Input('tabs', 'active_tab')])
-        def update_info(data):
-            return json.dumps(self.to_trace, indent=2)
 
     def graph_value_callback(self):
         @self.app.callback(Output('graph-div', 'children'),
