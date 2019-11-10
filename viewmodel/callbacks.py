@@ -230,9 +230,8 @@ class CallbackManager:
         @self.app.callback(Output('app-dialog', 'is_open'),
             [Input('manage-functions-button', 'n_clicks'),
             Input('close-app-dialog', 'n_clicks')],
-            [State('applications-select', 'value'),
-            State('functions-select', 'options')])
-        def open_app_dialog(open, close, app, functions):
+            [State('applications-select', 'value')])
+        def open_app_dialog(open, close, app):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
@@ -246,17 +245,15 @@ class CallbackManager:
     def open_func_dialog_callback(self):
         @self.app.callback(Output('func-dialog', 'is_open'),
             [Input('manage-params-button', 'n_clicks'),
-            Input('close-func-dialog', 'n_clicks')],
-            [State('functions-select', 'value'),
-            State('params-select', 'options')])
-        def open_app_dialog(open, close, app, params):
+            Input('close-func-dialog', 'n_clicks')])
+        def open_app_dialog(open_click, close_click):
             context = dash.callback_context
             if not context.triggered:
                 raise PreventUpdate
             id = context.triggered[0]['prop_id'].split('.')[0]
-            if id == 'manage-params-button' and open:
+            if id == 'manage-params-button' and open_click:
                 return True
-            elif id == 'close-func-dialog' and close:
+            elif id == 'close-func-dialog' and close_click:
                 return False
             raise PreventUpdate
 
