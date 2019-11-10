@@ -141,14 +141,11 @@ class View:
             placeholder='function name',
             disabled=self.view_model.max_count() < 1)]
 
-    def save_config_alert(self, success):
-        if success:
-            message = 'Configuration saved!'
-            color = 'success'
-        else:
-            message = 'Could not save configuration!'
-            color = 'danger'
-        return dbc.Alert(message, color=color, duration=4000, dismissable=True)
+    def save_config_success_alert(self):
+        return dbc.Alert('Configuration saved!', color='success', duration=4000, dismissable=True)
+
+    def empty_command_config_alert(self):
+        return dbc.Alert('Please provide a command', color='danger', duration=4000, dismissable=True)
 
     def trace_error_alert(self, message):
         return dbc.Alert([html.P('There was an error with tracing'), html.P(message)], color='danger', duration=6000, dismissable=True)

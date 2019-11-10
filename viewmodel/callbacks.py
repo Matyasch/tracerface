@@ -142,11 +142,10 @@ class CallbackManager:
             if save_btn:
                 if bcc_command:
                     self.view_model.save_app_config(bcc_command)
-                    return self.layout.save_config_alert(success=True)
+                    return self.layout.save_config_success_alert()
                 else:
-                    return self.layout.save_config_alert(success=False)
-            else:
-                return ''
+                    return self.layout.empty_command_config_alert()
+            raise PreventUpdate
 
     def update_graph_layout_callback(self):
         @self.app.callback(Output('graph', 'layout'),
