@@ -6,6 +6,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
+from view.dialogs import manage_application_dialog, manage_function_dialog
 
 class CallbackManager:
     def __init__(self, app, view_model, layout):
@@ -316,7 +317,7 @@ class CallbackManager:
         def change_app_dialog(app):
             if app:
                 functions = self.to_trace[app] or []
-                return self.layout.manage_application_dialog(app, functions)
+                return manage_application_dialog(app, functions)
             raise PreventUpdate
 
     def change_func_dialog_content_callback(self):
@@ -326,7 +327,7 @@ class CallbackManager:
         def change_app_dialog(func, app):
             if func:
                 params = self.to_trace[app][func] or []
-                return self.layout.manage_function_dialog(func=func, options=['{} : {}'.format(param, params[param]) for param in params])
+                return manage_function_dialog(func=func, options=['{} : {}'.format(param, params[param]) for param in params])
             raise PreventUpdate
 
     def change_func_options_callback(self):
