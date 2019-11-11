@@ -118,14 +118,14 @@ class CallbackManager:
         def switch_disables(timer_off):
             # TODO: if no functions, don't let turn on
             trace_on = not timer_off
-            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.dashboard.tabs.realtime_tab.config_path_swtich(trace_on)
+            return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, self.layout.dashboard.realtime.config_path_swtich(trace_on)
 
     def slider_visibility_callback(self):
         @self.app.callback(Output('slider-div', 'children'),
             [Input('tabs', 'active_tab')])
         def show_slider(tab):
             if tab == 'utilities-tab':
-                return self.layout.dashboard.tabs.utilities_tab.slider_div()
+                return self.layout.dashboard.utilities.slider_div()
             return None
 
     def update_searchbar_callback(self):
@@ -133,7 +133,7 @@ class CallbackManager:
             [Input('tabs', 'active_tab')])
         def update_searchbar(tab):
             if tab == 'utilities-tab':
-                return self.layout.dashboard.tabs.utilities_tab.search_div()
+                return self.layout.dashboard.utilities.search_div()
             raise PreventUpdate
 
     def config_save_notification_callback(self):
