@@ -24,7 +24,7 @@ class RealtimeTab:
                     type='text',
                     placeholder='/path/to/config'
                 ),
-                id="config-fine-input-collapse",
+                id="config-file-input-collapse",
             )
         ]
 

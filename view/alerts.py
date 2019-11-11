@@ -1,4 +1,6 @@
 from dash_bootstrap_components import Alert
+from dash_html_components import P
+
 
 #base alerts
 def base_success_alert(message):
@@ -54,7 +56,7 @@ def no_param_selected_alert():
 
 #trace alerts
 def trace_error_alert(error):
-    return Alert([html.P('There was an error with tracing'), html.P(error)], color='danger', duration=6000, dismissable=True)
+    return Alert([P('There was an error with tracing'), P(error)], color='danger', duration=6000, dismissable=True)
 
 #load output alerts
 def load_output_success_alert():
