@@ -1,12 +1,3 @@
-import json
-from pathlib import Path
-
-import dash
-from dash.dependencies import Input, Output, State
-from dash.exceptions import PreventUpdate
-
-import view.alerts as alerts
-from view.dialogs import manage_application_dialog, manage_function_dialog
 import viewmodel.app_dialog_callbacks as app_dialog_callbacks
 import viewmodel.configure_callbacks as configure_callbacks
 import viewmodel.func_dialog_callbacks as func_dialog_callbacks
@@ -14,6 +5,7 @@ import viewmodel.graph_callbacks as graph_callbacks
 import viewmodel.realtime_callbacks as realtime_callbacks
 import viewmodel.static_callbacks as static_callbacks
 import viewmodel.utilities_callbacks as utilities_callbacks
+
 
 class CallbackManager:
     def __init__(self, app, view_model, layout):
@@ -53,7 +45,7 @@ class CallbackManager:
         realtime_callbacks.show_app_not_selected_alert(app=self.app)
         realtime_callbacks.open_config_file_input(app=self.app)
 
-        static_callbacks.show_submit_alert(app=self.app)
+        static_callbacks.load_output(app=self.app)
 
         utilities_callbacks.update_color_slider(app=self.app, utilities_tab=self.layout.dashboard.utilities)
         utilities_callbacks.update_searchbar(app=self.app, utilities_tab=self.layout.dashboard.utilities)

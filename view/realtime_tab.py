@@ -16,17 +16,13 @@ class RealtimeTab:
                 options=self.config_path_swtich(),
                 value=[],
                 id="use-config-file-switch",
-                switch=True,
-            ),
+                switch=True),
             dbc.Collapse(
                 dbc.Input(
                     id='config-file-path',
                     type='text',
-                    placeholder='/path/to/config'
-                ),
-                id="config-file-input-collapse",
-            )
-        ]
+                    placeholder='/path/to/config'),
+                id="config-file-input-collapse")]
 
     def tab(self):
         return html.Div(children=[
@@ -36,20 +32,17 @@ class RealtimeTab:
                     dbc.Col(dbc.Input(
                         id='application-path',
                         type='text',
-                        placeholder='/path/to/binary'
-                    )),
+                        placeholder='/path/to/binary')),
                     dbc.Col(dbc.Button('Add',
                         id='add-app-button',
                         color='primary',
                         className='mr-1'),
-                    width=2)
-                ]),
+                        width=2)]),
                 dbc.FormText('Write path to runnable and click add'),
                 html.Div(
                     id='add-app-notification',
                     children=None,
-                    style=styles.button_style())
-            ]),
+                    style=styles.button_style())]),
             dbc.FormGroup([
                 dbc.Label('Manage applications'),
                 dbc.Select(
@@ -68,8 +61,7 @@ class RealtimeTab:
                 html.Div(
                     id='manage-apps-notification',
                     children=None,
-                    style=styles.button_style())
-                ]),
+                    style=styles.button_style())]),
             html.Div(
                 id='config-path-div',
                 children=self.config_path_div(),
@@ -82,11 +74,12 @@ class RealtimeTab:
                 id='trace-error-notification',
                 children=None,
                 style=styles.button_style()),
-            dbc.Modal(children=manage_application_dialog(),
+            dbc.Modal(
+                children=manage_application_dialog(),
                 id='app-dialog',
                 scrollable=True),
-            dbc.Modal(children=manage_function_dialog(),
+            dbc.Modal(
+                children=manage_function_dialog(),
                 id='func-dialog',
-                scrollable=True)
-        ],
-        style=styles.tab_style())
+                scrollable=True)],
+            style=styles.tab_style())

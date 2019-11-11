@@ -1,5 +1,6 @@
 from persistence.persistence import Persistence
 
+
 # Manages logic and persistence
 class BaseModel:
     def __init__(self, configuration):
@@ -7,11 +8,9 @@ class BaseModel:
         self._configuration = configuration
         self.debug = ''
 
-    # Returns a list of nodes and their call count
     def get_nodes(self):
         return self._persistence.nodes
 
-    # Returns a list of edges and their frequency
     def get_edges(self):
         return self._persistence.edges
 

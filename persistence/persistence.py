@@ -1,7 +1,8 @@
 from collections import namedtuple
-import operator
+
 
 Range = namedtuple('Range', 'yellow red top')
+
 
 class Persistence:
     def __init__(self):
@@ -52,5 +53,4 @@ class Persistence:
         return Range(
             yellow=self.yellow,
             red=self.red,
-            top=self.max_calls()
-        )
+            top=self.max_calls())

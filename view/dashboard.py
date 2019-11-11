@@ -27,8 +27,6 @@ class Dashboard:
                         Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime.tab()], tab_style={"margin-left": "auto"}),
                         Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static.tab()]),
                         Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.utilities.tab()]),
-                        Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure.tab()]),
-                    ]
-                ),
+                        Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure.tab()])]),
                 Hr(),
                 Div(children=[], id='info-card')])

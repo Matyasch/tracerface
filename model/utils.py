@@ -5,8 +5,10 @@ import re
 
 import yaml
 
+
 class ProcessEcception(Exception):
     pass
+
 
 def format_specs():
     return [
@@ -20,6 +22,7 @@ def format_specs():
         ('unsigned short', '%hi'),
         ('void *', '%p'),
     ]
+
 
 def flatten_trace_dict(trace_dict):
     def params_to_ordered_list_of_pairs(params):
@@ -44,6 +47,7 @@ def flatten_trace_dict(trace_dict):
     if not trace_list:
         raise ProcessEcception('No functions to trace')
     return trace_list
+
 
 def parse_stack(stack):
     FUNCTION_PATTERN = '^\s+(.+)\+.*\s\[(.+)\]'
@@ -105,8 +109,10 @@ def parse_stack(stack):
             called_hash = caller_hash
     return Graph(nodes=nodes, edges=edges)
 
+
 def text_to_stacks(text):
     return [stack.split('\n') for stack in text.split('\n\n')]
+
 
 def extract_config(config_path):
     try:

@@ -10,7 +10,7 @@ from model.utils import (
     ProcessEcception
 )
 
-# Manages logic and persistence
+
 class DynamicModel(BaseModel):
     def __init__(self, configuration):
         super().__init__(configuration)

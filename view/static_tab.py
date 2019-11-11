@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from view.styles import button_style, tab_style
 
 
-# ironically static tab is actually static
+# static tab is actually static
 class StaticTab:
     def tab(self):
         return html.Div([
@@ -22,7 +22,5 @@ class StaticTab:
                 html.Div(
                     id='load-output-notification',
                     children=None,
-                    style=button_style())
-            ])
-        ],
-        style=tab_style())
+                    style=button_style())])],
+            style=tab_style())

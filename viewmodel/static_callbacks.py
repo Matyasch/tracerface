@@ -1,8 +1,10 @@
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+import view.alerts as alerts
 
-def show_submit_alert(app):
+
+def load_output(app):
     @app.callback(Output('load-output-notification', 'children'),
         [Input('submit-button', 'n_clicks')],
         [State('output-textarea', 'value')])

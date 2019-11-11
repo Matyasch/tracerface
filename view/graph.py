@@ -19,15 +19,13 @@ class Graph:
             styles.base_edge_style(),
             styles.green_edge_style(self.view_model.yellow_count(), search),
             styles.yellow_edge_style(self.view_model.yellow_count(), self.view_model.red_count(), search),
-            styles.red_edge_style(self.view_model.red_count(), search)
-        ]
+            styles.red_edge_style(self.view_model.red_count(), search)]
 
     def layout(self):
         return {
             'name': 'dagre',
             'spacingFactor': self.view_model.spacing_config(),
-            'animate': self.view_model.animate_config()
-        }
+            'animate': self.view_model.animate_config()}
 
     def graph(self):
         return [Cytoscape(

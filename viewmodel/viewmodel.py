@@ -11,23 +11,22 @@ class ViewModel:
 
     def get_nodes(self):
         return [{
-        'data': {
-            'id': node,
-            'name': self.model.get_nodes()[node]['name'],
-            'source': self.model.get_nodes()[node]['source'],
-            'count': self.model.get_nodes()[node]['call_count']}
-        } for node in self.model.get_nodes()]
+            'data': {
+                'id': node,
+                'name': self.model.get_nodes()[node]['name'],
+                'source': self.model.get_nodes()[node]['source'],
+                'count': self.model.get_nodes()[node]['call_count']}
+            } for node in self.model.get_nodes()]
 
     def get_edges(self):
         return [{
-                'data': {
-                    'source': edge[0],
-                    'target': edge[1],
-                    'params': self.get_param_visuals_for_edge(edge),
-                    'call_count': self.model.get_edges()[edge]['call_count'],
-                    'caller_name': self.model.get_nodes()[edge[0]]['name'],
-                    'called_name': self.model.get_nodes()[edge[1]]['name']
-                }
+            'data': {
+                'source': edge[0],
+                'target': edge[1],
+                'params': self.get_param_visuals_for_edge(edge),
+                'call_count': self.model.get_edges()[edge]['call_count'],
+                'caller_name': self.model.get_nodes()[edge[0]]['name'],
+                'called_name': self.model.get_nodes()[edge[1]]['name']}
             } for edge in self.model.get_edges()]
 
     def get_param_visuals_for_edge(self, edge):

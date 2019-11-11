@@ -21,13 +21,10 @@ class Layout:
         return Div([
             Row([
                 Col(self.graph_div(), width=9),
-                Col(self.dashboard.dashboard())
-            ],
-            style={'width': '100%'}),
+                Col(self.dashboard.dashboard())],
+                style={'width': '100%'}),
             Interval(
                 id='timer',
                 interval=1*500, # in milliseconds
                 n_intervals=0,
-                disabled=True
-            )
-        ])
+                disabled=True)])

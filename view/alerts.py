@@ -10,14 +10,14 @@ def base_error_alert(message):
     return Alert(message, color='danger', duration=4000, dismissable=True)
 
 #application add alerts
-def empty_app_name_alert():
-    return base_error_alert('Please provide an application name')
-
 def app_already_added_alert():
     return base_error_alert('Application already added')
 
 def add_app_success_alert(app):
     return Alert('{} was added successfully'.format(app), color='success', duration=4000, dismissable=True)
+
+def empty_app_name_alert():
+    return base_error_alert('Please provide an application name')
 
 #manage app alerts
 def no_app_selected_alert():
@@ -66,8 +66,8 @@ def output_empty_alert():
     return base_error_alert('Please provide the output of a BCC trace run')
 
 #configuration save alerts
-def save_config_success_alert():
-    return base_success_alert('Configuration saved!')
-
 def empty_command_config_alert():
     return base_success_alert('Please provide a command')
+
+def save_config_success_alert():
+    return base_success_alert('Configuration saved!')

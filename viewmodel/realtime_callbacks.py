@@ -111,6 +111,7 @@ def show_app_not_selected_alert(app):
             return alerts.no_app_selected_alert()
         raise PreventUpdate
 
+
 def open_config_file_input(app):
     @app.callback(Output('config-file-input-collapse', 'is_open'),
         [Input('use-config-file-switch', 'value')])

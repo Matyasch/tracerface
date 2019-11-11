@@ -15,8 +15,7 @@ def manage_application_dialog(app='', options=[]):
                     dbc.Col(dbc.Input(
                         id='function-name',
                         type='text',
-                        placeholder='function name'
-                    )),
+                        placeholder='function name')),
                     dbc.Col(
                         dbc.Button('Add',
                             id='add-function-button',
@@ -25,8 +24,8 @@ def manage_application_dialog(app='', options=[]):
                         width=2)]),
                 dbc.FormText('Write name of the function and click add')]),
             html.Div(
-                id='add-func-notification',
                 children=None,
+                id='add-func-notification',
                 style=element_style()),
             dbc.FormGroup([
                 dbc.Label('Manage functions'),
@@ -46,8 +45,7 @@ def manage_application_dialog(app='', options=[]):
                 html.Div(
                     id='manage-func-notification',
                     children=None,
-                    style=element_style())])
-        ]),
+                    style=element_style())])]),
         dbc.ModalFooter(
             dbc.Button('Close', id='close-app-dialog', className='ml-auto'))]
 
@@ -90,7 +88,6 @@ def manage_function_dialog(func='', options=[]):
                 html.Div(
                     id='remove-param-notification',
                     children=None,
-                    style=element_style())])
-        ]),
+                    style=element_style())])]),
         dbc.ModalFooter(
             dbc.Button('Close', id='close-func-dialog', className='ml-auto'))]

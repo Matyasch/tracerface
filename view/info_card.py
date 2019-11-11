@@ -1,6 +1,7 @@
 import dash_bootstrap_components as dbc
 from dash_html_components import P
 
+
 class InfoCard:
     def __init__(self, view_model):
         self.view_model = view_model
@@ -12,8 +13,7 @@ class InfoCard:
                 dbc.ListGroup(
                     [dbc.ListGroupItem(', '.join(param)) for param in params],
                     className='scrollable',
-                    style={'max-height': '200px'})
-            ])],
+                    style={'max-height': '200px'})])],
             color='light',
             style={'margin': '20px'})
 
