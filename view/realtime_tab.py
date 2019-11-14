@@ -1,4 +1,5 @@
 import dash_bootstrap_components as dbc
+from dash_core_components import Interval
 import dash_daq as daq
 import dash_html_components as html
 
@@ -81,5 +82,10 @@ class RealtimeTab:
             dbc.Modal(
                 children=manage_function_dialog(),
                 id='func-dialog',
-                scrollable=True)],
+                scrollable=True),
+            Interval(
+                id='timer',
+                interval=1*500, # in milliseconds
+                n_intervals=0,
+                disabled=True)],
             style=styles.tab_style())

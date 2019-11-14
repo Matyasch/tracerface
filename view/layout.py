@@ -1,5 +1,4 @@
 from dash_bootstrap_components import Col, Row
-from dash_core_components import Interval
 from dash_html_components import Div
 
 from view.dashboard import Dashboard
@@ -14,17 +13,11 @@ class Layout:
 
     def graph_div(self):
         return Div(
-                id='graph-div',
-                children=self.graph.graph())
+            id='graph-div',
+            children=self.graph.graph())
 
     def layout(self):
-        return Div([
-            Row([
-                Col(self.graph_div(), width=9),
-                Col(self.dashboard.dashboard())],
-                style={'width': '100%'}),
-            Interval(
-                id='timer',
-                interval=1*500, # in milliseconds
-                n_intervals=0,
-                disabled=True)])
+        return Div(Row([
+            Col(self.graph_div(), width=9),
+            Col(self.dashboard.dashboard())],
+            style={'width': '100%'}))
