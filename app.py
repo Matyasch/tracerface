@@ -20,4 +20,4 @@ class App:
         self.callback_manager.setup_callbacks()
 
     def start(self):
-        self._app.run_server(debug=False)
+        self._app.run_server(dev_tools_silence_routes_logging=True)
