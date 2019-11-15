@@ -1,7 +1,7 @@
 from collections import namedtuple
 from operator import itemgetter
 from pathlib import Path
-import re
+from re import compile, match
 
 import yaml
 
@@ -50,9 +50,9 @@ def flatten_trace_dict(trace_dict):
 
 
 def parse_stack(stack):
-    FUNCTION_PATTERN = '^\s+(.+)\+.*\s\[(.+)\]'
-    PARAMS_PATTERN = '^\d+\s+\d+\s+\S+\s+\S+\s+(.+)'
-    OUTPUT_START = '^PID\s+TID\s+COMM\s+FUNC'
+    FUNCTION_PATTERN = compile('^\s+(.+)\+.*\s\[(.+)\]')
+    PARAMS_PATTERN = compile('^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
+    OUTPUT_START = compile('^PID\s+TID\s+COMM\s+FUNC')
 
     Graph = namedtuple('Graph', 'nodes edges')
 
@@ -82,7 +82,7 @@ def parse_stack(stack):
             nodes[node_hash]['call_count'] += 1
 
     def get_params(header):
-        params = re.search(PARAMS_PATTERN, header)
+        params = PARAMS_PATTERN.match(header)
         if params:
             return [param for param in params.group(1).rstrip('\r').split(' ') if param != '']
         return None
@@ -90,14 +90,14 @@ def parse_stack(stack):
     nodes = {}
     edges = {}
 
-    if re.search(OUTPUT_START, stack[0]):
+    if OUTPUT_START.match(stack[0]):
         stack.pop(0)
     params = get_params(stack.pop(0))
 
     called_hash = None
     traced = True
     for call in stack[1:]:
-        caller = re.search(FUNCTION_PATTERN, call)
+        caller = FUNCTION_PATTERN.match(call)
         if caller:
             caller_node = create_node(caller)
             caller_hash = create_hash_for_node(caller_node)
