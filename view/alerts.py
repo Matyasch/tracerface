@@ -20,7 +20,7 @@ def app_already_added_alert():
     return ErrorAlert('Application already added')
 
 def add_app_success_alert(app):
-    return Alert('{} was added successfully'.format(app), color='success', duration=4000, dismissable=True)
+    return SuccessAlert('{} added successfully'.format(app))
 
 def empty_app_name_alert():
     return ErrorAlert('Please provide an application name')
