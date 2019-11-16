@@ -8,9 +8,6 @@ from view.utilities_tab import UtilitiesTab
 
 
 class Dashboard:
-    def __init__(self):
-        self.static = StaticTab()
-
     def dashboard(self):
         return Div(
             id='dashboard',
@@ -19,7 +16,7 @@ class Dashboard:
                     id='tabs',
                     children=[
                         RealtimeTab(),
-                        Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static.tab()]),
+                        StaticTab(),
                         UtilitiesTab(),
                         ConfigureTab()]),
                 Hr(),

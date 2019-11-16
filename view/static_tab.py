@@ -5,8 +5,11 @@ from view.styles import button_style, tab_style
 
 
 # static tab is actually static
-class StaticTab:
-    def tab(self):
+class StaticTab(dbc.Tab):
+    def __init__(self):
+        super().__init__(label='Static', tab_id='static-tab', id='static-tab', children=self.content())
+
+    def content(self):
         return html.Div([
             dbc.FormGroup([
                 dbc.Label('Trace output'),
