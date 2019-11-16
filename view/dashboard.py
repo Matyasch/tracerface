@@ -1,7 +1,6 @@
 from dash_bootstrap_components import Tab, Tabs
 from dash_html_components import Div, Hr
 
-from view.info_card import InfoCard
 from view.configure_tab import ConfigureTab
 from view.static_tab import StaticTab
 from view.realtime_tab import RealtimeTab
@@ -15,7 +14,6 @@ class Dashboard:
         self.static = StaticTab()
         self.realtime = RealtimeTab()
         self.utilities = UtilitiesTab(view_model)
-        self.info_card = InfoCard(view_model)
 
     def dashboard(self):
         return Div(

@@ -27,7 +27,7 @@ class CallbackManager:
 
         graph_callbacks.update_graph_value(app=self.app, view_model=self.view_model, graph=self.layout.graph)
         graph_callbacks.update_graph_style(app=self.app, view_model=self.view_model, graph=self.layout.graph)
-        graph_callbacks.display_info_card(app=self.app, info_card=self.layout.dashboard.info_card)
+        graph_callbacks.display_info_card(app=self.app, view_model=self.view_model)
 
         func_dialog_callbacks.open(app=self.app)
         func_dialog_callbacks.update(app=self.app, to_trace=self.to_trace)

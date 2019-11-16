@@ -1,6 +1,7 @@
 from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
+from view.info_cards import EdgeInfoCard, NodeInfoCard
 
 
 def update_graph_value(app, graph, view_model):
@@ -27,16 +28,16 @@ def update_graph_style(app, graph, view_model):
         return graph.stylesheet(search)
 
 
-def display_info_card(app, info_card):
+def display_info_card(app, view_model):
     @app.callback(Output('info-card', 'children'),
         [Input('graph', 'tapNodeData'),
         Input('graph', 'tapEdgeData')])
-    def update_node_info(node_data, edge_data):
+    def update_node_info(node, edge):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[1]
-        if id == 'tapNodeData' and node_data:
-            return info_card.node_card(node_data)
-        elif id == 'tapEdgeData' and edge_data:
-            return info_card.edge_card(edge_data)
+        if id == 'tapNodeData' and node:
+            return NodeInfoCard(node, view_model.get_params_of_node(node['id']))
+        elif id == 'tapEdgeData' and edge:
+            return EdgeInfoCard(edge, view_model.get_params_of_edge(edge['source'], edge['target']))
         raise PreventUpdate
