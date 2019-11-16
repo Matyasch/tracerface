@@ -64,7 +64,7 @@ def add_function(app, to_trace):
                 return alerts.function_already_added_alert()
             else:
                 to_trace[app][name] = {}
-                return alerts.func_add_success_alert()
+                return alerts.func_add_success_alert(name)
         raise PreventUpdate
 
 

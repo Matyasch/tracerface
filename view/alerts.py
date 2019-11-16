@@ -36,8 +36,8 @@ def empty_function_name_alert():
 def function_already_added_alert():
     return ErrorAlert('Function already added to this application')
 
-def func_add_success_alert():
-    return SuccessAlert('Function successfully added')
+def func_add_success_alert(function):
+    return SuccessAlert('{} added successfully'.format(function))
 
 #manage function alert
 def no_func_selected_alert():
