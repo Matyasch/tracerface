@@ -3,7 +3,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
-from view.dialogs import manage_application_dialog
+from view.dialogs import ManageApplicationDialog
 
 
 def update_funcs_dropdown_options(app):
@@ -46,7 +46,7 @@ def update(app, to_trace):
     def update_app_dialog(app):
         if app:
             functions = to_trace[app] or []
-            return manage_application_dialog(app, functions)
+            return ManageApplicationDialog.content(app, functions)
         raise PreventUpdate
 
 

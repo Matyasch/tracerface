@@ -3,7 +3,7 @@ from dash_core_components import Interval
 import dash_daq as daq
 import dash_html_components as html
 
-from view.dialogs import manage_application_dialog, manage_function_dialog
+from view.dialogs import ManageApplicationDialog, ManageFunctionDialog
 import view.styles as styles
 
 
@@ -75,14 +75,8 @@ class RealtimeTab:
                 id='trace-error-notification',
                 children=None,
                 style=styles.button_style()),
-            dbc.Modal(
-                children=manage_application_dialog(),
-                id='app-dialog',
-                scrollable=True),
-            dbc.Modal(
-                children=manage_function_dialog(),
-                id='func-dialog',
-                scrollable=True),
+            ManageApplicationDialog(),
+            ManageFunctionDialog(),
             Interval(
                 id='timer',
                 interval=1*500, # in milliseconds

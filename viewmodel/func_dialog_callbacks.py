@@ -3,7 +3,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
-from view.dialogs import manage_function_dialog
+from view.dialogs import ManageFunctionDialog
 
 
 def open(app):
@@ -29,7 +29,7 @@ def update(app, to_trace):
     def update_func_dialog(func, app):
         if func:
             params = to_trace[app][func] or []
-            return manage_function_dialog(func=func, options=['{} : {}'.format(param, params[param]) for param in params])
+            return ManageFunctionDialog.content(func=func, options=['{} : {}'.format(param, params[param]) for param in params])
         raise PreventUpdate
 
 
