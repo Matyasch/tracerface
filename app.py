@@ -17,7 +17,6 @@ class App:
         self._app.layout = self._layout.layout()
 
         self.callback_manager = CallbackManager(self._app, self._view_model, self._layout)
-        self.callback_manager.setup_callbacks()
 
     def start(self):
         self._app.run_server(dev_tools_silence_routes_logging=True)
