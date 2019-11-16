@@ -7,8 +7,12 @@ from view.dialogs import ManageApplicationDialog, ManageFunctionDialog
 import view.styles as styles
 
 
-class RealtimeTab:
-    def config_path_swtich(self, disabled=False):
+class RealtimeTab(dbc.Tab):
+    def __init__(self):
+        super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=self.content(), tab_style={"margin-left": "auto"})
+
+    @staticmethod
+    def config_path_swtich(disabled=False):
         return [{"label": "Use config file instead", "value": 'config', 'disabled': disabled}]
 
     def config_path_div(self):
@@ -25,7 +29,7 @@ class RealtimeTab:
                     placeholder='/path/to/config'),
                 id="config-file-input-collapse")]
 
-    def tab(self):
+    def content(self):
         return html.Div(children=[
             dbc.FormGroup([
                 dbc.Label('Add application to trace'),

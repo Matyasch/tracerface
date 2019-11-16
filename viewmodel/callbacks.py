@@ -38,7 +38,7 @@ class CallbackManager:
 
         realtime_callbacks.start_trace(app=self.app, view_model=self.view_model, to_trace=self.to_trace)
         realtime_callbacks.stop_trace_on_error(app=self.app, view_model=self.view_model)
-        realtime_callbacks.disable_elemts_on_trace(app=self.app, realtime_tab=self.layout.dashboard.realtime)
+        realtime_callbacks.disable_elemts_on_trace(app=self.app)
         realtime_callbacks.add_application(app=self.app, to_trace=self.to_trace)
         realtime_callbacks.remove_application(app=self.app, to_trace=self.to_trace)
         realtime_callbacks.update_apps_dropdown_options(app=self.app)

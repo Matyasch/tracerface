@@ -3,6 +3,7 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
+from view.realtime_tab import RealtimeTab
 
 
 def stop_trace_on_error(app, view_model):
@@ -39,7 +40,7 @@ def start_trace(app, view_model, to_trace):
         return not trace_on
 
 
-def disable_elemts_on_trace(app, realtime_tab):
+def disable_elemts_on_trace(app):
     @app.callback([Output('static-tab', 'disabled'),
         Output('utilities-tab', 'disabled'),
         Output('configure-tab', 'disabled'),
@@ -51,7 +52,7 @@ def disable_elemts_on_trace(app, realtime_tab):
     def switch_disables(timer_off):
         # TODO: if no functions, don't let turn on
         trace_on = not timer_off
-        return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, realtime_tab.config_path_swtich(trace_on)
+        return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, RealtimeTab.config_path_swtich(trace_on)
 
 
 def update_apps_dropdown_options(app):

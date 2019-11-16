@@ -11,7 +11,6 @@ class Dashboard:
     def __init__(self):
         self.configure = ConfigureTab()
         self.static = StaticTab()
-        self.realtime = RealtimeTab()
 
     def dashboard(self):
         return Div(
@@ -20,7 +19,7 @@ class Dashboard:
                 Tabs(
                     id='tabs',
                     children=[
-                        Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime.tab()], tab_style={"margin-left": "auto"}),
+                        RealtimeTab(),
                         Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static.tab()]),
                         UtilitiesTab(),
                         Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure.tab()])]),
