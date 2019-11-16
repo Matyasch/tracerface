@@ -67,7 +67,7 @@ def output_empty_alert():
 
 #configuration save alerts
 def empty_command_config_alert():
-    return base_success_alert('Please provide a command')
+    return base_error_alert('Please provide a command')
 
 def save_config_success_alert():
     return base_success_alert('Configuration saved!')
