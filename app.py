@@ -13,7 +13,7 @@ class App:
         self._view_model=ViewModel(self._configuration)
         self._layout = Layout(self._view_model)
         self._app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-        self._app.title = 'Visual Trace'
+        self._app.title = 'Tracerface'
         self._app.layout = self._layout.layout()
 
         self.callback_manager = CallbackManager(self._app, self._view_model, self._layout)
