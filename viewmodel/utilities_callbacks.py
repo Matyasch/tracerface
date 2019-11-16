@@ -7,15 +7,11 @@ def update_color_slider(app, view_model):
     @app.callback(Output('slider-div', 'children'),
         [Input('tabs', 'active_tab')])
     def update(tab):
-        if tab == 'utilities-tab':
-            return UtilitiesTab.slider_div(view_model.yellow_count(), view_model.red_count(), view_model.max_count())
-        return None
+        return UtilitiesTab.slider(view_model.yellow_count(), view_model.red_count(), view_model.max_count())
 
 
 def update_searchbar(app, view_model):
-    @app.callback(Output('search-div', 'children'),
+    @app.callback(Output('searchbar', 'disabled'),
         [Input('tabs', 'active_tab')])
     def update(tab):
-        if tab == 'utilities-tab':
-            return UtilitiesTab.search_div(view_model.max_count())
-        raise PreventUpdate
+        return view_model.max_count() < 1

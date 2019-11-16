@@ -20,11 +20,11 @@ class CallbackManager:
         app_dialog_callbacks.update_funcs_dropdown_options(app=app)
         app_dialog_callbacks.show_func_not_selected_alert(app=app)
 
-        configure_callbacks.save_graph_layout_config(app=app, view_model=view_model, graph=layout.graph)
+        configure_callbacks.save_graph_layout_config(app=app, view_model=view_model)
         configure_callbacks.save_bcc_command_config(app=app, view_model=view_model)
 
-        graph_callbacks.update_graph_value(app=app, view_model=view_model, graph=layout.graph)
-        graph_callbacks.update_graph_style(app=app, view_model=view_model, graph=layout.graph)
+        graph_callbacks.update_graph_elements(app=app, view_model=view_model)
+        graph_callbacks.update_graph_style(app=app, view_model=view_model)
         graph_callbacks.display_info_card(app=app, view_model=view_model)
 
         func_dialog_callbacks.open(app=app)

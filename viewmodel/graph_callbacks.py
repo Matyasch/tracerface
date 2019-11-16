@@ -2,30 +2,35 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from view.info_cards import EdgeInfoCard, NodeInfoCard
+from view.graph import Graph
 
 
-def update_graph_value(app, graph, view_model):
-    @app.callback(Output('graph-div', 'children'),
+def update_graph_elements(app, view_model):
+    @app.callback(Output('graph', 'elements'),
         [Input('submit-button', 'n_clicks'),
         Input('timer', 'n_intervals')],
         [State('output-textarea', 'value')])
-    def update_graph(out_btn, n_int, output):
+    def update_elements(out_btn, n_int, output):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
         if id == 'submit-button' and output:
             view_model.output_submit_btn_clicked(output)
-        return graph.graph()
+        return view_model.get_nodes() + view_model.get_edges()
 
 
-def update_graph_style(app, graph, view_model):
+def update_graph_style(app, view_model):
     @app.callback(Output('graph', 'stylesheet'),
         [Input('slider', 'value'),
-        Input('searchbar', 'value')],
-        [State('trace-button', 'on')])
-    def update_output(slider, search, trace_on):
-        view_model.set_range(slider[0], slider[1])
-        return graph.stylesheet(search)
+        Input('searchbar', 'value'),
+        Input('graph', 'elements')])
+    def update_style(slider, search, elements):
+        if not callback_context.triggered:
+            raise PreventUpdate
+        id = callback_context.triggered[0]['prop_id'].split('.')[0]
+        if id == 'slider':
+            view_model.set_range(slider[0], slider[1])
+        return Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
 
 
 def display_info_card(app, view_model):

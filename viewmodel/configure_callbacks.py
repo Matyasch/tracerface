@@ -3,9 +3,10 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
+from view.graph import Graph
 
 
-def save_graph_layout_config(app, graph, view_model):
+def save_graph_layout_config(app, view_model):
     @app.callback(Output('graph', 'layout'),
         [Input('save-config-button', 'n_clicks')],
         [State('animate-switch', 'value'),
@@ -14,7 +15,7 @@ def save_graph_layout_config(app, graph, view_model):
         if save_btn:
             animate = len(animate_switch) == 1
             view_model.save_layout_config(animate, spacing)
-        return graph.layout()
+        return Graph.layout(spacing=view_model.spacing_config(), animate=view_model.animate_config())
 
 
 def save_bcc_command_config(app, view_model):

@@ -11,7 +11,7 @@ class App:
     def __init__(self):
         self._configuration = Configuration()
         self._view_model=ViewModel(self._configuration)
-        self._layout = Layout(self._view_model)
+        self._layout = Layout()
         self._app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
         self._app.title = 'Tracerface'
         self._app.layout = self._layout.layout()
