@@ -76,4 +76,4 @@ def empty_command_config_alert():
     return ErrorAlert('Please provide a command')
 
 def save_config_success_alert():
-    return SuccessAlert('Configuration saved!')
+    return SuccessAlert('Configuration saved')
