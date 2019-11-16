@@ -47,5 +47,5 @@ class CallbackManager:
 
         static_callbacks.load_output(app=self.app)
 
-        utilities_callbacks.update_color_slider(app=self.app, utilities_tab=self.layout.dashboard.utilities)
-        utilities_callbacks.update_searchbar(app=self.app, utilities_tab=self.layout.dashboard.utilities)
+        utilities_callbacks.update_color_slider(app=self.app, view_model=self.view_model)
+        utilities_callbacks.update_searchbar(app=self.app, view_model=self.view_model)

@@ -8,12 +8,10 @@ from view.utilities_tab import UtilitiesTab
 
 
 class Dashboard:
-    def __init__(self, view_model):
-        self.view_model = view_model
+    def __init__(self):
         self.configure = ConfigureTab()
         self.static = StaticTab()
         self.realtime = RealtimeTab()
-        self.utilities = UtilitiesTab(view_model)
 
     def dashboard(self):
         return Div(
@@ -24,7 +22,7 @@ class Dashboard:
                     children=[
                         Tab(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=[self.realtime.tab()], tab_style={"margin-left": "auto"}),
                         Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static.tab()]),
-                        Tab(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=[self.utilities.tab()]),
+                        UtilitiesTab(),
                         Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure.tab()])]),
                 Hr(),
                 Div(children=[], id='info-card')])

@@ -5,34 +5,36 @@ import dash_html_components as html
 import view.styles as styles
 
 
-class UtilitiesTab:
-    def __init__(self, view_model):
-        self.view_model = view_model
+class UtilitiesTab(dbc.Tab):
+    def __init__(self):
+        super().__init__(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=self.content())
 
-    def search_div(self):
+    @staticmethod
+    def search_div(max_count=0):
         return dbc.Input(
             id='searchbar',
             type='text',
             placeholder='function name',
-            disabled=self.view_model.max_count() < 1)
+            disabled=max_count < 1)
 
-    def slider_div(self):
-        disabled = self.view_model.max_count() < 1
+    @staticmethod
+    def slider_div(yellow_count=0, red_count=0, max_count=0):
+        disabled = max_count < 1
         return dcc.RangeSlider(
             id='slider',
             min=1,
-            max=self.view_model.max_count(),
+            max=max_count,
             value=[
-                round(self.view_model.model.yellow_count()),
-                round(self.view_model.model.red_count())],
+                round(yellow_count),
+                round(red_count)],
             pushable=1,
             disabled=disabled,
             marks={
                 1: {'label': '1', 'style': {'color': 'green'}},
-                self.view_model.max_count(): {'label': '{}'.format(self.view_model.max_count()), 'style': {'color': 'red'}}},
+                max_count: {'label': '{}'.format(max_count), 'style': {'color': 'red'}}},
             tooltip = { 'always_visible': not disabled })
 
-    def tab(self):
+    def content(self):
         return html.Div(children=[
             dbc.FormGroup([
                 dbc.Label('Update coloring'),
