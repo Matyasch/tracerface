@@ -9,7 +9,6 @@ import view.styles as styles
 class Layout:
     def __init__(self, view_model):
         self.graph = Graph(view_model)
-        self.dashboard = Dashboard()
 
     def graph_div(self):
         return Div(
@@ -19,5 +18,5 @@ class Layout:
     def layout(self):
         return Div(Row([
             Col(self.graph_div(), width=9),
-            Col(self.dashboard.dashboard())],
+            Col(Dashboard())],
             style={'width': '100%'}))

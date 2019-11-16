@@ -7,9 +7,9 @@ from view.realtime_tab import RealtimeTab
 from view.utilities_tab import UtilitiesTab
 
 
-class Dashboard:
-    def dashboard(self):
-        return Div(
+class Dashboard(Div):
+    def __init__(self):
+        super().__init__(
             id='dashboard',
             children=[
                 Tabs(
