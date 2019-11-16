@@ -1,5 +1,5 @@
 from dash import Dash
-import dash_bootstrap_components as dbc
+from dash_bootstrap_components.themes import BOOTSTRAP
 
 from persistence.configuration import Configuration
 from view.layout import Layout
@@ -12,7 +12,7 @@ class App:
         self._configuration = Configuration()
         self._view_model=ViewModel(self._configuration)
         self._layout = Layout(self._view_model)
-        self._app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+        self._app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
         self._app.title = 'Tracerface'
         self._app.layout = self._layout.layout()
 
