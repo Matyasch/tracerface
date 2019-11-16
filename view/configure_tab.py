@@ -4,8 +4,11 @@ from dash_html_components import Div
 from view.styles import button_style, tab_style
 
 
-class ConfigureTab:
-    def tab(self):
+class ConfigureTab(dbc.Tab):
+    def __init__(self):
+        super().__init__(label='Configure', tab_id='configure-tab', id='configure-tab', children=self.content())
+
+    def content(self):
         return Div(children=[
             dbc.FormGroup(children=[
                 dbc.Label('Command for bcc: ', width=5),

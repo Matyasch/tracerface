@@ -9,7 +9,6 @@ from view.utilities_tab import UtilitiesTab
 
 class Dashboard:
     def __init__(self):
-        self.configure = ConfigureTab()
         self.static = StaticTab()
 
     def dashboard(self):
@@ -22,6 +21,6 @@ class Dashboard:
                         RealtimeTab(),
                         Tab(label='Static', tab_id='static-tab', id='static-tab', children=[self.static.tab()]),
                         UtilitiesTab(),
-                        Tab(label='Configure', tab_id='configure-tab', id='configure-tab', children=[self.configure.tab()])]),
+                        ConfigureTab()]),
                 Hr(),
                 Div(children=[], id='info-card')])
