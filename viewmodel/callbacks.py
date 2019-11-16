@@ -8,11 +8,11 @@ import viewmodel.utilities_callbacks as utilities_callbacks
 
 
 class CallbackManager:
-    def __init__(self, app, view_model, layout):
+    def __init__(self, app, view_model):
         self.to_trace = {}
-        self.setup_callbacks(app, view_model, layout)
+        self.setup_callbacks(app, view_model)
 
-    def setup_callbacks(self, app, view_model, layout):
+    def setup_callbacks(self, app, view_model):
         app_dialog_callbacks.open(app=app)
         app_dialog_callbacks.update(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.add_function(app=app, to_trace=self.to_trace)
