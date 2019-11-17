@@ -21,15 +21,15 @@ class Persistence:
     def load_edges(self, edges):
         for edge in edges:
             if edge in self.edges:
+                self.edges[edge]['call_count'] += edges[edge]['call_count']
                 if edges[edge]['param']:
                     self.edges[edge]['params'].append(edges[edge]['param'])
-                    self.edges[edge]['call_count'] += edges[edge]['call_count']
             else:
                 self.edges[edge] = {}
                 self.edges[edge]['params'] = []
+                self.edges[edge]['call_count'] = edges[edge]['call_count']
                 if edges[edge]['param']:
                     self.edges[edge]['params'].append(edges[edge]['param'])
-                self.edges[edge]['call_count'] = edges[edge]['call_count']
 
     def clear(self):
         self.nodes = {}
