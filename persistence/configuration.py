@@ -10,5 +10,7 @@ class Configuration:
         self.bcc_command = bcc_command
 
     def update_layout(self, animate, spacing):
+        if spacing < 1:
+            raise ValueError('Spacing can not be less than 1')
         self.animate = animate
         self.spacing = spacing
