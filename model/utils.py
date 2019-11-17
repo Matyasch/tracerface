@@ -6,7 +6,7 @@ from re import compile, match
 import yaml
 
 
-class ProcessEcception(Exception):
+class ProcessException(Exception):
     pass
 
 

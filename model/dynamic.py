@@ -7,7 +7,7 @@ from model.utils import (
     extract_config,
     flatten_trace_dict,
     parse_stack,
-    ProcessEcception
+    ProcessException
 )
 
 
@@ -50,14 +50,14 @@ class DynamicModel(BaseModel):
         try:
             functions = flatten_trace_dict(dict_to_trace)
             self.start_trace(functions)
-        except ProcessEcception as e:
+        except ProcessException as e:
             self._process_error = str(e)
 
     def trace_yaml(self, config_path):
         try:
             functions = extract_config(config_path)
             self.start_trace(functions)
-        except ProcessEcception as e:
+        except ProcessException as e:
             self._process_error = str(e)
 
     def start_trace(self, functions):
