@@ -45,14 +45,14 @@ def flatten_trace_dict(trace_dict):
             trace_list.append(func_formula)
 
     if not trace_list:
-        raise ProcessEcception('No functions to trace')
+        raise ProcessException('No functions to trace')
     return trace_list
 
 
 def parse_stack(stack):
-    FUNCTION_PATTERN = compile('^\s+(.+)\+.*\s\[(.+)\]')
-    PARAMS_PATTERN = compile('^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
-    OUTPUT_START = compile('^PID\s+TID\s+COMM\s+FUNC')
+    FUNCTION_PATTERN = compile(r'^\s+(.+)\+.*\s\[(.+)\]')
+    PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
+    OUTPUT_START = compile(r'^PID\s+TID\s+COMM\s+FUNC')
 
     Graph = namedtuple('Graph', 'nodes edges')
 
@@ -118,14 +118,14 @@ def extract_config(config_path):
     try:
         path = Path(config_path)
     except TypeError:
-        raise ProcessEcception('Please provide a path to the configuration file')
+        raise ProcessException('Please provide a path to the configuration file')
 
     try:
         content = yaml.safe_load(path.read_text())
     except yaml.scanner.ScannerError:
-        raise ProcessEcception('Config file has to be YAML format')
+        raise ProcessException('Config file has to be YAML format')
     except FileNotFoundError:
-        raise ProcessEcception('Could not find configuration file at provided path')
+        raise ProcessException('Could not find configuration file at provided path')
 
     try:
         trace_list = []
@@ -143,7 +143,7 @@ def extract_config(config_path):
                     func_formula = '{}:{}'.format(app, func)
                 trace_list.append(func_formula)
         if not trace_list:
-            raise ProcessEcception('No functions to trace')
+            raise ProcessException('No functions to trace')
         return trace_list
     except TypeError:
-        raise ProcessEcception('Could not process configuration file')
+        raise ProcessException('Could not process configuration file')
