@@ -27,6 +27,7 @@ class DynamicModel(BaseModel):
             graph = parse_stack(stack)
             self._persistence.load_edges(graph.edges)
             self._persistence.load_nodes(graph.nodes)
+            self._persistence.init_colors()
             stack.clear()
         else:
             stack.append(call)
