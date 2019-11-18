@@ -14,10 +14,10 @@ class CallbackManager:
 
     def setup_callbacks(self, app, view_model):
         app_dialog_callbacks.open(app=app)
-        app_dialog_callbacks.update(app=app, to_trace=self.to_trace)
+        app_dialog_callbacks.update_header(app=app)
         app_dialog_callbacks.add_function(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.remove_function(app=app, to_trace=self.to_trace)
-        app_dialog_callbacks.update_funcs_dropdown_options(app=app)
+        app_dialog_callbacks.update_functions(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.show_func_not_selected_alert(app=app)
 
         configure_callbacks.save_graph_layout_config(app=app, view_model=view_model)

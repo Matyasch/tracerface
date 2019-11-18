@@ -9,10 +9,9 @@ class ManageApplicationDialog(dbc.Modal):
     def __init__(self):
         super().__init__(children=self.content(), id='app-dialog')
 
-    @staticmethod
-    def content(app='', options=[]):
+    def content(self):
         return [
-            dbc.ModalHeader('Manage functions of {}'.format(app)),
+            dbc.ModalHeader(children=[], id='app-dialog-header'),
             dbc.ModalBody([
                 dbc.FormGroup([
                     dbc.Label('Add function to trace'),
@@ -36,7 +35,7 @@ class ManageApplicationDialog(dbc.Modal):
                     dbc.Label('Manage functions'),
                     dbc.Select(
                         id='functions-select',
-                        options=[{"label": name, "value": name} for name in options]),
+                        options=[]),
                     dbc.Button('Manage parameters',
                         id='manage-params-button',
                         color='success',

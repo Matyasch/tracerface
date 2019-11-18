@@ -3,24 +3,27 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
-from view.dialogs import ManageApplicationDialog
 
 
-def update_funcs_dropdown_options(app):
+def update_functions(app, to_trace):
     @app.callback(Output('functions-select', 'options'),
         [Input('add-function-button', 'n_clicks'),
-        Input('remove-func-button', 'n_clicks')],
+        Input('remove-func-button', 'n_clicks'),
+        Input('applications-select', 'value')],
         [State('function-name', 'value'),
         State('functions-select', 'options'),
         State('functions-select', 'value')])
-    def change_options(manage, remove, func_name, functions, selected_func):
+    def change_options(manage, remove, app, func_name, functions, selected_func):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
         if id == 'add-function-button' and manage and func_name and func_name not in [function['label'] for function in functions]:
             return functions + [{'label': func_name, 'value': func_name}]
-        if id == 'remove-func-button' and remove and selected_func:
+        elif id == 'remove-func-button' and remove and selected_func:
             return [func for func in functions if func['value'] != selected_func]
+        elif id == 'applications-select' and app:
+            options = to_trace[app] or []
+            return [{"label": name, "value": name} for name in options]
         raise PreventUpdate
 
 
@@ -40,13 +43,12 @@ def open(app):
         raise PreventUpdate
 
 
-def update(app, to_trace):
-    @app.callback(Output('app-dialog', 'children'),
+def update_header(app):
+    @app.callback(Output('app-dialog-header', 'children'),
         [Input('applications-select', 'value')])
-    def update_app_dialog(app):
+    def update_app_dialog_header(app):
         if app:
-            functions = to_trace[app] or []
-            return ManageApplicationDialog.content(app, functions)
+            return 'Manage functions of {}'.format(app)
         raise PreventUpdate
 
 
