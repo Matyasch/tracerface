@@ -58,10 +58,9 @@ class ManageFunctionDialog(dbc.Modal):
     def __init__(self):
         super().__init__(children=self.content(), id='func-dialog')
 
-    @staticmethod
-    def content(func='', options=[]):
+    def content(self):
         return [
-            dbc.ModalHeader('Manage parameters of {}'.format(func)),
+            dbc.ModalHeader(children=[], id='func-dialog-header'),
             dbc.ModalBody([
                 dbc.FormGroup([
                     dbc.Label('Add parameter to trace'),
@@ -88,7 +87,7 @@ class ManageFunctionDialog(dbc.Modal):
                     dbc.Label('Manage parameters'),
                     dbc.Select(
                         id='params-select',
-                        options=[{"label": name, "value": name} for name in options]),
+                        options=[]),
                     dbc.Button('Remove parameter',
                         id='remove-param-button',
                         color='danger',

@@ -28,10 +28,10 @@ class CallbackManager:
         graph_callbacks.display_info_card(app=app, view_model=view_model)
 
         func_dialog_callbacks.open(app=app)
-        func_dialog_callbacks.update(app=app, to_trace=self.to_trace)
+        func_dialog_callbacks.update_header(app=app)
         func_dialog_callbacks.add_parameter(app=app, to_trace=self.to_trace)
         func_dialog_callbacks.remove_parameter(app=app, to_trace=self.to_trace)
-        func_dialog_callbacks.update_params_dropdown_options(app=app)
+        func_dialog_callbacks.update_parameters(app=app, to_trace=self.to_trace)
         func_dialog_callbacks.show_param_not_selected_alert(app=app)
 
         realtime_callbacks.start_trace(app=app, view_model=view_model, to_trace=self.to_trace)
