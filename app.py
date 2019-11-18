@@ -10,7 +10,7 @@ from viewmodel.viewmodel import ViewModel
 class App:
     def __init__(self):
         self._configuration = Configuration()
-        self._view_model=ViewModel(self._configuration)
+        self._view_model = ViewModel(self._configuration)
         self._app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
         self._app.layout = Layout()
         self._app.title = 'Tracerface'
