@@ -10,13 +10,6 @@ class UtilitiesTab(dbc.Tab):
         super().__init__(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=self.content())
 
     @staticmethod
-    def searchbar():
-        return dbc.Input(
-            id='searchbar',
-            type='text',
-            placeholder='function name')
-
-    @staticmethod
     def slider(yellow_count=0, red_count=0, max_count=0):
         disabled = max_count < 1
         return dcc.RangeSlider(
@@ -42,7 +35,12 @@ class UtilitiesTab(dbc.Tab):
                     children=self.slider(),
                     style={'padding': '40px 0px 20px 0px'})]),
             dbc.FormGroup([
-                dbc.Label('Search function'),
-                dbc.Col(self.searchbar(), width=8)],
+                dbc.Label('Search function:'),
+                dbc.Col(
+                    dbc.Input(
+                        id='searchbar',
+                        type='text',
+                        placeholder='function name'),
+                    width=8)],
                 row=True)],
             style=styles.tab_style())
