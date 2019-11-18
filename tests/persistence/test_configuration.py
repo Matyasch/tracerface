@@ -1,6 +1,6 @@
 import pytest
 
-from persistence.configuration import Configuration
+from tracerface.persistence.configuration import Configuration
 
 
 def test_initial_config():
