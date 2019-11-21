@@ -14,7 +14,6 @@ from model.utils import (
 class DynamicModel(BaseModel):
     def __init__(self, configuration):
         super().__init__(configuration)
-        self._thread = threading.Thread()
         self._thread_enabled = False
         self._thread_error = None
         self._process_error = None
