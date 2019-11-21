@@ -126,12 +126,17 @@ def extract_config(config_path):
     try:
         content = yaml.safe_load(path.read_text())
     except yaml.scanner.ScannerError:
-        raise ProcessException('Config file has to be YAML format')
+        raise ProcessException('Config file at {} has to be YAML format'.format(str(config_path)))
     except FileNotFoundError:
-        raise ProcessException('Could not find configuration file at provided path')
+        raise ProcessException('Could not find configuration file at {}'.format(str(config_path)))
+    except IsADirectoryError:
+        raise ProcessException('{} is a directory, not a file'.format(str(config_path)))
+    except Exception:
+        raise ProcessException('Unknown error happened while processing config file')
+
+    trace_list = []
 
     try:
-        trace_list = []
         for app in content:
             for func in content[app]:
                 if isinstance(func, dict):
@@ -140,13 +145,13 @@ def extract_config(config_path):
                         app,
                         list(func.keys())[0],
                         ' '.join(params_specs),
-                        ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))])
-                    )
+                        ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))]))
                 else:
                     func_formula = '{}:{}'.format(app, func)
                 trace_list.append(func_formula)
-        if not trace_list:
-            raise ProcessException('No functions to trace')
-        return trace_list
     except TypeError:
         raise ProcessException('Could not process configuration file')
+
+    if not trace_list:
+        raise ProcessException('No functions to trace')
+    return trace_list
