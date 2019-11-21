@@ -87,6 +87,9 @@ def parse_stack(stack):
             return [param for param in params.group(1).rstrip('\r').split(' ') if param != '']
         return None
 
+    if not stack:
+        return Graph(nodes={}, edges={})
+
     nodes = {}
     edges = {}
 
