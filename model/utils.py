@@ -69,7 +69,7 @@ def parse_stack(stack):
         edge_id = (caller, called)
         if edge_id not in edges:
             edges[edge_id] = {}
-            edges[edge_id]['param'] = params
+            edges[edge_id]['param'] = params or []
             edges[edge_id]['call_count'] = 0
         if traced:
             edges[edge_id]['call_count'] += 1
