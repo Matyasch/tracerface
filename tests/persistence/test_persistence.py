@@ -1,4 +1,4 @@
-from tracerface.persistence.persistence import Persistence
+from persistence.persistence import Persistence
 
 
 def test_initial_persistence():
