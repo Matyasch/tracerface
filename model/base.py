@@ -6,7 +6,6 @@ class BaseModel:
     def __init__(self, configuration):
         self._persistence = Persistence()
         self._configuration = configuration
-        self.debug = ''
 
     def get_nodes(self):
         return self._persistence.nodes
