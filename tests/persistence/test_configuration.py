@@ -1,4 +1,4 @@
-import pytest
+from pytest import raises
 
 from persistence.configuration import Configuration
 
@@ -34,7 +34,7 @@ def test_update_layout_by_valid_values():
 def test_update_layout_by_invalid_values():
     config = Configuration()
 
-    with pytest.raises(ValueError) as excinfo:
+    with raises(ValueError) as excinfo:
         config.update_layout(False, 0)
 
     assert str(excinfo.value) == 'Spacing can not be less than 1'
