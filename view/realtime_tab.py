@@ -74,7 +74,8 @@ class RealtimeTab(dbc.Tab):
             daq.PowerButton(
                 id='trace-button',
                 on=False,
-                color='#00FF00'),
+                color='#00FF00',
+                style=styles.button_style()),
             html.Div(
                 id='trace-error-notification',
                 children=None,

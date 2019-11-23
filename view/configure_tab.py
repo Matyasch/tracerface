@@ -17,7 +17,8 @@ class ConfigureTab(dbc.Tab):
                     type='text',
                     value='trace-bpfcc',
                     placeholder='command'))],
-                row=True),
+                row=True,
+                style=button_style()),
             dbc.Checklist(
                 options=[{"label": "Animate graph", "value": 'animate'}],
                 value=['animate'],
