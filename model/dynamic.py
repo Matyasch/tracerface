@@ -1,4 +1,4 @@
-import threading
+from threading import Thread
 
 import pexpect
 
@@ -65,7 +65,7 @@ class DynamicModel(BaseModel):
         self._thread_enabled = True
         self._persistence.clear()
         cmd = [self._configuration.get_command(), '-UK'] + ['\'{}\''.format(function) for function in functions]
-        thread = threading.Thread(target=self._run_command, args=[' '.join(cmd)])
+        thread = Thread(target=self._run_command, args=[' '.join(cmd)])
         thread.start()
 
     def stop_trace(self):
