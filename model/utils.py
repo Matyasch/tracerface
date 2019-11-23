@@ -6,6 +6,13 @@ from re import compile, match
 import yaml
 
 
+FUNCTION_PATTERN = compile(r'^\s+(.+)\+.*\s\[(.+)\]')
+PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
+OUTPUT_START = compile(r'^PID\s+TID\s+COMM\s+FUNC')
+
+Graph = namedtuple('Graph', 'nodes edges')
+
+
 class ProcessException(Exception):
     pass
 
@@ -50,12 +57,6 @@ def flatten_trace_dict(trace_dict):
 
 
 def parse_stack(stack):
-    FUNCTION_PATTERN = compile(r'^\s+(.+)\+.*\s\[(.+)\]')
-    PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
-    OUTPUT_START = compile(r'^PID\s+TID\s+COMM\s+FUNC')
-
-    Graph = namedtuple('Graph', 'nodes edges')
-
     def create_node(regex):
         node_dict = {}
         node_dict['name'] = regex.group(1)
