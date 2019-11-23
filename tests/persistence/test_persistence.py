@@ -3,8 +3,8 @@ from persistence.persistence import Persistence
 
 def test_initial_persistence():
     persistence = Persistence()
-    assert persistence.nodes == {}
-    assert persistence.edges == {}
+    assert persistence._nodes == {}
+    assert persistence._edges == {}
     assert persistence.yellow == 0
     assert persistence.red == 0
 
@@ -14,7 +14,7 @@ def test_load_node_single_to_empty_nodes():
 
     persistence.load_nodes({'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}})
 
-    assert persistence.nodes == {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}}
+    assert persistence._nodes == {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}}
 
 
 def test_load_node_multiple_to_empty_nodes():
@@ -25,7 +25,7 @@ def test_load_node_multiple_to_empty_nodes():
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
     })
 
-    assert persistence.nodes == {
+    assert persistence._nodes == {
         'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 0},
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
     }
@@ -33,11 +33,11 @@ def test_load_node_multiple_to_empty_nodes():
 
 def test_load_node_to_different_nodes():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3}}
+    persistence._nodes = {'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3}}
 
     persistence.load_nodes({'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}})
 
-    assert persistence.nodes == {
+    assert persistence._nodes == {
         'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
     }
@@ -45,11 +45,11 @@ def test_load_node_to_different_nodes():
 
 def test_load_node_to_same_nodes():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}}
 
     persistence.load_nodes({'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 1}})
 
-    assert persistence.nodes == {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 2}}
+    assert persistence._nodes == {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 2}}
 
 
 def test_load_edge_with_no_params():
@@ -57,7 +57,7 @@ def test_load_edge_with_no_params():
 
     persistence.load_edges({('node_hash1', 'node_hash2'): {'param': [], 'call_count': 8}})
 
-    assert persistence.edges == {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 8}}
+    assert persistence._edges == {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 8}}
 
 
 def test_load_edge_with_params():
@@ -65,7 +65,7 @@ def test_load_edge_with_params():
 
     persistence.load_edges({('node_hash1', 'node_hash2'): {'param': ['dummy_param1', 'dummy_param2'], 'call_count': 8}})
 
-    assert persistence.edges == {('node_hash1', 'node_hash2'): {'params': [['dummy_param1', 'dummy_param2']], 'call_count': 8}}
+    assert persistence._edges == {('node_hash1', 'node_hash2'): {'params': [['dummy_param1', 'dummy_param2']], 'call_count': 8}}
 
 
 def test_single_load_different_edges():
@@ -76,7 +76,7 @@ def test_single_load_different_edges():
         ('node_hash3', 'node_hash4'): {'param': ['dummy_param'], 'call_count': 3}
     })
 
-    assert persistence.edges == {
+    assert persistence._edges == {
         ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
         ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
     }
@@ -84,11 +84,11 @@ def test_single_load_different_edges():
 
 def test_load_edge_to_different_edges():
     persistence = Persistence()
-    persistence.edges = {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0}}
+    persistence._edges = {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0}}
 
     persistence.load_edges({('node_hash3', 'node_hash4'): {'param': ['dummy_param'], 'call_count': 3}})
     
-    assert persistence.edges == {
+    assert persistence._edges == {
         ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
         ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
     }
@@ -96,26 +96,64 @@ def test_load_edge_to_different_edges():
 
 def test_load_edge_to_same_edges():
     persistence = Persistence()
-    persistence.edges = {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 1}}
+    persistence._edges = {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 1}}
 
     persistence.load_edges({('node_hash1', 'node_hash2'): {'param': [], 'call_count': 3}})
 
-    assert persistence.edges == {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 4}}
+    assert persistence._edges == {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 4}}
 
 
 def test_load_edge_to_same_edges_with_params():
     persistence = Persistence()
-    persistence.edges = {('node_hash1', 'node_hash2'): {
+    persistence._edges = {('node_hash1', 'node_hash2'): {
         'params': [['dummy_param1', 'dummy_param2']],
         'call_count': 1}
     }
 
     persistence.load_edges({('node_hash1', 'node_hash2'): {'param': ['dummy_param3', 'dummy_param4'], 'call_count': 3}})
 
-    assert persistence.edges == {('node_hash1', 'node_hash2'): {
+    assert persistence._edges == {('node_hash1', 'node_hash2'): {
             'params': [['dummy_param1', 'dummy_param2'], ['dummy_param3', 'dummy_param4']],
             'call_count': 4}
         }
+
+
+def test_get_nodes_returns_empty_dict_for_empty_persistence():
+    persistence = Persistence()
+
+    assert persistence.get_nodes() == {}
+
+
+def test_get_edges_returns_empty_dict_for_empty_persistence():
+    persistence = Persistence()
+
+    assert persistence.get_edges() == {}
+
+
+def test_get_nodes_return_nodes_for_filled_persistence():
+    persistence = Persistence()
+    persistence._nodes = {
+        'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
+        'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
+    }
+
+    assert persistence.get_nodes() == {
+        'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
+        'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
+    }
+
+
+def test_get_edges_return_edges_for_filled_persistence():
+    persistence = Persistence()
+    persistence._edges = {
+        ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
+        ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
+    }
+
+    assert persistence.get_edges() == {
+        ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
+        ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
+    }
 
 
 def test_clear_empty_persistence():
@@ -123,48 +161,48 @@ def test_clear_empty_persistence():
 
     persistence.clear()
 
-    assert persistence.nodes == {}
+    assert persistence._nodes == {}
 
 
 def test_clear_for_only_nodes():
     persistence = Persistence()
-    persistence.nodes = {
+    persistence._nodes = {
         'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
     }
 
     persistence.clear()
 
-    assert persistence.nodes == {}
+    assert persistence._nodes == {}
 
 
 def test_clear_for_only_edges():
     persistence = Persistence()
-    persistence.edges = {
+    persistence._edges = {
         ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
         ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
     }
 
     persistence.clear()
 
-    assert persistence.edges == {}
+    assert persistence._edges == {}
 
 
 def test_clear_for_nodes_and_edges():
     persistence = Persistence()
-    persistence.nodes = {
+    persistence._nodes = {
         'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1}
     }
-    persistence.edges = {
+    persistence._edges = {
         ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
         ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
     }
 
     persistence.clear()
 
-    assert persistence.nodes == {}
-    assert persistence.edges == {}
+    assert persistence._nodes == {}
+    assert persistence._edges == {}
 
 
 def test_max_calls_with_no_nodes_returns_zero():
@@ -175,14 +213,14 @@ def test_max_calls_with_no_nodes_returns_zero():
 
 def test_max_calls_with_single_node_returns_call_count_of_node():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3}}
+    persistence._nodes = {'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3}}
 
     assert persistence.max_calls() == 3
 
 
 def test_max_calls_with_multiple_nodes_returns_max_call_count():
     persistence = Persistence()
-    persistence.nodes = {
+    persistence._nodes = {
         'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1},
         'dummy_hash3': {'name': 'dummy_name3', 'source': 'dummy_source2', 'call_count': 5}
@@ -202,7 +240,7 @@ def test_init_colors_of_empty_persistence():
 
 def test_init_colors_with_0_max_call_count():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 0}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 0}}
 
     persistence.init_colors()
 
@@ -212,7 +250,7 @@ def test_init_colors_with_0_max_call_count():
 
 def test_init_colors_with_three_divisible_call_count():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 9}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 9}}
 
     persistence.init_colors()
 
@@ -222,7 +260,7 @@ def test_init_colors_with_three_divisible_call_count():
 
 def test_init_colors_rounding():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
 
     persistence.init_colors()
 
@@ -251,7 +289,7 @@ def test_get_range_with_empty_persistence():
 
 def test_get_range_with_nodes_but_not_set_colors():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
 
     result = persistence.get_range()
 
@@ -274,7 +312,7 @@ def test_get_range_with_no_nodes_but_set_colors():
 
 def test_get_range_with_nodes_and_set_colors():
     persistence = Persistence()
-    persistence.nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
     persistence.yellow = 3
     persistence.red = 8
 

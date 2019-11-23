@@ -8,10 +8,10 @@ class BaseModel:
         self._configuration = configuration
 
     def get_nodes(self):
-        return self._persistence.nodes
+        return self._persistence.get_nodes()
 
     def get_edges(self):
-        return self._persistence.edges
+        return self._persistence.get_edges()
 
     def yellow_count(self):
         return self._persistence.get_range().yellow

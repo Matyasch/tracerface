@@ -6,38 +6,44 @@ Range = namedtuple('Range', 'yellow red top')
 
 class Persistence:
     def __init__(self):
-        self.nodes = {}
-        self.edges = {}
+        self._nodes = {}
+        self._edges = {}
         self.yellow = 0
         self.red = 0
 
     def load_nodes(self, nodes):
         for node in nodes:
-            if node in self.nodes:
-                self.nodes[node]['call_count'] += nodes[node]['call_count']
+            if node in self._nodes:
+                self._nodes[node]['call_count'] += nodes[node]['call_count']
             else:
-                self.nodes[node] = nodes[node]
+                self._nodes[node] = nodes[node]
 
     def load_edges(self, edges):
         for edge in edges:
-            if edge in self.edges:
-                self.edges[edge]['call_count'] += edges[edge]['call_count']
+            if edge in self._edges:
+                self._edges[edge]['call_count'] += edges[edge]['call_count']
                 if edges[edge]['param']:
-                    self.edges[edge]['params'].append(edges[edge]['param'])
+                    self._edges[edge]['params'].append(edges[edge]['param'])
             else:
-                self.edges[edge] = {}
-                self.edges[edge]['params'] = []
-                self.edges[edge]['call_count'] = edges[edge]['call_count']
+                self._edges[edge] = {}
+                self._edges[edge]['params'] = []
+                self._edges[edge]['call_count'] = edges[edge]['call_count']
                 if edges[edge]['param']:
-                    self.edges[edge]['params'].append(edges[edge]['param'])
+                    self._edges[edge]['params'].append(edges[edge]['param'])
+
+    def get_nodes(self):
+        return self._nodes
+
+    def get_edges(self):
+        return self._edges
 
     def clear(self):
-        self.nodes = {}
-        self.edges = {}
+        self._nodes = {}
+        self._edges = {}
 
     def max_calls(self):
-        if self.nodes:
-            return max([node['call_count'] for node in self.nodes.values()])
+        if self._nodes:
+            return max([node['call_count'] for node in self._nodes.values()])
         return 0
 
     def init_colors(self):
