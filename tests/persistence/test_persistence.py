@@ -5,8 +5,8 @@ def test_initial_persistence():
     persistence = Persistence()
     assert persistence._nodes == {}
     assert persistence._edges == {}
-    assert persistence.yellow == 0
-    assert persistence.red == 0
+    assert persistence._yellow == 0
+    assert persistence._red == 0
 
 
 def test_load_node_single_to_empty_nodes():
@@ -234,8 +234,8 @@ def test_init_colors_of_empty_persistence():
 
     persistence.init_colors()
 
-    assert persistence.yellow == 0
-    assert persistence.red == 0
+    assert persistence._yellow == 0
+    assert persistence._red == 0
 
 
 def test_init_colors_with_0_max_call_count():
@@ -244,8 +244,8 @@ def test_init_colors_with_0_max_call_count():
 
     persistence.init_colors()
 
-    assert persistence.yellow == 0
-    assert persistence.red == 0
+    assert persistence._yellow == 0
+    assert persistence._red == 0
 
 
 def test_init_colors_with_three_divisible_call_count():
@@ -254,8 +254,8 @@ def test_init_colors_with_three_divisible_call_count():
 
     persistence.init_colors()
 
-    assert persistence.yellow == 3
-    assert persistence.red == 6
+    assert persistence._yellow == 3
+    assert persistence._red == 6
 
 
 def test_init_colors_rounding():
@@ -264,8 +264,8 @@ def test_init_colors_rounding():
 
     persistence.init_colors()
 
-    assert persistence.yellow == 2
-    assert persistence.red == 5
+    assert persistence._yellow == 2
+    assert persistence._red == 5
 
 
 def test_update_color_range():
@@ -273,51 +273,66 @@ def test_update_color_range():
 
     persistence.update_color_range(yellow=2, red=3)
 
-    assert persistence.yellow == 2
-    assert persistence.red == 3
+    assert persistence._yellow == 2
+    assert persistence._red == 3
 
 
-def test_get_range_with_empty_persistence():
+def test_get_yellow_with_empty_persistence():
     persistence = Persistence()
 
-    result = persistence.get_range()
-
-    assert result.yellow == 0
-    assert result.red == 0
-    assert result.top == 0
+    assert persistence.get_yellow() == 0
 
 
-def test_get_range_with_nodes_but_not_set_colors():
+def test_get_red_with_empty_persistence():
+    persistence = Persistence()
+
+    assert persistence.get_red() == 0
+
+
+def test_get_top_with_empty_persistence():
+    persistence = Persistence()
+
+    assert persistence.get_top() == 0
+
+
+def test_get_yellow_with_nodes_but_not_set_colors():
+    persistence = Persistence()
+    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
+
+    assert persistence.get_yellow() == 0
+
+
+def test_get_red_with_nodes_but_not_set_colors():
     persistence = Persistence()
     persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
 
-    result = persistence.get_range()
-
-    assert result.yellow == 0
-    assert result.red == 0
-    assert result.top == 7
+    assert persistence.get_red() == 0
 
 
-def test_get_range_with_no_nodes_but_set_colors():
-    persistence = Persistence()
-    persistence.yellow = 3
-    persistence.red = 8
-
-    result = persistence.get_range()
-
-    assert result.yellow == 3
-    assert result.red == 8
-    assert result.top == 0
-
-
-def test_get_range_with_nodes_and_set_colors():
+def test_get_top_with_nodes_but_not_set_colors():
     persistence = Persistence()
     persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
-    persistence.yellow = 3
-    persistence.red = 8
 
-    result = persistence.get_range()
+    assert persistence.get_top() == 7
 
-    assert result.yellow == 3
-    assert result.red == 8
-    assert result.top == 7
+
+def test_get_yellow_with_no_nodes_but_set_color():
+    persistence = Persistence()
+    persistence._yellow = 3
+
+    assert persistence.get_yellow() == 3
+
+
+def test_get_red_with_no_nodes_but_set_color():
+    persistence = Persistence()
+    persistence._red = 8
+
+    assert persistence.get_red() == 8
+
+
+def test_get_top_with_no_nodes_but_set_colors():
+    persistence = Persistence()
+    persistence._yellow = 3
+    persistence._red = 8
+
+    assert persistence.get_top() == 0

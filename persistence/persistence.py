@@ -1,15 +1,9 @@
-from collections import namedtuple
-
-
-Range = namedtuple('Range', 'yellow red top')
-
-
 class Persistence:
     def __init__(self):
         self._nodes = {}
         self._edges = {}
-        self.yellow = 0
-        self.red = 0
+        self._yellow = 0
+        self._red = 0
 
     def load_nodes(self, nodes):
         for node in nodes:
@@ -47,15 +41,18 @@ class Persistence:
         return 0
 
     def init_colors(self):
-        self.yellow=round(self.max_calls()/3)
-        self.red=round(self.max_calls()*2/3)
+        self._yellow=round(self.max_calls()/3)
+        self._red=round(self.max_calls()*2/3)
 
     def update_color_range(self, yellow, red):
-        self.yellow = yellow
-        self.red = red
+        self._yellow = yellow
+        self._red = red
 
-    def get_range(self):
-        return Range(
-            yellow=self.yellow,
-            red=self.red,
-            top=self.max_calls())
+    def get_yellow(self):
+        return self._yellow
+
+    def get_red(self):
+        return self._red
+
+    def get_top(self):
+        return self.max_calls()

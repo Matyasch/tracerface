@@ -14,13 +14,13 @@ class BaseModel:
         return self._persistence.get_edges()
 
     def yellow_count(self):
-        return self._persistence.get_range().yellow
+        return self._persistence.get_yellow()
 
     def red_count(self):
-        return self._persistence.get_range().red
+        return self._persistence.get_red()
 
     def max_count(self):
-        return self._persistence.get_range().top
+        return self._persistence.get_top()
 
     def set_range(self, yellow, red):
         self._persistence.update_color_range(yellow, red)
