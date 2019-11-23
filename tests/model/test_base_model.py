@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 from model.base import BaseModel
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_initialization(persistence):
     config = Mock()
     model = BaseModel(config)
@@ -12,7 +12,7 @@ def test_initialization(persistence):
     assert model._configuration is config
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_get_nodes_gets_nodes_from_persistence(persistence):
     model = BaseModel(None)
 
@@ -21,7 +21,7 @@ def test_get_nodes_gets_nodes_from_persistence(persistence):
     persistence.return_value.get_nodes.assert_called_once()
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_get_edges_gets_edges_from_persistence(persistence):
     model = BaseModel(None)
 
@@ -30,7 +30,7 @@ def test_get_edges_gets_edges_from_persistence(persistence):
     persistence.return_value.get_edges.assert_called_once()
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_yellow_count_gets_range_from_persistence(persistence):
     model = BaseModel(None)
 
@@ -39,7 +39,7 @@ def test_yellow_count_gets_range_from_persistence(persistence):
     persistence.return_value.get_yellow.assert_called_once()
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_red_count_gets_range_from_persistence(persistence):
     model = BaseModel(None)
 
@@ -48,7 +48,7 @@ def test_red_count_gets_range_from_persistence(persistence):
     persistence.return_value.get_red.assert_called_once()
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_max_count_gets_range_from_persistence(persistence):
     model = BaseModel(None)
 
@@ -57,7 +57,7 @@ def test_max_count_gets_range_from_persistence(persistence):
     persistence.return_value.get_top.assert_called_once()
 
 
-@patch("model.base.Persistence")
+@patch('model.base.Persistence')
 def test_set_range_calls_persistence_with_right_params(persistence):
     model = BaseModel(None)
 
