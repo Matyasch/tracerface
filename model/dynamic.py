@@ -64,7 +64,7 @@ class DynamicModel(BaseModel):
         self._process_error = None
         self._thread_enabled = True
         self._persistence.clear()
-        cmd = [self._configuration.bcc_command, '-UK'] + ['\'{}\''.format(function) for function in functions]
+        cmd = [self._configuration.get_command(), '-UK'] + ['\'{}\''.format(function) for function in functions]
         thread = threading.Thread(target=self._run_command, args=[' '.join(cmd)])
         thread.start()
 

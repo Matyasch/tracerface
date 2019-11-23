@@ -32,7 +32,7 @@ class BaseModel:
         self._configuration.update_layout(animate, spacing)
 
     def get_spacing_config(self):
-        return self._configuration.spacing
+        return self._configuration.get_spacing()
 
     def get_animate_config(self):
-        return self._configuration.animate
+        return self._configuration.get_animate()

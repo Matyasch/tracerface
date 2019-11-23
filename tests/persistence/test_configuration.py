@@ -6,9 +6,9 @@ from persistence.configuration import Configuration
 def test_initial_config():
     config = Configuration()
 
-    assert config.bcc_command == 'trace-bpfcc'
-    assert config.animate
-    assert config.spacing == 2
+    assert config._bcc_command == 'trace-bpfcc'
+    assert config._animate
+    assert config._spacing == 2
 
 
 def test_update_command():
@@ -16,9 +16,9 @@ def test_update_command():
 
     config.update_command('dummy_command')
 
-    assert config.bcc_command == 'dummy_command'
-    assert config.animate
-    assert config.spacing == 2
+    assert config._bcc_command == 'dummy_command'
+    assert config._animate
+    assert config._spacing == 2
 
 
 def test_update_layout_by_valid_values():
@@ -26,9 +26,9 @@ def test_update_layout_by_valid_values():
 
     config.update_layout(False, 3)
 
-    assert config.bcc_command == 'trace-bpfcc'
-    assert not config.animate
-    assert config.spacing == 3
+    assert config._bcc_command == 'trace-bpfcc'
+    assert not config._animate
+    assert config._spacing == 3
 
 
 def test_update_layout_by_invalid_values():
@@ -38,3 +38,24 @@ def test_update_layout_by_invalid_values():
         config.update_layout(False, 0)
 
     assert str(excinfo.value) == 'Spacing can not be less than 1'
+
+
+def test_get_spacing_returns_spacing():
+    config = Configuration()
+    config._spacing = 10
+
+    assert config.get_spacing() == 10
+
+
+def test_get_animate_returns_animate():
+    config = Configuration()
+    config._animate = False
+
+    assert not config.get_animate()
+
+
+def test_get_command_returns_command():
+    config = Configuration()
+    config._bcc_command = 'dummy command'
+
+    assert config.get_command() == 'dummy command'
