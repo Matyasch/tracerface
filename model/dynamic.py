@@ -43,6 +43,7 @@ class DynamicModel(BaseModel):
             child.close()
         except pexpect.exceptions.ExceptionPexpect as e:
             self._thread_error = str(e)
+        finally:
             self._thread_enabled = False
 
     def trace_dict(self, dict_to_trace):
