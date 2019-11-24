@@ -87,7 +87,7 @@ def test_load_edge_to_different_edges():
     persistence._edges = {('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0}}
 
     persistence.load_edges({('node_hash3', 'node_hash4'): {'param': ['dummy_param'], 'call_count': 3}})
-    
+
     assert persistence._edges == {
         ('node_hash1', 'node_hash2'): {'params': [], 'call_count': 0},
         ('node_hash3', 'node_hash4'): {'params': [['dummy_param']], 'call_count': 3}
@@ -268,10 +268,12 @@ def test_init_colors_rounding():
     assert persistence._red == 5
 
 
-def test_update_color_range():
+def test_update_colors():
     persistence = Persistence()
+    persistence._yellow = 0
+    persistence._red = 0
 
-    persistence.update_color_range(yellow=2, red=3)
+    persistence.update_colors(yellow=2, red=3)
 
     assert persistence._yellow == 2
     assert persistence._red == 3

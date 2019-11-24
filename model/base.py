@@ -23,7 +23,7 @@ class BaseModel:
         return self._persistence.get_top()
 
     def set_range(self, yellow, red):
-        self._persistence.update_color_range(yellow, red)
+        self._persistence.update_colors(yellow, red)
 
     def save_app_config(self, bcc_command):
         self._configuration.update_command(bcc_command)

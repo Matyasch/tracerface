@@ -44,7 +44,7 @@ class Persistence:
         self._yellow=round(self.max_calls()/3)
         self._red=round(self.max_calls()*2/3)
 
-    def update_color_range(self, yellow, red):
+    def update_colors(self, yellow, red):
         self._yellow = yellow
         self._red = red
 
