@@ -187,11 +187,12 @@ def test_start_trace(thread):
 def test_stop_trace(persistence):
     model = DynamicModel(None)
     model._thread_enabled = True
+    model.init_colors = mock.Mock()
 
     model.stop_trace()
 
     assert not model._thread_enabled
-    persistence.return_value.init_colors.assert_called_once()
+    model.init_colors.assert_called_once()
 
 
 def test_thread_error_returns_error():

@@ -26,7 +26,7 @@ class DynamicModel(BaseModel):
             graph = parse_stack(stack)
             self._persistence.load_edges(graph.edges)
             self._persistence.load_nodes(graph.nodes)
-            self._persistence.init_colors()
+            self.init_colors()
             stack.clear()
         else:
             stack.append(call)
@@ -70,7 +70,7 @@ class DynamicModel(BaseModel):
 
     def stop_trace(self):
         self._thread_enabled = False
-        self._persistence.init_colors()
+        self.init_colors()
 
     def thread_error(self):
         return self._thread_error

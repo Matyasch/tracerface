@@ -205,69 +205,6 @@ def test_clear_for_nodes_and_edges():
     assert persistence._edges == {}
 
 
-def test_max_calls_with_no_nodes_returns_zero():
-    persistence = Persistence()
-
-    assert persistence.max_calls() == 0
-
-
-def test_max_calls_with_single_node_returns_call_count_of_node():
-    persistence = Persistence()
-    persistence._nodes = {'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3}}
-
-    assert persistence.max_calls() == 3
-
-
-def test_max_calls_with_multiple_nodes_returns_max_call_count():
-    persistence = Persistence()
-    persistence._nodes = {
-        'dummy_hash1': {'name': 'dummy_name1', 'source': 'dummy_source1', 'call_count': 3},
-        'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 1},
-        'dummy_hash3': {'name': 'dummy_name3', 'source': 'dummy_source2', 'call_count': 5}
-    }
-
-    assert persistence.max_calls() == 5
-
-
-def test_init_colors_of_empty_persistence():
-    persistence = Persistence()
-
-    persistence.init_colors()
-
-    assert persistence._yellow == 0
-    assert persistence._red == 0
-
-
-def test_init_colors_with_0_max_call_count():
-    persistence = Persistence()
-    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 0}}
-
-    persistence.init_colors()
-
-    assert persistence._yellow == 0
-    assert persistence._red == 0
-
-
-def test_init_colors_with_three_divisible_call_count():
-    persistence = Persistence()
-    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 9}}
-
-    persistence.init_colors()
-
-    assert persistence._yellow == 3
-    assert persistence._red == 6
-
-
-def test_init_colors_rounding():
-    persistence = Persistence()
-    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
-
-    persistence.init_colors()
-
-    assert persistence._yellow == 2
-    assert persistence._red == 5
-
-
 def test_update_colors():
     persistence = Persistence()
     persistence._yellow = 0
@@ -291,12 +228,6 @@ def test_get_red_with_empty_persistence():
     assert persistence.get_red() == 0
 
 
-def test_get_top_with_empty_persistence():
-    persistence = Persistence()
-
-    assert persistence.get_top() == 0
-
-
 def test_get_yellow_with_nodes_but_not_set_colors():
     persistence = Persistence()
     persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
@@ -311,30 +242,8 @@ def test_get_red_with_nodes_but_not_set_colors():
     assert persistence.get_red() == 0
 
 
-def test_get_top_with_nodes_but_not_set_colors():
-    persistence = Persistence()
-    persistence._nodes = {'dummy_hash': {'name': 'dummy_name', 'source': 'dummy_source', 'call_count': 7}}
-
-    assert persistence.get_top() == 7
-
-
 def test_get_yellow_with_no_nodes_but_set_color():
     persistence = Persistence()
     persistence._yellow = 3
 
     assert persistence.get_yellow() == 3
-
-
-def test_get_red_with_no_nodes_but_set_color():
-    persistence = Persistence()
-    persistence._red = 8
-
-    assert persistence.get_red() == 8
-
-
-def test_get_top_with_no_nodes_but_set_colors():
-    persistence = Persistence()
-    persistence._yellow = 3
-    persistence._red = 8
-
-    assert persistence.get_top() == 0

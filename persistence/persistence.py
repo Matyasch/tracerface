@@ -35,15 +35,6 @@ class Persistence:
         self._nodes = {}
         self._edges = {}
 
-    def max_calls(self):
-        if self._nodes:
-            return max([node['call_count'] for node in self._nodes.values()])
-        return 0
-
-    def init_colors(self):
-        self._yellow=round(self.max_calls()/3)
-        self._red=round(self.max_calls()*2/3)
-
     def update_colors(self, yellow, red):
         self._yellow = yellow
         self._red = red
@@ -53,6 +44,3 @@ class Persistence:
 
     def get_red(self):
         return self._red
-
-    def get_top(self):
-        return self.max_calls()
