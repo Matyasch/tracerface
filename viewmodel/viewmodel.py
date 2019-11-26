@@ -80,10 +80,10 @@ class ViewModel:
     def save_layout_config(self, animate, spacing):
         self._model.save_layout_config(animate, spacing)
 
-    def animate_config(self):
+    def get_animate_config(self):
         return self._model.get_animate_config()
 
-    def spacing_config(self):
+    def get_spacing_config(self):
         return self._model.get_spacing_config()
 
     def thread_error(self):

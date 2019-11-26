@@ -15,7 +15,7 @@ def save_graph_layout_config(app, view_model):
         if save_btn:
             animate = len(animate_switch) == 1
             view_model.save_layout_config(animate, spacing)
-        return Graph.layout(spacing=view_model.spacing_config(), animate=view_model.animate_config())
+        return Graph.layout(spacing=view_model.get_spacing_config(), animate=view_model.get_animate_config())
 
 
 def save_bcc_command_config(app, view_model):
