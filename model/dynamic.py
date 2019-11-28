@@ -19,7 +19,10 @@ class DynamicModel(BaseModel):
         self._process_error = None
 
     def _process_output(self, child, stack):
-        child.expect('\n')
+        try:
+            child.expect('\n', timeout=1)
+        except pexpect.TIMEOUT:
+            pass
         raw = child.before
         call = raw.decode("utf-8")
         if call == '\r':
