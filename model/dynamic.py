@@ -21,18 +21,18 @@ class DynamicModel(BaseModel):
     def _process_output(self, child, stack):
         try:
             child.expect('\n', timeout=1)
+            raw = child.before
+            call = raw.decode("utf-8")
+            if call == '\r':
+                graph = parse_stack(stack)
+                self._persistence.load_edges(graph.edges)
+                self._persistence.load_nodes(graph.nodes)
+                self.init_colors()
+                stack.clear()
+            else:
+                stack.append(call)
         except pexpect.TIMEOUT:
             pass
-        raw = child.before
-        call = raw.decode("utf-8")
-        if call == '\r':
-            graph = parse_stack(stack)
-            self._persistence.load_edges(graph.edges)
-            self._persistence.load_nodes(graph.nodes)
-            self.init_colors()
-            stack.clear()
-        else:
-            stack.append(call)
 
     def _run_command(self, cmd):
         try:
@@ -67,7 +67,7 @@ class DynamicModel(BaseModel):
         self._process_error = None
         self._thread_enabled = True
         self._persistence.clear()
-        cmd = [self._configuration.get_command(), '-UK'] + ['\'{}\''.format(function) for function in functions]
+        cmd = [self._configuration.get_command(), '-UK'] + ["'{}'".format(function) for function in functions]
         thread = Thread(target=self._run_command, args=[' '.join(cmd)])
         thread.start()
 
