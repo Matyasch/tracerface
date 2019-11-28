@@ -86,7 +86,7 @@ def test_process_output_inside_stack():
     model._process_output(child, stack)
 
     child.expect.assert_called_once()
-    child.expect.assert_called_with('\n')
+    child.expect.assert_called_with('\n', timeout=1)
     stack.append.assert_called_once()
     stack.append.assert_called_with(child.before.decode())
 
@@ -103,7 +103,7 @@ def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
     model._process_output(child, stack)
 
     child.expect.assert_called_once()
-    child.expect.assert_called_with('\n')
+    child.expect.assert_called_with('\n', timeout=1)
     parse_stack.assert_called_once()
     parse_stack.assert_called_with(stack)
     persistence.return_value.load_edges.assert_called_once()
