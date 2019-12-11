@@ -113,6 +113,21 @@ def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
     stack.clear.assert_called_once()
 
 
+@mock.patch('model.base.Persistence')
+def test_process_output_does_noting_on_timeout(persistence):
+    model = DynamicModel(None)
+    child = mock.Mock()
+    child.expect.side_effect = pexpect.TIMEOUT('Dummy Error')
+    stack = mock.Mock()
+
+    model._process_output(child, stack) #no exception raised
+
+    assert not child.before.called
+    assert not persistence.return_value.load_edges.called
+    assert not persistence.return_value.load_nodes.called
+    assert not stack.append.called
+
+
 @mock.patch('model.dynamic.flatten_trace_dict', return_value='dummy_functions')
 def test_trace_dict_without_exception(flatten_trace_dict):
     config = mock.Mock()
