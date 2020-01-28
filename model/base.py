@@ -18,6 +18,10 @@ class BaseModel:
     def get_edges(self):
         return self._persistence.get_edges()
 
+    # returns count for a specific edge
+    def get_count_of_edge(self, edge):
+        return self.get_edges()[edge]['call_count']
+
     # returns the lower bound for coloring elements yellow
     def yellow_count(self):
         return self._persistence.get_yellow()

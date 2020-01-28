@@ -91,15 +91,6 @@ def test_get_param_visuals_for_edge_returns_dots_with_multiple_params(get_edges)
 
 
 @mock.patch('viewmodel.viewmodel.BaseModel.get_edges', return_value={
-        ('dummy_hash2', 'dummy_hash3'): {'params': [['dummy_param1'], ['dummy_param2'], ['dummy_param3']], 'call_count': 4}})
-def test_get_count_of_edge_returns_edge_count(get_edges):
-    configuration = mock.Mock()
-    viewmodel = ViewModel(configuration)
-
-    assert viewmodel.get_count_of_edge('dummy_hash3', 'dummy_hash2') == 4
-
-
-@mock.patch('viewmodel.viewmodel.BaseModel.get_edges', return_value={
         ('dummy_hash2', 'dummy_hash3'): {'params': [], 'call_count': 4}})
 def test_get_params_of_edge_returns_no_params(get_edges):
     configuration = mock.Mock()
