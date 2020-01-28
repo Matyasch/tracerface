@@ -10,6 +10,20 @@ import view.styles as styles
 class RealtimeTab(dbc.Tab):
     def __init__(self):
         def content():
+            def config_path_div():
+                return [
+                    dbc.Checklist(
+                        options=self.config_path_swtich(),
+                        value=[],
+                        id="use-config-file-switch",
+                        switch=True),
+                    dbc.Collapse(
+                        dbc.Input(
+                            id='config-file-path',
+                            type='text',
+                            placeholder='/path/to/config'),
+                        id="config-file-input-collapse")]
+
             return html.Div(children=[
                 dbc.FormGroup([
                     dbc.Label('Add application to trace'),
@@ -49,7 +63,7 @@ class RealtimeTab(dbc.Tab):
                         style=styles.button_style())]),
                 html.Div(
                     id='config-path-div',
-                    children=self.config_path_div(),
+                    children=config_path_div(),
                     style=styles.button_style()),
                 daq.PowerButton(
                     id='trace-button',
@@ -74,17 +88,3 @@ class RealtimeTab(dbc.Tab):
     @staticmethod
     def config_path_swtich(disabled=False):
         return [{"label": "Use config file instead", "value": 'config', 'disabled': disabled}]
-
-    def config_path_div(self):
-        return [
-            dbc.Checklist(
-                options=self.config_path_swtich(),
-                value=[],
-                id="use-config-file-switch",
-                switch=True),
-            dbc.Collapse(
-                dbc.Input(
-                    id='config-file-path',
-                    type='text',
-                    placeholder='/path/to/config'),
-                id="config-file-input-collapse")]
