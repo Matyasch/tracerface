@@ -36,8 +36,9 @@ def update_graph_style(app, view_model):
 def display_info_card(app, view_model):
     @app.callback(Output('info-card', 'children'),
         [Input('graph', 'tapNodeData'),
-        Input('graph', 'tapEdgeData')])
-    def update_node_info(node, edge):
+        Input('graph', 'tapEdgeData'),
+        Input('graph', 'elements')])
+    def update_node_info(node, edge, elements):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[1]
@@ -45,4 +46,6 @@ def display_info_card(app, view_model):
             return NodeInfoCard(node, view_model.get_params_of_node(node['id']))
         elif id == 'tapEdgeData' and edge:
             return EdgeInfoCard(edge, view_model.get_params_of_edge(edge['source'], edge['target']))
+        elif id == 'elements' and elements:
+            return None 
         raise PreventUpdate
