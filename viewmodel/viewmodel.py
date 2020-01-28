@@ -24,7 +24,7 @@ class ViewModel:
                 'source': edge[0],
                 'target': edge[1],
                 'params': self.get_param_visuals_for_edge(edge),
-                'call_count': self._model.get_count_of_edge(edge),
+                'call_count': self._model.get_edges()[edge]['call_count'],
                 'caller_name': self._model.get_nodes()[edge[0]]['name'],
                 'called_name': self._model.get_nodes()[edge[1]]['name']}
             } for edge in self._model.get_edges()]

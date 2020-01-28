@@ -30,14 +30,6 @@ def test_get_edges_gets_edges_from_persistence(persistence):
     persistence.return_value.get_edges.assert_called_once()
 
 
-@patch('viewmodel.viewmodel.BaseModel.get_edges', return_value={
-        ('dummy_hash2', 'dummy_hash3'): {'params': [['dummy_param1'], ['dummy_param2'], ['dummy_param3']], 'call_count': 4}})
-def test_get_count_of_edge_returns_edge_count(get_edges):
-    model = BaseModel(None)
-
-    assert model.get_count_of_edge(('dummy_hash2', 'dummy_hash3')) == 4
-
-
 @patch('model.base.Persistence')
 def test_yellow_count_gets_range_from_persistence(persistence):
     model = BaseModel(None)
