@@ -101,7 +101,7 @@ def test_get_params_of_edge_returns_no_params(get_edges):
 
 @mock.patch('viewmodel.viewmodel.BaseModel.get_edges', return_value={
         ('dummy_hash2', 'dummy_hash3'): {'params': [['dummy_param']], 'call_count': 4}})
-def test_get_params_of_edge_returns_no_params(get_edges):
+def test_get_params_of_edge_returns_single_params(get_edges):
     configuration = mock.Mock()
     viewmodel = ViewModel(configuration)
 
