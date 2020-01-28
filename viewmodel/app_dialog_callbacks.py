@@ -27,6 +27,13 @@ def update_functions(app, to_trace):
         raise PreventUpdate
 
 
+def clear_dialog(app):
+    @app.callback(Output('function-name', 'value'),
+        [Input('app-dialog', 'is_open')])
+    def clear_dialog_when_opened(open):
+        return None
+
+
 def open(app):
     @app.callback(Output('app-dialog', 'is_open'),
         [Input('manage-functions-button', 'n_clicks'),
@@ -72,15 +79,15 @@ def add_function(app, to_trace):
 
 def remove_function(app, to_trace):
     @app.callback(Output('functions-select', 'value'),
-        [Input('remove-func-button', 'n_clicks')],
+        [Input('remove-func-button', 'n_clicks'),
+        Input('app-dialog', 'is_open')],
         [State('functions-select', 'value'),
         State('applications-select', 'value')])
-    def add_or_remove_function(remove, func, app):
+    def add_or_remove_function(remove, open, func, app):
         if remove and func:
             if func in to_trace[app]:
                 del to_trace[app][func]
-            return None
-        raise PreventUpdate
+        return None
 
 
 def show_func_not_selected_alert(app):

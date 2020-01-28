@@ -14,6 +14,7 @@ class CallbackManager:
 
     def setup_callbacks(self, app, view_model):
         app_dialog_callbacks.open(app=app)
+        app_dialog_callbacks.clear_dialog(app=app)
         app_dialog_callbacks.update_header(app=app)
         app_dialog_callbacks.add_function(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.remove_function(app=app, to_trace=self.to_trace)
