@@ -48,6 +48,7 @@ void func6()
 int main(int argc, char * argv[])
 {
     func6();
+    my_sleep();
     return 0 ;
 }
 
