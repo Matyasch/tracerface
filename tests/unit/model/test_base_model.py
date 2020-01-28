@@ -3,13 +3,13 @@ from unittest.mock import call, Mock, patch
 from model.base import BaseModel
 
 
-@patch('model.base.Persistence')
-def test_initialization(persistence):
+def test_empty_model():
     config = Mock()
     model = BaseModel(config)
 
-    assert model._persistence is persistence.return_value
     assert model._configuration is config
+    assert model.get_edges() == {}
+    assert model.get_nodes() == {}
 
 
 @patch('model.base.Persistence')

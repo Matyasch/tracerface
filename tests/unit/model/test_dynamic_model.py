@@ -6,16 +6,16 @@ from model.dynamic import DynamicModel
 import model.utils as utils
 
 
-@mock.patch('model.base.Persistence')
-def test_initialization(persistence):
+def test_empty_model():
     config = mock.Mock()
     model = DynamicModel(config)
 
-    assert model._persistence is persistence.return_value
     assert model._configuration is config
     assert not model._thread_enabled
     assert model._thread_error == None
     assert model._process_error == None
+    assert model.get_edges() == {}
+    assert model.get_nodes() == {}
 
 
 @mock.patch('model.dynamic.pexpect.spawn')
