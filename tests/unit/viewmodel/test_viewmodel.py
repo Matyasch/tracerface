@@ -232,14 +232,14 @@ def test_set_range_uses_model(model):
 
 
 @mock.patch('viewmodel.viewmodel.BaseModel')
-def test_save_app_config_uses_model(model):
+def test_save_bcc_command_uses_model(model):
     configuration = mock.Mock()
     viewmodel = ViewModel(configuration.return_value)
 
-    viewmodel.save_app_config('dummy_command')
+    viewmodel.save_bcc_command('dummy_command')
 
-    model.return_value.save_app_config.assert_called_once()
-    model.return_value.save_app_config.assert_called_with('dummy_command')
+    model.return_value.save_bcc_command.assert_called_once()
+    model.return_value.save_bcc_command.assert_called_with('dummy_command')
 
 
 @mock.patch('viewmodel.viewmodel.BaseModel')

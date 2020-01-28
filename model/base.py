@@ -38,7 +38,7 @@ class BaseModel:
         self._persistence.update_colors(yellow, red)
 
     # set command for bcc trace
-    def save_app_config(self, bcc_command):
+    def save_bcc_command(self, bcc_command):
         self._configuration.update_command(bcc_command)
 
     # set animation state and spacing between nodes

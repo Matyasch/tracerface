@@ -75,11 +75,11 @@ def test_set_range_calls_persistence_with_right_params(persistence):
     persistence.return_value.update_colors.assert_called_with('dummy_yellow', 'dummy_red')
 
 
-def test_save_app_config_calls_configuration_with_right_params():
+def test_save_bcc_command_calls_configuration_with_right_params():
     config = Mock()
     model = BaseModel(config)
 
-    model.save_app_config('dummy_command')
+    model.save_bcc_command('dummy_command')
 
     config.update_command.assert_called_once()
     config.update_command.assert_called_with('dummy_command')

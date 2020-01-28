@@ -25,7 +25,7 @@ def save_bcc_command_config(app, view_model):
     def save_clicked(save_btn, bcc_command):
         if save_btn:
             if bcc_command:
-                view_model.save_app_config(bcc_command)
+                view_model.save_bcc_command(bcc_command)
                 return alerts.save_config_success_alert()
             else:
                 return alerts.empty_command_config_alert()
