@@ -21,6 +21,14 @@ def open(app):
         raise PreventUpdate
 
 
+def clear_dialog(app):
+    @app.callback([Output('param-type', 'value'),
+        Output('param-index', 'value')],
+        [Input('func-dialog', 'is_open')])
+    def clear_dialog_when_opened(open):
+        return None, ''
+
+
 def update_header(app):
     @app.callback(Output('func-dialog-header', 'children'),
         [Input('functions-select', 'value')])
@@ -56,17 +64,17 @@ def update_parameters(app, to_trace):
 
 def remove_parameter(app, to_trace):
     @app.callback(Output('params-select', 'value'),
-        [Input('remove-param-button', 'n_clicks')],
+        [Input('remove-param-button', 'n_clicks'),
+        Input('func-dialog', 'is_open')],
         [State('params-select', 'value'),
         State('functions-select', 'value'),
         State('applications-select', 'value')])
-    def remove_param(remove, selected_param, func, app):
+    def remove_param(remove, open, selected_param, func, app):
         if remove and selected_param:
             param_name = 'arg{}'.format(selected_param[0])
             if param_name in to_trace[app][func]:
                 del to_trace[app][func][param_name]
-            return None
-        raise PreventUpdate
+        return None
 
 
 def add_parameter(app, to_trace):

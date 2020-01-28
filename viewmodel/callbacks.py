@@ -28,6 +28,7 @@ class CallbackManager:
         graph_callbacks.display_info_card(app=app, view_model=view_model)
 
         func_dialog_callbacks.open(app=app)
+        func_dialog_callbacks.clear_dialog(app=app)
         func_dialog_callbacks.update_header(app=app)
         func_dialog_callbacks.add_parameter(app=app, to_trace=self.to_trace)
         func_dialog_callbacks.remove_parameter(app=app, to_trace=self.to_trace)
