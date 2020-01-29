@@ -11,21 +11,18 @@ class UtilitiesTab(dbc.Tab):
 
     def _content(self):
         return html.Div(children=[
+            dbc.Input(
+                id='searchbar',
+                type='text',
+                placeholder='Search function name',
+                style=styles.element_style()),
             dbc.FormGroup([
                 dbc.Label('Update coloring'),
                 html.Div(
                     id='slider-div',
                     children=self.slider(),
-                    style={'padding': '40px 0px 20px 0px'})]),
-            dbc.FormGroup([
-                dbc.Label('Search function:'),
-                dbc.Col(
-                    dbc.Input(
-                        id='searchbar',
-                        type='text',
-                        placeholder='function name'),
-                    width=8)],
-                row=True)],
+                    style={'padding': '40px 0px 20px 0px'})],
+                style=styles.element_style())],
             style=styles.tab_style())
 
     @staticmethod
