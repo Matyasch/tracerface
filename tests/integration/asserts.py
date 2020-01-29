@@ -16,6 +16,10 @@ EXPECTED_EDGES = [
 ]
 
 def assert_results(result_nodes, result_edges):
+    assert len(result_nodes) == len(EXPECTED_NODES)
+    assert len(result_edges) == len(EXPECTED_EDGES)
+
+
     sorted_nodes = sorted(result_nodes, key = lambda i: i['data']['name'])
     # we can sort like this because no node is called from two different nodes
     sorted_edges = sorted(result_edges, key = lambda i: i['data']['called_name'])
