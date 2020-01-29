@@ -3,6 +3,7 @@
 from app import App
 
 
+# Create application and start it
 def main():
     app = App()
     app.start()

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Script for running tests properly
+
 echo "running unit tests"
 python3 -m pytest tests/unit/
 

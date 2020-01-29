@@ -7,6 +7,7 @@ from viewmodel.callbacks import CallbackManager
 from viewmodel.viewmodel import ViewModel
 
 
+# Class to store the application's resources
 class App:
     def __init__(self):
         self._configuration = Configuration()
@@ -17,6 +18,7 @@ class App:
 
         self.callback_manager = CallbackManager(self._app, self._view_model)
 
+    # Start server of the web application
     def start(self):
         try:
             self._app.run_server(debug=True, dev_tools_silence_routes_logging=True)

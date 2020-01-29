@@ -11,6 +11,7 @@ from model.utils import (
 )
 
 
+# Model for tracing realtime
 class DynamicModel(BaseModel):
     def __init__(self, configuration):
         super().__init__(configuration)
@@ -18,6 +19,7 @@ class DynamicModel(BaseModel):
         self._thread_error = None
         self._process_error = None
 
+    # Parse and save the output of started bcc trace
     def _process_output(self, child, stack):
         try:
             child.expect('\n', timeout=1)
@@ -34,6 +36,7 @@ class DynamicModel(BaseModel):
         except pexpect.TIMEOUT:
             pass
 
+    # Start bcc trace and parse its output until it is stopped
     def _run_command(self, cmd):
         try:
             child = pexpect.spawn(cmd, timeout=None)
@@ -48,6 +51,7 @@ class DynamicModel(BaseModel):
         finally:
             self._thread_enabled = False
 
+    # Start tracing with the functions given in a dict
     def trace_dict(self, dict_to_trace):
         try:
             functions = flatten_trace_dict(dict_to_trace)
@@ -55,6 +59,7 @@ class DynamicModel(BaseModel):
         except ProcessException as e:
             self._process_error = str(e)
 
+    # Start tracing with the functions given in a configuration file
     def trace_yaml(self, config_path):
         try:
             functions = extract_config(config_path)
@@ -62,6 +67,7 @@ class DynamicModel(BaseModel):
         except ProcessException as e:
             self._process_error = str(e)
 
+    # Initializing alert values, creating command to be ran and start tracing
     def start_trace(self, functions):
         self._thread_error = None
         self._process_error = None
@@ -71,15 +77,19 @@ class DynamicModel(BaseModel):
         thread = Thread(target=self._run_command, args=[' '.join(cmd)])
         thread.start()
 
+    # Stop tracing and initialize colors
     def stop_trace(self):
         self._thread_enabled = False
         self.init_colors()
 
+    # Returns error happening while an active trace
     def thread_error(self):
         return self._thread_error
 
+    # Returns error happening during the procession of functions to trace
     def process_error(self):
         return self._process_error
 
+    # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled

@@ -1,3 +1,4 @@
+# Saving the settings for the application
 class Configuration:
     def __init__(
             self, bcc_command='trace-bpfcc',
