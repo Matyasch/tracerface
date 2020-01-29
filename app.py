@@ -18,4 +18,8 @@ class App:
         self.callback_manager = CallbackManager(self._app, self._view_model)
 
     def start(self):
-        self._app.run_server(dev_tools_silence_routes_logging=True)
+        try:
+            self._app.run_server(debug=True, dev_tools_silence_routes_logging=True)
+        except OSError as e:
+            print('Address already in use!\nDid you already start the application?')
+            return
