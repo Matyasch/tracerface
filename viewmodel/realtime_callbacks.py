@@ -1,3 +1,6 @@
+'''
+This module contains all callbacks regarding the realtime tracing
+'''
 from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -6,6 +9,7 @@ import view.alerts as alerts
 from view.realtime_tab import RealtimeTab
 
 
+# Stop tracing if an error occurs
 def stop_trace_on_error(app, view_model):
     @app.callback([Output('trace-button', 'on'),
         Output('trace-error-notification', 'children')],
@@ -22,6 +26,7 @@ def stop_trace_on_error(app, view_model):
         raise PreventUpdate
 
 
+# Start realtime tracing
 def start_trace(app, view_model, to_trace):
     @app.callback(Output('timer', 'disabled'),
         [Input('trace-button', 'on')],
@@ -40,7 +45,8 @@ def start_trace(app, view_model, to_trace):
         return not trace_on
 
 
-def disable_elemts_on_trace(app):
+# Disable parts of the interface while tracing is active
+def disable_interface_on_trace(app):
     @app.callback([Output('static-tab', 'disabled'),
         Output('utilities-tab', 'disabled'),
         Output('configure-tab', 'disabled'),
@@ -50,11 +56,11 @@ def disable_elemts_on_trace(app):
         Output('use-config-file-switch', 'options')],
         [Input('timer', 'disabled')])
     def switch_disables(timer_off):
-        # TODO: if no functions, don't let turn on
         trace_on = not timer_off
         return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, RealtimeTab.config_path_swtich(trace_on)
 
 
+# Add or remove application to trace
 def update_apps_dropdown_options(app):
     @app.callback(Output('applications-select', 'options'),
         [Input('add-app-button', 'n_clicks'),
@@ -73,6 +79,7 @@ def update_apps_dropdown_options(app):
         return apps
 
 
+# Update value of application selection on application removal
 def remove_application(app, to_trace):
     @app.callback(Output('applications-select', 'value'),
         [Input('remove-app-button', 'n_clicks')],
@@ -85,7 +92,8 @@ def remove_application(app, to_trace):
         raise PreventUpdate
 
 
-def add_application(app, to_trace):
+# Show notification when adding application to trace
+def show_add_application_alert(app, to_trace):
     @app.callback(Output('add-app-notification', 'children'),
         [Input('add-app-button', 'n_clicks')],
         [State('application-path', 'value'),
@@ -102,6 +110,7 @@ def add_application(app, to_trace):
         raise PreventUpdate
 
 
+# Show notification when trying to remove application without selecting it
 def show_app_not_selected_alert(app):
     @app.callback(Output('manage-apps-notification', 'children'),
         [Input('manage-functions-button', 'n_clicks'),
@@ -113,6 +122,7 @@ def show_app_not_selected_alert(app):
         raise PreventUpdate
 
 
+# Show input element for config file path
 def open_config_file_input(app):
     @app.callback(Output('config-file-input-collapse', 'is_open'),
         [Input('use-config-file-switch', 'value')])

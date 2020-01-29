@@ -4,6 +4,7 @@ from dash_html_components import Div
 from view.styles import button_style, tab_style
 
 
+# Implementation of Configure tab
 class ConfigureTab(dbc.Tab):
     def __init__(self):
         super().__init__(label='Configure', tab_id='configure-tab', id='configure-tab', children=self._content())

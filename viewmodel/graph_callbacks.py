@@ -1,3 +1,7 @@
+'''
+This module contains all callbacks regarding
+the shown graph including the information cards
+'''
 from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -5,6 +9,7 @@ from view.info_cards import EdgeInfoCard, NodeInfoCard
 from view.graph import Graph
 
 
+# Update nodes and edges in graph
 def update_graph_elements(app, view_model):
     @app.callback(Output('graph', 'elements'),
         [Input('submit-button', 'n_clicks'),
@@ -19,6 +24,7 @@ def update_graph_elements(app, view_model):
         return view_model.get_nodes() + view_model.get_edges()
 
 
+# Update colors of the graph
 def update_graph_style(app, view_model):
     @app.callback(Output('graph', 'stylesheet'),
         [Input('slider', 'value'),
@@ -33,6 +39,7 @@ def update_graph_style(app, view_model):
         return Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
 
 
+# Display info card for clicked element in graph
 def display_info_card(app, view_model):
     @app.callback(Output('info-card', 'children'),
         [Input('graph', 'tapNodeData'),
@@ -47,5 +54,5 @@ def display_info_card(app, view_model):
         elif id == 'tapEdgeData' and edge:
             return EdgeInfoCard(edge, view_model.get_params_of_edge(edge['source'], edge['target']))
         elif id == 'elements' and elements:
-            return None 
+            return None
         raise PreventUpdate

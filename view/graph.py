@@ -3,6 +3,7 @@ from dash_cytoscape import Cytoscape, load_extra_layouts
 import view.styles as styles
 
 
+# Implementation of the displayed graph
 class Graph(Cytoscape):
     def __init__(self):
         load_extra_layouts()

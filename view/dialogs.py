@@ -5,6 +5,7 @@ from model.utils import format_specs
 from view.styles import element_style
 
 
+# Implementation of dialog window to manage an application
 class ManageApplicationDialog(dbc.Modal):
     def __init__(self):
         super().__init__(children=self._content(), id='app-dialog')
@@ -61,6 +62,7 @@ class ManageApplicationDialog(dbc.Modal):
         ])
 
 
+# Implementation of dialog window to manage a function
 class ManageFunctionDialog(dbc.Modal):
     def __init__(self):
         super().__init__(children=self._content(), id='func-dialog')

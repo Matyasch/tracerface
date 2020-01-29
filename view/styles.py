@@ -1,3 +1,7 @@
+'''
+This module contains the definitions of all the styles used by elements
+'''
+
 def tab_style():
     return {'padding': '0px 20px 0px 20px'}
 

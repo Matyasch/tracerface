@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 from view.styles import button_style, tab_style
 
 
-# static tab is actually static
+# Implementation of Static tab
 class StaticTab(dbc.Tab):
     def __init__(self):
         super().__init__(label='Static', tab_id='static-tab', id='static-tab', children=self._content())

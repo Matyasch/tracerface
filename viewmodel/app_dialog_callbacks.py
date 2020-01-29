@@ -1,3 +1,7 @@
+'''
+This module contains all callbacks regarding
+the dialog used to manage functions of an application
+'''
 from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -5,6 +9,7 @@ from dash.exceptions import PreventUpdate
 import view.alerts as alerts
 
 
+# Update shown selection of functions for application
 def update_functions(app, to_trace):
     @app.callback(Output('functions-select', 'options'),
         [Input('add-function-button', 'n_clicks'),
@@ -27,6 +32,7 @@ def update_functions(app, to_trace):
         raise PreventUpdate
 
 
+# Clear values of input elements in dialog
 def clear_dialog(app):
     @app.callback(Output('function-name', 'value'),
         [Input('app-dialog', 'is_open')])
@@ -34,6 +40,7 @@ def clear_dialog(app):
         return None
 
 
+# Open dialog window
 def open(app):
     @app.callback(Output('app-dialog', 'is_open'),
         [Input('manage-functions-button', 'n_clicks'),
@@ -50,6 +57,7 @@ def open(app):
         raise PreventUpdate
 
 
+# Update header of the dialog with the name of the application
 def update_header(app):
     @app.callback(Output('app-dialog-header', 'children'),
         [Input('applications-select', 'value')])
@@ -59,6 +67,7 @@ def update_header(app):
         raise PreventUpdate
 
 
+# Add function to be traced for application
 def add_function(app, to_trace):
     @app.callback(Output('add-func-notification', 'children'),
         [Input('add-function-button', 'n_clicks')],
@@ -77,6 +86,7 @@ def add_function(app, to_trace):
         raise PreventUpdate
 
 
+# Remove function from traced ones for application
 def remove_function(app, to_trace):
     @app.callback(Output('functions-select', 'value'),
         [Input('remove-func-button', 'n_clicks'),
@@ -90,6 +100,7 @@ def remove_function(app, to_trace):
         return None
 
 
+# Show alert if we did not select function for removal
 def show_func_not_selected_alert(app):
     @app.callback(Output('manage-func-notification', 'children'),
         [Input('manage-params-button', 'n_clicks'),

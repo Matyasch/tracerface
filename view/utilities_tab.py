@@ -5,6 +5,7 @@ import dash_html_components as html
 import view.styles as styles
 
 
+# Implementation of Utilities tab
 class UtilitiesTab(dbc.Tab):
     def __init__(self):
         super().__init__(label='Utilities', tab_id='utilities-tab', id='utilities-tab', children=self._content())

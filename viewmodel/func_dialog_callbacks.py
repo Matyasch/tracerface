@@ -1,3 +1,7 @@
+'''
+This module contains all callbacks regarding
+the dialog used to manage parameters of a function
+'''
 from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -5,6 +9,7 @@ from dash.exceptions import PreventUpdate
 import view.alerts as alerts
 
 
+# Open dialog window
 def open(app):
     @app.callback(Output('func-dialog', 'is_open'),
         [Input('manage-params-button', 'n_clicks'),
@@ -21,6 +26,7 @@ def open(app):
         raise PreventUpdate
 
 
+# Clear values of input elements in dialog
 def clear_dialog(app):
     @app.callback([Output('param-type', 'value'),
         Output('param-index', 'value')],
@@ -29,6 +35,7 @@ def clear_dialog(app):
         return None, ''
 
 
+# Update name of function to configure in header
 def update_header(app):
     @app.callback(Output('func-dialog-header', 'children'),
         [Input('functions-select', 'value')])
@@ -38,6 +45,7 @@ def update_header(app):
         raise PreventUpdate
 
 
+# Update shown selection of parameters for function
 def update_parameters(app, to_trace):
     @app.callback(Output('params-select', 'options'),
         [Input('add-param-button', 'n_clicks'),
@@ -62,6 +70,7 @@ def update_parameters(app, to_trace):
         raise PreventUpdate
 
 
+# Remove parameter from traced ones for function
 def remove_parameter(app, to_trace):
     @app.callback(Output('params-select', 'value'),
         [Input('remove-param-button', 'n_clicks'),
@@ -77,6 +86,7 @@ def remove_parameter(app, to_trace):
         return None
 
 
+# Add parameter to trace for function
 def add_parameter(app, to_trace):
     @app.callback(Output('add-param-notification', 'children'),
         [Input('add-param-button', 'n_clicks')],
@@ -99,6 +109,7 @@ def add_parameter(app, to_trace):
         raise PreventUpdate
 
 
+# Show alert if no parameter is selected while trying to remove one
 def show_param_not_selected_alert(app):
     @app.callback(Output('remove-param-notification', 'children'),
         [Input('remove-param-button', 'n_clicks')],

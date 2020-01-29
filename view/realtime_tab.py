@@ -7,6 +7,7 @@ from view.dialogs import ManageApplicationDialog, ManageFunctionDialog
 import view.styles as styles
 
 
+# Implementation of Realtime tab
 class RealtimeTab(dbc.Tab):
     def __init__(self):
         super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=self._content(), tab_style={"margin-left": "auto"})

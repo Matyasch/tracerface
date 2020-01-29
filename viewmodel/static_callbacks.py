@@ -1,9 +1,13 @@
+'''
+This module contains all callbacks regarding static processing
+'''
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
 
 
+# Load output of bcc trace output
 def load_output(app):
     @app.callback(Output('load-output-notification', 'children'),
         [Input('submit-button', 'n_clicks')],

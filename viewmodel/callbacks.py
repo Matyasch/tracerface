@@ -1,3 +1,7 @@
+'''
+Initialize all shared resources used by callbacks
+Initialize all callbacks used by the application
+'''
 import viewmodel.app_dialog_callbacks as app_dialog_callbacks
 import viewmodel.configure_callbacks as configure_callbacks
 import viewmodel.func_dialog_callbacks as func_dialog_callbacks
@@ -38,8 +42,8 @@ class CallbackManager:
 
         realtime_callbacks.start_trace(app=app, view_model=view_model, to_trace=self.to_trace)
         realtime_callbacks.stop_trace_on_error(app=app, view_model=view_model)
-        realtime_callbacks.disable_elemts_on_trace(app=app)
-        realtime_callbacks.add_application(app=app, to_trace=self.to_trace)
+        realtime_callbacks.disable_interface_on_trace(app=app)
+        realtime_callbacks.show_add_application_alert(app=app, to_trace=self.to_trace)
         realtime_callbacks.remove_application(app=app, to_trace=self.to_trace)
         realtime_callbacks.update_apps_dropdown_options(app=app)
         realtime_callbacks.show_app_not_selected_alert(app=app)

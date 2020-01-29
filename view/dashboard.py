@@ -7,6 +7,7 @@ from view.realtime_tab import RealtimeTab
 from view.utilities_tab import UtilitiesTab
 
 
+# Implementation of the dasboard
 class Dashboard(Div):
     def __init__(self):
         super().__init__(

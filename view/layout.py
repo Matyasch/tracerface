@@ -4,6 +4,7 @@ from view.dashboard import Dashboard
 from view.graph import Graph
 
 
+# Implementation of the base layout of the user interface
 class Layout(Row):
     def __init__(self):
         super().__init__([
