@@ -12,8 +12,22 @@ class RealtimeTab(dbc.Tab):
         super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=self._content(), tab_style={"margin-left": "auto"})
 
     def _content(self):
-        return html.Div(children=[
-            dbc.FormGroup([
+        return html.Div(
+            children=[
+                self._add_app_group(),
+                self._manage_apps_group(),
+                self._config_path_group(),
+                self._trace_group(),
+                self._timer(),
+                ManageApplicationDialog(),
+                ManageFunctionDialog()
+            ],
+            style=styles.tab_style())
+
+    def _add_app_group(self):
+        return dbc.FormGroup(
+            id='add-app-groub',
+            children=[
                 dbc.Label('Add application to trace'),
                 dbc.Row([
                     dbc.Col(dbc.Input(
@@ -29,8 +43,12 @@ class RealtimeTab(dbc.Tab):
                 html.Div(
                     id='add-app-notification',
                     children=None,
-                    style=styles.button_style())]),
-            dbc.FormGroup([
+                    style=styles.button_style())])
+
+    def _manage_apps_group(self):
+        return dbc.FormGroup(
+            id='manage-apps-group',
+            children=[
                 dbc.Label('Manage applications'),
                 dbc.Select(
                     id='applications-select',
@@ -48,43 +66,45 @@ class RealtimeTab(dbc.Tab):
                 html.Div(
                     id='manage-apps-notification',
                     children=None,
-                    style=styles.button_style())]),
-            html.Div(
-                id='config-path-div',
-                children=self._config_path_div(),
-                style=styles.button_style()),
-            daq.PowerButton(
-                id='trace-button',
-                on=False,
-                color='#00FF00',
-                style=styles.button_style()),
-            html.Div(
-                id='trace-error-notification',
-                children=None,
-                style=styles.button_style()),
-            ManageApplicationDialog(),
-            ManageFunctionDialog(),
-            Interval(
-                id='timer',
-                interval=1*500, # in milliseconds
-                n_intervals=0,
-                disabled=True)],
-            style=styles.tab_style())
+                    style=styles.button_style())])
 
-    def _config_path_div(self):
-        return [
-            dbc.Checklist(
-                options=self.config_path_swtich(),
-                value=[],
-                id="use-config-file-switch",
-                switch=True),
-            dbc.Collapse(
-                dbc.Input(
-                    id='config-file-path',
-                    type='text',
-                    placeholder='/path/to/config'),
-                id="config-file-input-collapse")]
+    def _trace_group(self):
+        return dbc.FormGroup(
+            id='trace-group',
+            children=[
+                daq.PowerButton(
+                    id='trace-button',
+                    on=False,
+                    color='#00FF00',
+                    style=styles.button_style()),
+                html.Div(
+                    id='trace-error-notification',
+                    children=None,
+                    style=styles.button_style())])
 
+    def _config_path_group(self):
+        return dbc.FormGroup(
+            id='config-path-group',
+            children=[
+                dbc.Checklist(
+                    options=self.config_path_swtich(),
+                    value=[],
+                    id="use-config-file-switch",
+                    switch=True),
+                dbc.Collapse(
+                    dbc.Input(
+                        id='config-file-path',
+                        type='text',
+                        placeholder='/path/to/config'),
+                    id="config-file-input-collapse")],
+            style=styles.button_style())
+
+    def _timer(self):
+        return Interval(
+            id='timer',
+            interval=1*500, # in milliseconds
+            n_intervals=0,
+            disabled=True)
 
     @staticmethod
     def config_path_swtich(disabled=False):
