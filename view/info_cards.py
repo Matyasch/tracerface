@@ -4,16 +4,16 @@ from dash_html_components import P
 
 class BaseInfoCard(dbc.Card):
     def __init__(self, header, info, params):
-        def content(header, infos, params):
-            return [
-                dbc.CardHeader(header),
-                dbc.CardBody([P(info) for info in infos] + [
-                    dbc.ListGroup(
-                        [dbc.ListGroupItem(', '.join(param)) for param in params],
-                        className='scrollable',
-                        style={'max-height': '200px'})])]
+        super().__init__(children=self._content(header, info, params), color='light', style={'margin': '20px'})
 
-        super().__init__(children=content(header, info, params), color='light', style={'margin': '20px'})
+    def _content(self, header, infos, params):
+        return [
+            dbc.CardHeader(header),
+            dbc.CardBody([P(info) for info in infos] + [
+                dbc.ListGroup(
+                    [dbc.ListGroupItem(', '.join(param)) for param in params],
+                    className='scrollable',
+                    style={'max-height': '200px'})])]
 
 
 class NodeInfoCard(BaseInfoCard):
