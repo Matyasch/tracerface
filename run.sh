@@ -30,7 +30,7 @@ function usage() {
 
 start_command="python3 $ROOT_DIR/main.py"
 
-args=$(getopt -l help,debug,routes-loggin -o hdl -- "$@")
+args=$(getopt -l help,debug,routes-logging -o hdl -- "$@")
 eval set -- "$args"
 while [ $# -ge 1 ];
 do
