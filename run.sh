@@ -3,7 +3,7 @@ set -e
 
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
+VIRTUALENV_DIR="$ROOT_DIR/bin-python"
 
 function usage() {
     echo "usage: $0 [-h --help] [-d --debug] [-l --routes-logging]"
@@ -51,8 +51,8 @@ do
     shift
 done
 
-python3 -m venv "$ROOT_DIR/bin-python"
-"$ROOT_DIR/bin-python/bin/pip" --disable-pip-version-check install  --no-cache-dir --requirement requirements.txt > bin-python/pip-install.log
+python3 -m venv "$VIRTUALENV_DIR"
 source "$ROOT_DIR/bin-python/bin/activate"
+pip3 --disable-pip-version-check install --no-cache-dir --requirement requirements.txt > bin-python/pip-install.log
 
 $start_command
