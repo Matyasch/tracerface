@@ -29,9 +29,12 @@ function usage() {
 
 
 start_command="python3 $ROOT_DIR/main.py"
-while getopts ":h" option;
+
+args=$(getopt -l help,debug,routes-loggin -o hdl -- "$@")
+eval set -- "$args"
+while [ $# -ge 1 ];
 do
-    case $option in
+    case "$1" in
         -h|--help)
             usage
             exit 0
@@ -44,16 +47,12 @@ do
             start_command+=" --routes-logging"
             shift
             ;;
-        \?)
-            echo "Error: Invalid option"
-            usage
-            exit 1;;
     esac
+    shift
 done
-
 
 python3 -m venv "$ROOT_DIR/bin-python"
 "$ROOT_DIR/bin-python/bin/pip" --disable-pip-version-check install  --no-cache-dir --requirement requirements.txt > bin-python/pip-install.log
 source "$ROOT_DIR/bin-python/bin/activate"
-echo $start_command
+
 $start_command
