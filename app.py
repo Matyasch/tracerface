@@ -23,6 +23,6 @@ class App:
         silent = not logging
         try:
             self._app.run_server(debug=debug, dev_tools_silence_routes_logging=silent)
-        except OSError as e:
+        except OSError:
             print('Address already in use!\nDid you already start the application?')
             exit(1)
