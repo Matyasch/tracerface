@@ -5,9 +5,8 @@ from model.static import StaticModel
 
 # Transforms data into format usable by the layout
 class ViewModel:
-    def __init__(self, configuration):
-        self._model = BaseModel(configuration)
-        self._configuration = configuration
+    def __init__(self):
+        self._model = BaseModel()
 
     # Return list of nodes in a format usable to the view
     def get_nodes(self):
@@ -63,17 +62,17 @@ class ViewModel:
 
     # Event for static output submit button clicked
     def output_submit_btn_clicked(self, text):
-        self._model = StaticModel(self._configuration)
+        self._model = StaticModel()
         self._model.load_text(text)
 
     # Event for starting trace with functions given in dictionary
     def trace_with_ui_elements(self, trace_dict):
-        self._model = DynamicModel(self._configuration)
+        self._model = DynamicModel()
         self._model.trace_dict(trace_dict)
 
     # Event for starting trace with functions given in config file
     def trace_with_config_file(self, config_path):
-        self._model = DynamicModel(self._configuration)
+        self._model = DynamicModel()
         self._model.trace_yaml(config_path)
 
     # Event for tracing stopped
@@ -83,22 +82,6 @@ class ViewModel:
     # Event for setting colors
     def set_range(self, range_bottom, range_top):
         self._model.set_range(range_bottom, range_top)
-
-    # Event for setting bcc command
-    def save_bcc_command(self, bcc_command):
-        self._model.save_bcc_command(bcc_command)
-
-    # Event for setting animation and spacing between nodes
-    def save_layout_config(self, animate, spacing):
-        self._model.save_layout_config(animate, spacing)
-
-    # Return set animation state
-    def get_animate_config(self):
-        return self._model.get_animate_config()
-
-    # Return set spacing between nodes
-    def get_spacing_config(self):
-        return self._model.get_spacing_config()
 
     # Return error happening while tracing
     def thread_error(self):

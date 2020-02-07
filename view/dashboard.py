@@ -1,7 +1,6 @@
 from dash_bootstrap_components import Tab, Tabs
 from dash_html_components import Div, Hr
 
-from view.configure_tab import ConfigureTab
 from view.static_tab import StaticTab
 from view.realtime_tab import RealtimeTab
 from view.utilities_tab import UtilitiesTab
@@ -18,7 +17,6 @@ class Dashboard(Div):
                     children=[
                         RealtimeTab(),
                         StaticTab(),
-                        UtilitiesTab(),
-                        ConfigureTab()]),
+                        UtilitiesTab()]),
                 Hr(),
                 Div(children=[], id='info-card')])

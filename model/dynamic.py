@@ -14,8 +14,8 @@ from model.utils import (
 
 # Model for tracing realtime
 class DynamicModel(BaseModel):
-    def __init__(self, configuration):
-        super().__init__(configuration)
+    def __init__(self):
+        super().__init__()
         self._thread_enabled = False
         self._thread_error = None
         self._process_error = None

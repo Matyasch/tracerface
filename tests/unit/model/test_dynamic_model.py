@@ -8,10 +8,8 @@ import model.utils as utils
 
 
 def test_empty_model():
-    config = mock.Mock()
-    model = DynamicModel(config)
+    model = DynamicModel()
 
-    assert model._configuration is config
     assert not model._thread_enabled
     assert model._thread_error == None
     assert model._process_error == None
@@ -21,7 +19,7 @@ def test_empty_model():
 
 @mock.patch('model.dynamic.pexpect.spawn')
 def test_run_command_without_thread_enabled(spawn):
-    model = DynamicModel(None)
+    model = DynamicModel()
 
     model._run_command('dummy_command')
 
@@ -35,7 +33,7 @@ def test_run_command_with_thread_enabled(spawn):
     def side_effect(*argv):
         model._thread_enabled = False
 
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._process_output = mock.Mock(side_effect=side_effect)
     model._thread_enabled = True
 
@@ -50,7 +48,7 @@ def test_run_command_with_thread_enabled(spawn):
 
 @mock.patch('model.dynamic.pexpect.spawn')
 def test_run_command_EOF_exception(spawn):
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._process_output = mock.Mock(side_effect=pexpect.EOF('Dummy Error'))
     model._thread_enabled = True
 
@@ -65,7 +63,7 @@ def test_run_command_EOF_exception(spawn):
 
 @mock.patch('model.dynamic.pexpect.spawn')
 def test_run_command_ExceptionPexpect_exception(spawn):
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._process_output = mock.Mock(side_effect=pexpect.exceptions.ExceptionPexpect('Dummy Error'))
     model._thread_enabled = True
 
@@ -80,7 +78,7 @@ def test_run_command_ExceptionPexpect_exception(spawn):
 
 
 def test_process_output_inside_stack():
-    model = DynamicModel(None)
+    model = DynamicModel()
     child = mock.Mock()
     stack = mock.Mock()
 
@@ -96,7 +94,7 @@ def test_process_output_inside_stack():
 @mock.patch('model.dynamic.pexpect')
 @mock.patch('model.base.Persistence')
 def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
-    model = DynamicModel(None)
+    model = DynamicModel()
     child = mock.Mock()
     child.before = '\r'
     stack = mock.Mock()
@@ -116,7 +114,7 @@ def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
 
 @mock.patch('model.base.Persistence')
 def test_process_output_does_noting_on_timeout(persistence):
-    model = DynamicModel(None)
+    model = DynamicModel()
     child = mock.Mock()
     child.expect.side_effect = pexpect.TIMEOUT('Dummy Error')
     stack = mock.Mock()
@@ -131,8 +129,7 @@ def test_process_output_does_noting_on_timeout(persistence):
 
 @mock.patch('model.dynamic.flatten_trace_dict', return_value='dummy_functions')
 def test_trace_dict_without_exception(flatten_trace_dict):
-    config = mock.Mock()
-    model = DynamicModel(config)
+    model = DynamicModel()
     model.start_trace = mock.Mock()
 
     model.trace_dict('dummy_dict')
@@ -145,8 +142,7 @@ def test_trace_dict_without_exception(flatten_trace_dict):
 
 @mock.patch('model.dynamic.flatten_trace_dict', side_effect=utils.ProcessException('Dummy Error'))
 def test_trace_dict_with_exception(flatten_trace_dict):
-    config = mock.Mock()
-    model = DynamicModel(config)
+    model = DynamicModel()
     model.start_trace = mock.Mock()
 
     model.trace_dict('dummy_dict')
@@ -158,8 +154,7 @@ def test_trace_dict_with_exception(flatten_trace_dict):
 
 @mock.patch('model.dynamic.extract_config', return_value='dummy_functions')
 def test_trace_yaml_without_exception(extract_config):
-    config = mock.Mock()
-    model = DynamicModel(config)
+    model = DynamicModel()
     model.start_trace = mock.Mock()
 
     model.trace_yaml('dummy_dict')
@@ -172,8 +167,7 @@ def test_trace_yaml_without_exception(extract_config):
 
 @mock.patch('model.dynamic.extract_config', side_effect=utils.ProcessException('Dummy Error'))
 def test_trace_yaml_with_exception(extract_config):
-    config = mock.Mock()
-    model = DynamicModel(config)
+    model = DynamicModel()
     model.start_trace = mock.Mock()
 
     model.trace_yaml('dummy_dict')
@@ -185,9 +179,7 @@ def test_trace_yaml_with_exception(extract_config):
 
 @mock.patch('model.dynamic.Thread')
 def test_start_trace(thread):
-    config = mock.Mock()
-    config.get_command.return_value = 'dummy_command'
-    model = DynamicModel(config)
+    model = DynamicModel()
 
     model.start_trace(['dummy', 'functions'])
 
@@ -201,7 +193,7 @@ def test_start_trace(thread):
 
 @mock.patch('model.base.Persistence')
 def test_stop_trace(persistence):
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._thread_enabled = True
     model.init_colors = mock.Mock()
 
@@ -212,21 +204,21 @@ def test_stop_trace(persistence):
 
 
 def test_thread_error_returns_error():
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._thread_error = 'Dummy Error'
 
     assert model.thread_error() == 'Dummy Error'
 
 
 def test_process_error_returns_error():
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._process_error = 'Dummy Error'
 
     assert model.process_error() == 'Dummy Error'
 
 
 def test_trace_active_returns_thread_enabled():
-    model = DynamicModel(None)
+    model = DynamicModel()
     model._thread_enabled = True
 
     assert model.trace_active()

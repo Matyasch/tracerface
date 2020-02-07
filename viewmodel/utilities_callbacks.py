@@ -5,6 +5,8 @@ from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from view.utilities_tab import UtilitiesTab
 
+from view.graph import Graph
+
 
 # Update color slider based on graph and set colors
 def update_color_slider(app, view_model):
@@ -20,3 +22,14 @@ def update_searchbar(app, view_model):
         [Input('tabs', 'active_tab')])
     def update(tab):
         return view_model.max_count() < 1
+
+
+
+# Save animation status and spacing between nodes
+def update_graph_layout(app, view_model):
+    @app.callback(Output('graph', 'layout'),
+        [Input('animate-switch', 'value'),
+        Input('node-spacing-input', 'value')])
+    def update_spacing_and_animate(animate_switch, spacing):
+        animate = len(animate_switch) == 1
+        return Graph.layout(spacing=spacing, animate=animate)

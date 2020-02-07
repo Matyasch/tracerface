@@ -4,17 +4,15 @@ from model.base import BaseModel
 
 
 def test_empty_model():
-    config = Mock()
-    model = BaseModel(config)
+    model = BaseModel()
 
-    assert model._configuration is config
     assert model.get_edges() == {}
     assert model.get_nodes() == {}
 
 
 @patch('model.base.Persistence')
 def test_get_nodes_gets_nodes_from_persistence(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
 
     model.get_nodes()
 
@@ -23,7 +21,7 @@ def test_get_nodes_gets_nodes_from_persistence(persistence):
 
 @patch('model.base.Persistence')
 def test_get_edges_gets_edges_from_persistence(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
 
     model.get_edges()
 
@@ -32,7 +30,7 @@ def test_get_edges_gets_edges_from_persistence(persistence):
 
 @patch('model.base.Persistence')
 def test_yellow_count_gets_range_from_persistence(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
 
     model.yellow_count()
 
@@ -41,7 +39,7 @@ def test_yellow_count_gets_range_from_persistence(persistence):
 
 @patch('model.base.Persistence')
 def test_red_count_gets_range_from_persistence(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
 
     model.red_count()
 
@@ -50,7 +48,7 @@ def test_red_count_gets_range_from_persistence(persistence):
 
 @patch('model.base.Persistence.get_nodes')
 def test_max_count_gets_with_no_nodes(get_nodes):
-    model = BaseModel(None)
+    model = BaseModel()
 
     assert model.max_count() == 0
 
@@ -60,14 +58,14 @@ def test_max_count_gets_with_no_nodes(get_nodes):
         'dummy_hash2': {'name': 'dummy_name2', 'source': 'dummy_source2', 'call_count': 5}
     })
 def test_max_count_gets_with_nodes(get_nodes):
-    model = BaseModel(None)
+    model = BaseModel()
 
     assert model.max_count() == 5
 
 
 @patch('model.base.Persistence')
 def test_set_range_calls_persistence_with_right_params(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
 
     model.set_range('dummy_yellow', 'dummy_red')
 
@@ -75,45 +73,9 @@ def test_set_range_calls_persistence_with_right_params(persistence):
     persistence.return_value.update_colors.assert_called_with('dummy_yellow', 'dummy_red')
 
 
-def test_save_bcc_command_calls_configuration_with_right_params():
-    config = Mock()
-    model = BaseModel(config)
-
-    model.save_bcc_command('dummy_command')
-
-    config.update_command.assert_called_once()
-    config.update_command.assert_called_with('dummy_command')
-
-
-def test_save_layout_config_calls_configuration_with_right_params():
-    config = Mock()
-    model = BaseModel(config)
-
-    model.save_layout_config('dummy_animate', 'dummy_spacing')
-
-    config.update_layout.assert_called_once()
-    config.update_layout.assert_called_with('dummy_animate', 'dummy_spacing')
-
-
-def test_get_spacing_config_calls_configuration():
-    config = Mock()
-    model = BaseModel(config)
-    config.get_spacing.return_value = 'Dummy Value'
-
-    assert model.get_spacing_config() == 'Dummy Value'
-
-
-def test_get_animate_config_calls_configuration():
-    config = Mock()
-    config.get_animate.return_value = 'Dummy Value'
-    model = BaseModel(config)
-
-    assert model.get_animate_config() == 'Dummy Value'
-
-
 @patch('model.base.Persistence')
 def test_init_colors(persistence):
-    model = BaseModel(None)
+    model = BaseModel()
     model.max_count = Mock(return_value=8)
 
     model.init_colors()

@@ -49,7 +49,6 @@ def start_trace(app, view_model, to_trace):
 def disable_interface_on_trace(app):
     @app.callback([Output('static-tab', 'disabled'),
         Output('utilities-tab', 'disabled'),
-        Output('configure-tab', 'disabled'),
         Output('add-app-button', 'disabled'),
         Output('remove-app-button', 'disabled'),
         Output('manage-functions-button', 'disabled'),
@@ -57,7 +56,7 @@ def disable_interface_on_trace(app):
         [Input('timer', 'disabled')])
     def switch_disables(timer_off):
         trace_on = not timer_off
-        return trace_on, trace_on, trace_on, trace_on, trace_on, trace_on, RealtimeTab.config_path_swtich(trace_on)
+        return trace_on, trace_on, trace_on, trace_on, trace_on, RealtimeTab.config_path_swtich(trace_on)
 
 
 # Add or remove application to trace

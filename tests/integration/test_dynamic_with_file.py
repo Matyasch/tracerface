@@ -4,7 +4,6 @@ import time
 
 from pytest import fixture
 
-from persistence.configuration import Configuration
 from tests.integration.asserts import assert_results
 from viewmodel.viewmodel import ViewModel
 
@@ -28,8 +27,7 @@ def test_dynamic_model_with_config_file(tmp_path, config):
     test_config_file = tmp_path.joinpath('test_config_file')
     test_config_file.write_text(test_config_file_content)
 
-    configuration = Configuration()
-    viewmodel = ViewModel(configuration)
+    viewmodel = ViewModel()
 
     viewmodel.trace_with_config_file(str(test_config_file)) # start monitoring
     time.sleep(3) # BCC trace needs a bit of time to setup

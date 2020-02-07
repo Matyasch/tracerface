@@ -4,7 +4,6 @@ import time
 
 from pytest import fixture
 
-from persistence.configuration import Configuration
 from tests.integration.asserts import assert_results
 from viewmodel.viewmodel import ViewModel
 
@@ -23,8 +22,7 @@ def test_dynamic_model_with_trace_dict(functions_to_trace):
     to_trace = {}
     to_trace[str(test_application_path)] = functions_to_trace
 
-    configuration = Configuration()
-    viewmodel = ViewModel(configuration)
+    viewmodel = ViewModel()
 
     viewmodel.trace_with_ui_elements(to_trace) # start monitoring
     time.sleep(3) # BCC trace needs a bit of time to setup

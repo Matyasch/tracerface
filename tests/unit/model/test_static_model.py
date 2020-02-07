@@ -5,10 +5,8 @@ from model.utils import Graph
 
 
 def test_empty_model():
-    config = mock.Mock()
-    model = StaticModel(config)
+    model = StaticModel()
 
-    assert model._configuration is config
     assert model.get_edges() == {}
     assert model.get_nodes() == {}
 
@@ -17,7 +15,7 @@ def test_empty_model():
 @mock.patch('model.static.parse_stack', return_value=Graph(nodes='dummy_nodes', edges='dummy_edges'))
 @mock.patch('model.base.Persistence')
 def test_load_text(persistence, parse_stack, text_to_stacks):
-    model = StaticModel(None)
+    model = StaticModel()
 
     model.load_text('dummy text')
 
