@@ -1,4 +1,5 @@
 import unittest.mock as mock
+from pathlib import Path
 
 import pexpect
 
@@ -25,7 +26,7 @@ def test_run_command_without_thread_enabled(spawn):
     model._run_command('dummy_command')
 
     spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None)
+    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
     spawn.return_value.close.assert_called_once()
 
 
@@ -41,7 +42,7 @@ def test_run_command_with_thread_enabled(spawn):
     model._run_command('dummy_command')
 
     spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None)
+    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
     spawn.return_value.close.assert_called_once()
     model._process_output.assert_called_once()
     model._process_output.assert_called_with(spawn.return_value, [])
@@ -56,7 +57,7 @@ def test_run_command_EOF_exception(spawn):
     model._run_command('dummy_command')
 
     spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None)
+    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
     model._process_output.assert_called_once()
     model._process_output.assert_called_with(spawn.return_value, [])
     assert not model._thread_enabled
@@ -71,7 +72,7 @@ def test_run_command_ExceptionPexpect_exception(spawn):
     model._run_command('dummy_command')
 
     spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None)
+    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
     model._process_output.assert_called_once()
     model._process_output.assert_called_with(spawn.return_value, [])
     assert not model._thread_enabled
@@ -88,7 +89,7 @@ def test_process_output_inside_stack():
     child.expect.assert_called_once()
     child.expect.assert_called_with('\n', timeout=1)
     stack.append.assert_called_once()
-    stack.append.assert_called_with(child.before.decode())
+    stack.append.assert_called_with(child.before)
 
 
 @mock.patch('model.dynamic.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
@@ -97,7 +98,7 @@ def test_process_output_inside_stack():
 def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
     model = DynamicModel(None)
     child = mock.Mock()
-    child.before.decode.return_value = '\r'
+    child.before = '\r'
     stack = mock.Mock()
 
     model._process_output(child, stack)
@@ -194,7 +195,7 @@ def test_start_trace(thread):
     assert model._process_error == None
     assert model._thread_enabled
     thread.assert_called_once()
-    thread.assert_called_with(target=model._run_command, args=["dummy_command -UK 'dummy' 'functions'"])
+    thread.assert_called_with(target=model._run_command, args=["{}/env/bcc_trace.py -UK 'dummy' 'functions'".format(str(Path.cwd()))])
     thread.return_value.start.assert_called_once()
 
 

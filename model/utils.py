@@ -11,7 +11,7 @@ import yaml
 
 
 # Regex patterns to match in bcc trace output
-FUNCTION_PATTERN = compile(r'^\s+(.+)\+.*\s\[(.+)\]')
+FUNCTION_PATTERN = compile(r'^\s+b\'(.+)\+.*\s\[(.+)\]')
 PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
 OUTPUT_START = compile(r'^PID\s+TID\s+COMM\s+FUNC')
 
@@ -110,7 +110,7 @@ def parse_stack(stack):
     def get_params(header):
         params = PARAMS_PATTERN.match(header)
         if params:
-            return [param for param in params.group(1).rstrip('\r').split(' ') if param != '']
+            return [param.lstrip('b').strip("'") for param in params.group(1).rstrip('\r').split(' ') if param != '']
         return None
 
     if not stack:

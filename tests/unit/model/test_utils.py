@@ -93,9 +93,9 @@ def test_parse_stack_returns_empty_graph_for_stack_with_no_calls():
 
 def test_parse_stack_returns_nodes_for_stack_with_one_call():
     stack = [
-        '19059  19059  dummy_source1 func1        ',
-        '        -14',
-        '        func1+0x0 [dummy_source1]',
+        "19059  19059  dummy_source1 func1        ",
+        "       -14",
+        "       b'func1+0x0 [dummy_source1]'"
     ]
 
     result = utils.parse_stack(stack)
@@ -105,12 +105,12 @@ def test_parse_stack_returns_nodes_for_stack_with_one_call():
 
 def test_parse_stack_returns_nodes_for_stack_with_no_params():
     stack = [
-        '19059  19059  dummy_source1 func1        ',
-        '        -14',
-        '        func1+0x0 [dummy_source1]',
-        '        func2+0x26 [dummy_source1]',
-        '        func3+0x17 [dummy_source2]',
-        '        [unknown]'
+        "19059  19059  dummy_source1 func1        ",
+        "        -14",
+        "        b'func1+0x0 [dummy_source1]'",
+        "        b'func2+0x26 [dummy_source1]'",
+        "        b'func3+0x17 [dummy_source2]'",
+        "        b'[unknown]'"
     ]
 
     result = utils.parse_stack(stack)
@@ -129,11 +129,11 @@ def test_parse_stack_returns_nodes_for_stack_with_no_params():
 
 def test_parse_stack_returns_nodes_for_stack_with_params():
     stack = [
-        '19059  19059  dummy_source1 func1        param1 param2',
-        '        -14',
-        '        func1+0x0 [dummy_source1]',
-        '        func2+0x26 [dummy_source1]',
-        '        func3+0x17 [dummy_source2]',
+        "19059  19059  dummy_source1 func1        b'param1' b'param2'",
+        "        -14",
+        "        b'func1+0x0 [dummy_source1]'",
+        "        b'func2+0x26 [dummy_source1]'",
+        "        b'func3+0x17 [dummy_source2]'",
     ]
 
     result = utils.parse_stack(stack)
@@ -152,13 +152,13 @@ def test_parse_stack_returns_nodes_for_stack_with_params():
 
 def test_parse_stack_returns_nodes_for_stack_with_header():
     stack = [
-        'PID    TID    COMM         FUNC             ',
-        '19059  19059  dummy_source1 func1        ',
-        '        -14',
-        '        func1+0x0 [dummy_source1]',
-        '        func2+0x26 [dummy_source1]',
-        '        func3+0x17 [dummy_source2]',
-        '        [unknown]'
+        "PID    TID    COMM         FUNC             ",
+        "19059  19059  dummy_source1 func1        ",
+        "        -14",
+        "        b'func1+0x0 [dummy_source1]'",
+        "        b'func2+0x26 [dummy_source1]'",
+        "        b'func3+0x17 [dummy_source2]'",
+        "        b'[unknown]'"
     ]
 
     result = utils.parse_stack(stack)

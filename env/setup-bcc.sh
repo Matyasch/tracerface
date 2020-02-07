@@ -17,6 +17,7 @@ function check_bcc_available() {
 # Download trace.py from BCC repo because that is the only script we need
 function download_trace_script() {
     wget -q "https://raw.githubusercontent.com/iovisor/bcc/master/tools/trace.py" -O "$ENV_DIR/bcc_trace.py"
+    chmod +x "$ENV_DIR/bcc_trace.py"
 }
 
 check_bcc_available

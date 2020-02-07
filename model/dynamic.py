@@ -1,4 +1,5 @@
 from threading import Thread
+from pathlib import Path
 
 import pexpect
 
@@ -23,8 +24,7 @@ class DynamicModel(BaseModel):
     def _process_output(self, child, stack):
         try:
             child.expect('\n', timeout=1)
-            raw = child.before
-            call = raw.decode("utf-8")
+            call = child.before
             if call == '\r':
                 graph = parse_stack(stack)
                 self._persistence.load_edges(graph.edges)
@@ -39,7 +39,7 @@ class DynamicModel(BaseModel):
     # Start bcc trace and parse its output until it is stopped
     def _run_command(self, cmd):
         try:
-            child = pexpect.spawn(cmd, timeout=None)
+            child = pexpect.spawn(cmd, timeout=None, encoding='utf-8')
             stack = []
             while self._thread_enabled:
                 self._process_output(child, stack)
@@ -73,7 +73,7 @@ class DynamicModel(BaseModel):
         self._process_error = None
         self._thread_enabled = True
         self._persistence.clear()
-        cmd = [self._configuration.get_command(), '-UK'] + ["'{}'".format(function) for function in functions]
+        cmd = ['{}/env/bcc_trace.py'.format(str(Path.cwd())), '-UK'] + ["'{}'".format(function) for function in functions]
         thread = Thread(target=self._run_command, args=[' '.join(cmd)])
         thread.start()
 
