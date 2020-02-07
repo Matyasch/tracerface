@@ -12,17 +12,10 @@ class ConfigureTab(dbc.Tab):
     def _content(self):
         return dbc.FormGroup(
             children=[
-                self._command_settings_group(),
                 self._graph_settings_group(),
                 self._save_changes_group()
             ],
             style=tab_style())
-
-    def _command_settings_group(self):
-        return dbc.FormGroup([
-            dbc.Label('Command for bcc'),
-            dbc.Input(id='bcc-command', type='text', value='trace-bpfcc', placeholder='command')
-        ])
 
     def _graph_settings_group(self):
         return dbc.FormGroup([

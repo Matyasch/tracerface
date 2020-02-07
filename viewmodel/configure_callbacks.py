@@ -21,18 +21,3 @@ def save_graph_layout_config(app, view_model):
             animate = len(animate_switch) == 1
             view_model.save_layout_config(animate, spacing)
         return Graph.layout(spacing=view_model.get_spacing_config(), animate=view_model.get_animate_config())
-
-
-# Save command specified to run bcc trace with
-def save_bcc_command_config(app, view_model):
-    @app.callback(Output('save-config-notification', 'children'),
-        [Input('save-config-button', 'n_clicks')],
-        [State('bcc-command', 'value')])
-    def save_clicked(save_btn, bcc_command):
-        if save_btn:
-            if bcc_command:
-                view_model.save_bcc_command(bcc_command)
-                return alerts.save_config_success_alert()
-            else:
-                return alerts.empty_command_config_alert()
-        raise PreventUpdate
