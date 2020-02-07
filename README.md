@@ -7,7 +7,7 @@ Install ```python3-bcc``` package and clone this repo.
 
 ## Usage
 
-Run ```run.sh``` with superuser privileges. The privileges are needed for bcc trace to access the kernel, the application runs without them too. Use the ```--help``` argument for more information.
+Run ```run.sh``` with superuser privileges. The privileges are needed for bcc trace to access the kernel. Use the ```--help``` argument for more information.
 
 For tests, run the ```run-tests.sh``` wrapper script. For integration tests too you have to run it with superuser privileges for the previous reasons.
 
@@ -21,14 +21,14 @@ For tests, run the ```run-tests.sh``` wrapper script. For integration tests too 
 
 ### **Realtime tracing with config file**
 
-If you think using the UI takes too much time, you can load the applications, functions and parameters from a yaml file instead with the following format:
+If you think using the UI takes too much time, you can load the applications, functions and parameters from a yaml file instead using the following format:
 
 ```yaml
-app1:  # an application
-  - func1  # a function we would like to trace
-  - func2:
-    - ’%s’  # list of parameters in order
-    - ’%d’  # starting from the first one
+app1:  # application
+  - func1  # function we would like to trace
+  - func2: # function with parameters
+    - ’%s’  # list of parameters in order starting from the first one
+    - ’%d’
 app2:  # another app
   - func3
 ```
