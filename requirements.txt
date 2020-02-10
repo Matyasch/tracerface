@@ -4,4 +4,3 @@ dash-cytoscape
 dash-bootstrap-components
 dash-daq
 pyyaml
-pexpect
