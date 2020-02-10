@@ -1,64 +1,64 @@
 PID    TID    COMM         FUNC             -
 24622  24622  test_applicatio func2            3
-        -14
-        b'func2+0x0 [test_application]''
-        b'func6+0xe [test_application]''
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func2+0x0 [test_application]''
+b'func6+0xe [test_application]''
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func3
-        -14
-        b'func3+0x0 [test_application]''
-        b'func6+0xe [test_application]''
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func3+0x0 [test_application]''
+b'func6+0xe [test_application]''
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func3
-        -14
-        b'func3+0x0 [test_application]'
-        b'func6+0xe [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func3+0x0 [test_application]'
+b'func6+0xe [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func3
-        -14
-        b'func3+0x0 [test_application]'
-        b'func6+0xe [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func3+0x0 [test_application]'
+b'func6+0xe [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func3
-        -14
-        b'func3+0x0 [test_application]'
-        b'func6+0xe [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func3+0x0 [test_application]'
+b'func6+0xe [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func3
-        -14
-        b'func3+0x0 [test_application]'
-        b'func6+0xe [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func3+0x0 [test_application]'
+b'func6+0xe [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func1            param1 param2
-        -14
-        b'func1+0x0 [test_application]'
-        b'func6+0x18 [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func1+0x0 [test_application]'
+b'func6+0x18 [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'
 
 24622  24622  test_applicatio func1            param3 param4
-        -14
-        b'func1+0x0 [test_application]'
-        b'func6+0x18 [test_application]'
-        b'main+0x19 [test_application]'
-        b'__libc_start_main+0xe7 [libc-2.27.so]'
-        b'[unknown]'
+-14
+b'func1+0x0 [test_application]'
+b'func6+0x18 [test_application]'
+b'main+0x19 [test_application]'
+b'__libc_start_main+0xe7 [libc-2.27.so]'
+b'[unknown]'

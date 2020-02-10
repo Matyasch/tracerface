@@ -1,7 +1,5 @@
+from queue import Empty
 import unittest.mock as mock
-from pathlib import Path
-
-import pexpect
 
 from model.dynamic import DynamicModel
 import model.utils as utils
@@ -17,117 +15,100 @@ def test_empty_model():
     assert model.get_nodes() == {}
 
 
-@mock.patch('model.dynamic.pexpect.spawn')
-def test_run_command_without_thread_enabled(spawn):
+def test_monitor_tracing_without_thread_enabled_with_process_alive():
     model = DynamicModel()
+    queue = mock.Mock()
+    process = mock.Mock()
+    process.is_alive = mock.Mock(return_value=True)
 
-    model._run_command('dummy_command')
+    model.monitor_tracing(queue, process)
 
-    spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
-    spawn.return_value.close.assert_called_once()
+    process.is_alive.assert_called()
+    process.terminate.assert_called()
+    assert not queue.get_nowait.called
 
 
-@mock.patch('model.dynamic.pexpect.spawn')
-def test_run_command_with_thread_enabled(spawn):
+def test_monitor_tracing_without_thread_enabled_without_process_alive():
+    model = DynamicModel()
+    queue = mock.Mock()
+    process = mock.Mock()
+    process.is_alive = mock.Mock(return_value=False)
+
+    model.monitor_tracing(queue, process)
+
+    process.is_alive.assert_called()
+    assert not process.terminate.called
+    assert not queue.get_nowait.called
+
+
+def test_monitor_tracing_with_thread_enabled_without_process_alive():
+    model = DynamicModel()
+    model._thread_enabled = True
+    queue = mock.Mock()
+    process = mock.Mock()
+    process.is_alive = mock.Mock(return_value=False)
+
+    model.monitor_tracing(queue, process)
+
+    assert model._thread_error == 'Tracing stopped unexpectedly'
+
+
+@mock.patch('model.base.Persistence')
+@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
+def test_monitor_tracing_with_thread_enabled_with_process_alive_at_stack_end(parse_stack, persistence):
     def side_effect(*argv):
         model._thread_enabled = False
+        return True
 
     model = DynamicModel()
-    model._process_output = mock.Mock(side_effect=side_effect)
     model._thread_enabled = True
+    queue = mock.Mock()
+    queue.get_nowait.return_value = utils.STACK_END_PATTERN
+    process = mock.Mock()
+    process.is_alive = mock.Mock(side_effect=side_effect)
 
-    model._run_command('dummy_command')
+    model.monitor_tracing(queue, process)
 
-    spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
-    spawn.return_value.close.assert_called_once()
-    model._process_output.assert_called_once()
-    model._process_output.assert_called_with(spawn.return_value, [])
-
-
-@mock.patch('model.dynamic.pexpect.spawn')
-def test_run_command_EOF_exception(spawn):
-    model = DynamicModel()
-    model._process_output = mock.Mock(side_effect=pexpect.EOF('Dummy Error'))
-    model._thread_enabled = True
-
-    model._run_command('dummy_command')
-
-    spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
-    model._process_output.assert_called_once()
-    model._process_output.assert_called_with(spawn.return_value, [])
-    assert not model._thread_enabled
-
-
-@mock.patch('model.dynamic.pexpect.spawn')
-def test_run_command_ExceptionPexpect_exception(spawn):
-    model = DynamicModel()
-    model._process_output = mock.Mock(side_effect=pexpect.exceptions.ExceptionPexpect('Dummy Error'))
-    model._thread_enabled = True
-
-    model._run_command('dummy_command')
-
-    spawn.assert_called_once()
-    spawn.assert_called_with('dummy_command', timeout=None, encoding='utf-8')
-    model._process_output.assert_called_once()
-    model._process_output.assert_called_with(spawn.return_value, [])
-    assert not model._thread_enabled
-    assert model._thread_error == 'Dummy Error'
-
-
-def test_process_output_inside_stack():
-    model = DynamicModel()
-    child = mock.Mock()
-    stack = mock.Mock()
-
-    model._process_output(child, stack)
-
-    child.expect.assert_called_once()
-    child.expect.assert_called_with('\n', timeout=1)
-    stack.append.assert_called_once()
-    stack.append.assert_called_with(child.before)
-
-
-@mock.patch('model.dynamic.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
-@mock.patch('model.dynamic.pexpect')
-@mock.patch('model.base.Persistence')
-def test_process_output_end_of_stack(persistence, pexpect, parse_stack):
-    model = DynamicModel()
-    child = mock.Mock()
-    child.before = '\r'
-    stack = mock.Mock()
-
-    model._process_output(child, stack)
-
-    child.expect.assert_called_once()
-    child.expect.assert_called_with('\n', timeout=1)
-    parse_stack.assert_called_once()
-    parse_stack.assert_called_with(stack)
-    persistence.return_value.load_edges.assert_called_once()
     persistence.return_value.load_edges.assert_called_with('dummy_edges')
-    persistence.return_value.load_nodes.assert_called_once()
-    persistence.return_value.load_nodes.assert_called_with('dummy_nodes')
-    stack.clear.assert_called_once()
 
 
 @mock.patch('model.base.Persistence')
-def test_process_output_does_noting_on_timeout(persistence):
+@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
+def test_monitor_tracing_with_thread_enabled_with_process_alive_at_middle_of_stack(parse_stack, persistence):
+    def side_effect(*argv):
+        model._thread_enabled = False
+        return True
+
     model = DynamicModel()
-    child = mock.Mock()
-    child.expect.side_effect = pexpect.TIMEOUT('Dummy Error')
-    stack = mock.Mock()
+    model._thread_enabled = True
+    queue = mock.Mock()
+    queue.get_nowait.return_value = 'dummy value'
+    process = mock.Mock()
+    process.is_alive = mock.Mock(side_effect=side_effect)
 
-    model._process_output(child, stack) #no exception raised
+    model.monitor_tracing(queue, process)
 
-    assert not child.before.called
     assert not persistence.return_value.load_edges.called
-    assert not persistence.return_value.load_nodes.called
-    assert not stack.append.called
 
 
-@mock.patch('model.dynamic.flatten_trace_dict', return_value='dummy_functions')
+def test_monitor_tracing_handles_empty_exception():
+    def side_effect(*argv):
+        model._thread_enabled = False
+        return True
+
+    model = DynamicModel()
+    model._thread_enabled = True
+    queue = mock.Mock()
+    queue.get_nowait.side_effect = Empty
+    process = mock.Mock()
+    process.is_alive = mock.Mock(side_effect=side_effect)
+
+    model.monitor_tracing(queue, process)
+
+    process.terminate.assert_called()
+
+
+@mock.patch('model.dynamic.utils.flatten_trace_dict', return_value='dummy_functions')
 def test_trace_dict_without_exception(flatten_trace_dict):
     model = DynamicModel()
     model.start_trace = mock.Mock()
@@ -140,7 +121,7 @@ def test_trace_dict_without_exception(flatten_trace_dict):
     model.start_trace.assert_called_with('dummy_functions')
 
 
-@mock.patch('model.dynamic.flatten_trace_dict', side_effect=utils.ProcessException('Dummy Error'))
+@mock.patch('model.dynamic.utils.flatten_trace_dict', side_effect=utils.ProcessException('Dummy Error'))
 def test_trace_dict_with_exception(flatten_trace_dict):
     model = DynamicModel()
     model.start_trace = mock.Mock()
@@ -152,7 +133,7 @@ def test_trace_dict_with_exception(flatten_trace_dict):
     assert model._process_error == 'Dummy Error'
 
 
-@mock.patch('model.dynamic.extract_config', return_value='dummy_functions')
+@mock.patch('model.dynamic.utils.extract_config', return_value='dummy_functions')
 def test_trace_yaml_without_exception(extract_config):
     model = DynamicModel()
     model.start_trace = mock.Mock()
@@ -165,7 +146,7 @@ def test_trace_yaml_without_exception(extract_config):
     model.start_trace.assert_called_with('dummy_functions')
 
 
-@mock.patch('model.dynamic.extract_config', side_effect=utils.ProcessException('Dummy Error'))
+@mock.patch('model.dynamic.utils.extract_config', side_effect=utils.ProcessException('Dummy Error'))
 def test_trace_yaml_with_exception(extract_config):
     model = DynamicModel()
     model.start_trace = mock.Mock()
@@ -178,7 +159,8 @@ def test_trace_yaml_with_exception(extract_config):
 
 
 @mock.patch('model.dynamic.Thread')
-def test_start_trace(thread):
+@mock.patch('model.dynamic.TraceProcess')
+def test_start_trace(process, thread):
     model = DynamicModel()
 
     model.start_trace(['dummy', 'functions'])
@@ -187,8 +169,9 @@ def test_start_trace(thread):
     assert model._process_error == None
     assert model._thread_enabled
     thread.assert_called_once()
-    thread.assert_called_with(target=model._run_command, args=["{}/env/bcc_trace.py -UK 'dummy' 'functions'".format(str(Path.cwd()))])
     thread.return_value.start.assert_called_once()
+    process.assert_called_once()
+    process.return_value.start.assert_called_once()
 
 
 @mock.patch('model.base.Persistence')

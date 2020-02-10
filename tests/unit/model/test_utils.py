@@ -93,9 +93,9 @@ def test_parse_stack_returns_empty_graph_for_stack_with_no_calls():
 
 def test_parse_stack_returns_nodes_for_stack_with_one_call():
     stack = [
-        "19059  19059  dummy_source1 func1        ",
-        "       -14",
-        "       b'func1+0x0 [dummy_source1]'"
+        "19059  19059  dummy_source1 func1",
+        "-14",
+        "b'func1+0x0 [dummy_source1]'"
     ]
 
     result = utils.parse_stack(stack)
@@ -105,12 +105,12 @@ def test_parse_stack_returns_nodes_for_stack_with_one_call():
 
 def test_parse_stack_returns_nodes_for_stack_with_no_params():
     stack = [
-        "19059  19059  dummy_source1 func1        ",
-        "        -14",
-        "        b'func1+0x0 [dummy_source1]'",
-        "        b'func2+0x26 [dummy_source1]'",
-        "        b'func3+0x17 [dummy_source2]'",
-        "        b'[unknown]'"
+        "19059  19059  dummy_source1 func1",
+        "-14",
+        "b'func1+0x0 [dummy_source1]'",
+        "b'func2+0x26 [dummy_source1]'",
+        "b'func3+0x17 [dummy_source2]'",
+        "b'[unknown]'"
     ]
 
     result = utils.parse_stack(stack)
@@ -130,10 +130,10 @@ def test_parse_stack_returns_nodes_for_stack_with_no_params():
 def test_parse_stack_returns_nodes_for_stack_with_params():
     stack = [
         "19059  19059  dummy_source1 func1        b'param1' b'param2'",
-        "        -14",
-        "        b'func1+0x0 [dummy_source1]'",
-        "        b'func2+0x26 [dummy_source1]'",
-        "        b'func3+0x17 [dummy_source2]'",
+        "-14",
+        "b'func1+0x0 [dummy_source1]'",
+        "b'func2+0x26 [dummy_source1]'",
+        "b'func3+0x17 [dummy_source2]'",
     ]
 
     result = utils.parse_stack(stack)
@@ -155,10 +155,10 @@ def test_parse_stack_returns_nodes_for_stack_with_header():
         "PID    TID    COMM         FUNC             ",
         "19059  19059  dummy_source1 func1        ",
         "        -14",
-        "        b'func1+0x0 [dummy_source1]'",
-        "        b'func2+0x26 [dummy_source1]'",
-        "        b'func3+0x17 [dummy_source2]'",
-        "        b'[unknown]'"
+        "b'func1+0x0 [dummy_source1]'",
+        "b'func2+0x26 [dummy_source1]'",
+        "b'func3+0x17 [dummy_source2]'",
+        "b'[unknown]'"
     ]
 
     result = utils.parse_stack(stack)
@@ -173,6 +173,17 @@ def test_parse_stack_returns_nodes_for_stack_with_header():
         {'call_count': 1, 'param': []},
         {'call_count': 0, 'param': []},
     ]
+
+
+def test_parse_stack_returns_nodes_for_stack_with_header_and_nothing_else():
+    stack = [
+        "PID    TID    COMM         FUNC             ",
+    ]
+
+    result = utils.parse_stack(stack)
+
+    assert result.nodes == {}
+    assert result.edges == {}
 
 
 def test_text_to_stacks_returns_empty_stack_for_empty_string():

@@ -11,9 +11,10 @@ import yaml
 
 
 # Regex patterns to match in bcc trace output
-FUNCTION_PATTERN = compile(r'^\s+b\'(.+)\+.*\s\[(.+)\]')
+FUNCTION_PATTERN = compile(r'^b\'(.+)\+.*\s\[(.+)\]')
 PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
 OUTPUT_START = compile(r'^PID\s+TID\s+COMM\s+FUNC')
+STACK_END_PATTERN = '---'
 
 
 # Struct to contains a call-stack from bcc trace output
@@ -116,16 +117,20 @@ def parse_stack(stack):
     if not stack:
         return Graph(nodes={}, edges={})
 
-    nodes = {}
-    edges = {}
 
     if OUTPUT_START.match(stack[0]):
         stack.pop(0)
+    if not stack:
+        return Graph(nodes={}, edges={})
+
     params = get_params(stack.pop(0))
 
+    nodes = {}
+    edges = {}
     called_hash = None
     traced = True
-    for call in stack[1:]:
+    while stack:
+        call = stack.pop(0)
         caller = FUNCTION_PATTERN.match(call)
         if caller:
             caller_node = create_node(caller)
