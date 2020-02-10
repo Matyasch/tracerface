@@ -8,7 +8,7 @@ VIRTUALENV_DIR="$ROOT_DIR/bin-python"
 
 # Prepare environment
 echo "Preparing environment"
-source "$ROOT_DIR/env/setup-bcc.sh"
+source "$ROOT_DIR/bcc-env.inc.sh"
 
 python3 -m venv "$VIRTUALENV_DIR"
 source "$ROOT_DIR/bin-python/bin/activate"

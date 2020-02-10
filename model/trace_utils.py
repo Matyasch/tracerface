@@ -4,7 +4,7 @@ from multiprocessing import Process
 from threading import Thread, Lock
 from contextlib import redirect_stdout
 
-from env.bcc_trace import Tool
+from model.bcc_trace import Tool
 from model.utils import STACK_END_PATTERN
 
 

@@ -1,4 +1,3 @@
 *__pycache__*
 .vscode/
 bin-python/*
-bcc_trace.py
