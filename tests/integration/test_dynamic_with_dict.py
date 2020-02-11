@@ -25,7 +25,7 @@ def test_dynamic_model_with_trace_dict(functions_to_trace):
     viewmodel = ViewModel()
 
     viewmodel.trace_with_ui_elements(to_trace) # start monitoring
-    time.sleep(3) # BCC trace needs a bit of time to setup
+    time.sleep(5) # BCC trace needs a bit of time to setup
     subprocess.run(str(test_application_path)) # run monitored application
     viewmodel.trace_btn_turned_off() # stop monitoring
 
