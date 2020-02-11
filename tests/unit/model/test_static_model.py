@@ -1,7 +1,7 @@
 import unittest.mock as mock
 
 from model.static import StaticModel
-from model.utils import Graph
+from model.utils import Stack
 
 
 def test_empty_model():
@@ -12,7 +12,7 @@ def test_empty_model():
 
 
 @mock.patch('model.static.text_to_stacks', return_value=['dummy', 'stack'])
-@mock.patch('model.static.parse_stack', return_value=Graph(nodes='dummy_nodes', edges='dummy_edges'))
+@mock.patch('model.static.parse_stack', return_value=Stack(nodes='dummy_nodes', edges='dummy_edges'))
 @mock.patch('model.base.Persistence')
 def test_load_text(persistence, parse_stack, text_to_stacks):
     model = StaticModel()

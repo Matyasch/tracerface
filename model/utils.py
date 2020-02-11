@@ -18,7 +18,7 @@ STACK_END_PATTERN = '---'
 
 
 # Struct to contains a call-stack from bcc trace output
-Graph = namedtuple('Graph', 'nodes edges')
+Stack = namedtuple('Stack', 'nodes edges')
 
 
 # Special exception class to handle all exceptions
@@ -115,13 +115,13 @@ def parse_stack(stack):
         return None
 
     if not stack:
-        return Graph(nodes={}, edges={})
+        return Stack(nodes={}, edges={})
 
 
     if OUTPUT_START.match(stack[0]):
         stack.pop(0)
     if not stack:
-        return Graph(nodes={}, edges={})
+        return Stack(nodes={}, edges={})
 
     params = get_params(stack.pop(0))
 
@@ -141,7 +141,7 @@ def parse_stack(stack):
                 params = None
                 traced = False
             called_hash = caller_hash
-    return Graph(nodes=nodes, edges=edges)
+    return Stack(nodes=nodes, edges=edges)
 
 
 # Split raw text into list of stacks

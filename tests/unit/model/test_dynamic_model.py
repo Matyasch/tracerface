@@ -54,7 +54,7 @@ def test_monitor_tracing_with_thread_enabled_without_process_alive():
 
 
 @mock.patch('model.base.Persistence')
-@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
+@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Stack(nodes='dummy_nodes', edges='dummy_edges'))
 def test_monitor_tracing_with_thread_enabled_with_process_alive_at_stack_end(parse_stack, persistence):
     def side_effect(*argv):
         model._thread_enabled = False
@@ -73,7 +73,7 @@ def test_monitor_tracing_with_thread_enabled_with_process_alive_at_stack_end(par
 
 
 @mock.patch('model.base.Persistence')
-@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Graph(nodes='dummy_nodes', edges='dummy_edges'))
+@mock.patch('model.dynamic.utils.parse_stack', return_value=utils.Stack(nodes='dummy_nodes', edges='dummy_edges'))
 def test_monitor_tracing_with_thread_enabled_with_process_alive_at_middle_of_stack(parse_stack, persistence):
     def side_effect(*argv):
         model._thread_enabled = False

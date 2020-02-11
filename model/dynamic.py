@@ -34,7 +34,7 @@ class DynamicModel(BaseModel):
 
     # While tracing, consume items from the queue and process them
     def monitor_tracing(self, queue, process):
-        stack = []
+        calls = []
         while self._thread_enabled:
             # If process died unexpectedly, report error
             if not process.is_alive():
@@ -46,13 +46,13 @@ class DynamicModel(BaseModel):
                 # so we keep checking the loop condition.
                 output = queue.get_nowait()
                 if output == utils.STACK_END_PATTERN:
-                    graph = utils.parse_stack(stack)
-                    self._persistence.load_edges(graph.edges)
-                    self._persistence.load_nodes(graph.nodes)
+                    stack = utils.parse_stack(calls)
+                    self._persistence.load_edges(stack.edges)
+                    self._persistence.load_nodes(stack.nodes)
                     self.init_colors()
-                    stack.clear()
+                    calls.clear()
                 else:
-                    stack.append(output)
+                    calls.append(output)
             except Empty:
                 pass
         # If tracing was stopped by the user, terminate tracing process
