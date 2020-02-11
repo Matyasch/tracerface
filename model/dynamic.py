@@ -1,11 +1,18 @@
 from multiprocessing import Queue
+from operator import itemgetter
 from pathlib import Path
 from queue import Empty
 from threading import Thread
+import yaml
 
 from model.base import BaseModel
-import model.utils as utils
-from model.trace_utils import TraceProcess
+from model.trace_utils import TraceProcess, STACK_END_PATTERN
+
+
+# Special exception class to handle all exceptions
+# during processing functions to trace
+class ProcessException(Exception):
+    pass
 
 
 # Model for tracing realtime
@@ -19,17 +26,17 @@ class DynamicModel(BaseModel):
     # Start tracing with the functions given in a dict
     def trace_dict(self, dict_to_trace):
         try:
-            functions = utils.flatten_trace_dict(dict_to_trace)
+            functions = self.parse_args_from_dict(dict_to_trace)
             self.start_trace(functions)
-        except utils.ProcessException as e:
+        except ProcessException as e:
             self._process_error = str(e)
 
     # Start tracing with the functions given in a configuration file
     def trace_yaml(self, config_path):
         try:
-            functions = utils.extract_config(config_path)
+            functions = self.parse_args_from_file(config_path)
             self.start_trace(functions)
-        except utils.ProcessException as e:
+        except ProcessException as e:
             self._process_error = str(e)
 
     # While tracing, consume items from the queue and process them
@@ -45,8 +52,8 @@ class DynamicModel(BaseModel):
                 # tracing gets stopped but queue keeps getting items
                 # so we keep checking the loop condition.
                 output = queue.get_nowait()
-                if output == utils.STACK_END_PATTERN:
-                    stack = utils.parse_stack(calls)
+                if output == STACK_END_PATTERN:
+                    stack = self.parse_stack(calls)
                     self._persistence.load_edges(stack.edges)
                     self._persistence.load_nodes(stack.nodes)
                     self.init_colors()
@@ -91,3 +98,71 @@ class DynamicModel(BaseModel):
     # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled
+
+    # Convert dictionary of functions to trace into properly
+    # structured list of args to be used by the trace tool
+    @staticmethod
+    def parse_args_from_dict(trace_dict):
+        def params_to_ordered_list_of_pairs(params):
+            param_list = [(param, params[param]) for param in params]
+            param_list.sort(key=itemgetter(0))
+            return param_list
+
+        trace_list = []
+        for app in trace_dict:
+            functions = trace_dict[app]
+            for function in functions:
+                func_formula = '{}:{}'.format(app, function)
+                params = trace_dict[app][function]
+                if params:
+                    param_list = params_to_ordered_list_of_pairs(params)
+                    func_formula = '{} "{}", {}'.format(
+                        func_formula,
+                        ' '.join([param[1] for param in param_list]),
+                        ', '.join([param[0] for param in param_list]))
+                trace_list.append(func_formula)
+
+        if not trace_list:
+            raise ProcessException('No functions to trace')
+        return trace_list
+
+    # Parse config file containing funtions to trace
+    @staticmethod
+    def parse_args_from_file(config_path):
+        try:
+            path = Path(config_path)
+        except TypeError:
+            raise ProcessException('Please provide a path to the configuration file')
+
+        try:
+            content = yaml.safe_load(path.read_text())
+        except yaml.scanner.ScannerError:
+            raise ProcessException('Config file at {} has to be YAML format'.format(str(config_path)))
+        except FileNotFoundError:
+            raise ProcessException('Could not find configuration file at {}'.format(str(config_path)))
+        except IsADirectoryError:
+            raise ProcessException('{} is a directory, not a file'.format(str(config_path)))
+        except Exception:
+            raise ProcessException('Unknown error happened while processing config file')
+
+        trace_list = []
+
+        try:
+            for app in content:
+                for func in content[app]:
+                    if isinstance(func, dict):
+                        params_specs = list(func.values())[0]
+                        func_formula = '{}:{} "{}", {}'.format(
+                            app,
+                            list(func.keys())[0],
+                            ' '.join(params_specs),
+                            ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))]))
+                    else:
+                        func_formula = '{}:{}'.format(app, func)
+                    trace_list.append(func_formula)
+        except TypeError:
+            raise ProcessException('Could not process configuration file')
+
+        if not trace_list:
+            raise ProcessException('No functions to trace')
+        return trace_list

@@ -1,7 +1,7 @@
 import unittest.mock as mock
 
 from model.static import StaticModel
-from model.utils import Stack
+from model.base import Stack
 
 
 def test_empty_model():
@@ -11,19 +11,12 @@ def test_empty_model():
     assert model.get_nodes() == {}
 
 
-@mock.patch('model.static.text_to_stacks', return_value=['dummy', 'stack'])
-@mock.patch('model.static.parse_stack', return_value=Stack(nodes='dummy_nodes', edges='dummy_edges'))
 @mock.patch('model.base.Persistence')
-def test_load_text(persistence, parse_stack, text_to_stacks):
+def test_load_text(persistence):
     model = StaticModel()
+    model.parse_stack = mock.Mock(return_value=Stack(nodes='dummy_nodes', edges='dummy_edges'))
 
-    model.load_text('dummy text')
-
-    text_to_stacks.assert_called_once()
-    text_to_stacks.assert_called_with('dummy text')
-
-    assert parse_stack.call_args_list == [mock.call('dummy'), mock.call('stack')]
-    assert parse_stack.call_count == 2
+    model.load_text('first\nstack\n\nsecond\nstack')
 
     assert persistence.return_value.load_edges.call_args == mock.call('dummy_edges')
     assert persistence.return_value.load_edges.call_count == 2

@@ -5,7 +5,9 @@ from threading import Thread, Lock
 from contextlib import redirect_stdout
 
 from model.bcc_trace import Tool
-from model.utils import STACK_END_PATTERN
+
+
+STACK_END_PATTERN = '---'
 
 
 # Special StringIO class with atomic read and

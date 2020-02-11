@@ -1,8 +1,21 @@
 import dash_bootstrap_components as dbc
 import dash_html_components as html
 
-from model.utils import format_specs
 from view.styles import element_style
+
+
+# Format specifiers and their labels to show for parameters
+FORMAT_SPECS = [
+    ('char', '%c'),
+    ('double/float', '%f'),
+    ('int', '%d'),
+    ('long', '%l'),
+    ('long double', '%lF'),
+    ('string/char *', '%s'),
+    ('short', '%hi'),
+    ('unsigned short', '%hi'),
+    ('void *', '%p'),
+]
 
 
 # Implementation of dialog window to manage an application
@@ -85,7 +98,7 @@ class ManageFunctionDialog(dbc.Modal):
                     id='param-type',
                     options=[{
                         "label": format_spec[0], "value": '{}:{}'.format(format_spec[0], format_spec[1])}
-                        for format_spec in format_specs()
+                            for format_spec in FORMAT_SPECS()
                     ])),
                 dbc.Col(dbc.Input(id='param-index', type='number', min=1)),
                 dbc.Col(
