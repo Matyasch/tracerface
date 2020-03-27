@@ -98,7 +98,7 @@ class ManageFunctionDialog(dbc.Modal):
                     id='param-type',
                     options=[{
                         "label": format_spec[0], "value": '{}:{}'.format(format_spec[0], format_spec[1])}
-                            for format_spec in FORMAT_SPECS()
+                            for format_spec in FORMAT_SPECS
                     ])),
                 dbc.Col(dbc.Input(id='param-index', type='number', min=1)),
                 dbc.Col(
