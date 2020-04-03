@@ -6,6 +6,7 @@ from threading import Thread
 import yaml
 
 from model.base import BaseModel
+from model.parse_stack import parse_stack
 from model.trace_utils import TraceProcess, STACK_END_PATTERN
 
 
@@ -53,7 +54,7 @@ class DynamicModel(BaseModel):
                 # so we keep checking the loop condition.
                 output = queue.get_nowait()
                 if output == STACK_END_PATTERN:
-                    stack = self.parse_stack(calls)
+                    stack = parse_stack(calls)
                     self._persistence.load_edges(stack.edges)
                     self._persistence.load_nodes(stack.nodes)
                     self.init_colors()

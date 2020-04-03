@@ -1,4 +1,5 @@
 from model.base import BaseModel
+from model.parse_stack import parse_stack
 
 
 # Model for graph creation with static text
@@ -11,7 +12,7 @@ class StaticModel(BaseModel):
         self._persistence.clear()
         stacks = [stack.split('\n') for stack in raw_text.split('\n\n')]
         for stack in stacks:
-            graph = self.parse_stack(stack)
+            graph = parse_stack(stack)
             self._persistence.load_edges(graph.edges)
             self._persistence.load_nodes(graph.nodes)
         self.init_colors()
