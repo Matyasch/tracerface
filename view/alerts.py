@@ -39,10 +39,6 @@ def function_already_added_alert():
 def func_add_success_alert(function):
     return SuccessAlert('{} added successfully'.format(function))
 
-#manage function alert
-def no_func_selected_alert():
-    return ErrorAlert('Please select a function first')
-
 #add parameter alerts
 def no_param_type_alert():
     return ErrorAlert('Please provide the type of the parameter')

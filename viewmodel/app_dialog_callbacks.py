@@ -40,6 +40,16 @@ def clear_dialog(app):
         return None
 
 
+# Disable function managagement buttons if no function is selected
+def disable_buttons(app):
+    output = [Output('manage-params-button', 'disabled'), Output('remove-func-button', 'disabled')]
+    input = [Input('functions-select', 'value')]
+    @app.callback(output, input)
+    def disable(function):
+        disabled = not function
+        return disabled, disabled
+
+
 # Open dialog window
 def open(app):
     @app.callback(Output('app-dialog', 'is_open'),
@@ -98,15 +108,3 @@ def remove_function(app, to_trace):
             if func in to_trace[app]:
                 del to_trace[app][func]
         return None
-
-
-# Show alert if we did not select function for removal
-def show_func_not_selected_alert(app):
-    @app.callback(Output('manage-func-notification', 'children'),
-        [Input('manage-params-button', 'n_clicks'),
-        Input('remove-func-button', 'n_clicks')],
-        [State('functions-select', 'value')])
-    def show_manage_funcs_alert(open_click, remove_click, function):
-        if (open_click or remove_click) and not function:
-            return alerts.no_func_selected_alert()
-        raise PreventUpdate

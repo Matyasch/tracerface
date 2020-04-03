@@ -22,7 +22,7 @@ class CallbackManager:
         app_dialog_callbacks.add_function(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.remove_function(app=app, to_trace=self.to_trace)
         app_dialog_callbacks.update_functions(app=app, to_trace=self.to_trace)
-        app_dialog_callbacks.show_func_not_selected_alert(app=app)
+        app_dialog_callbacks.disable_buttons(app=app)
 
         graph_callbacks.update_graph_elements(app=app, view_model=view_model)
         graph_callbacks.update_graph_style(app=app, view_model=view_model)
