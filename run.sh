@@ -42,7 +42,7 @@ done
 
 source "$ROOT_DIR/bcc-env.inc.sh"
 
-python3 -m venv "$VIRTUALENV_DIR"
+python3 -m virtualenv "$VIRTUALENV_DIR"
 source "$ROOT_DIR/bin-python/bin/activate"
 pip3 --disable-pip-version-check install --no-cache-dir --requirement requirements.txt > "$VIRTUALENV_DIR/pip-install.log"
 
