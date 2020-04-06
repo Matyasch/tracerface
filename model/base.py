@@ -2,12 +2,11 @@
 Parent class of the two types of models used.
 Provides basic functionality and persistence handling.
 '''
-from persistence.persistence import Persistence
 
 
 class BaseModel:
-    def __init__(self):
-        self._persistence = Persistence()
+    def __init__(self, persistence):
+        self._persistence = persistence
 
     # returns all nodes in a list
     def get_nodes(self):
@@ -41,4 +40,3 @@ class BaseModel:
         yellow = round(self.max_count()/3)
         red = round(self.max_count()*2/3)
         self._persistence.update_colors(yellow, red)
-

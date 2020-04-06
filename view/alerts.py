@@ -7,69 +7,50 @@ class BaseAlert(Alert):
     def __init__(self, message, color):
         super().__init__(message, color=color, duration=4000, dismissable=True)
 
+
+# Style for alerts singaling success
 class SuccessAlert(BaseAlert):
     def __init__(self, message):
         super().__init__(message=message, color='success')
 
+
+# Style for alerts singaling error
 class ErrorAlert(BaseAlert):
     def __init__(self, message):
         super().__init__(message=message, color='danger')
 
-#application add alerts
+
 def app_already_added_alert():
     return ErrorAlert('Application already added')
 
-def add_app_success_alert(app):
-    return SuccessAlert('{} added successfully'.format(app))
 
-def empty_app_name_alert():
-    return ErrorAlert('Please provide an application name')
+def add_success_alert(item):
+    return SuccessAlert('{} added successfully'.format(item))
 
-#manage app alerts
-def no_app_selected_alert():
-    return ErrorAlert('Please select an application first')
 
-#add function alerts
-def empty_function_name_alert():
-    return ErrorAlert('Please provide a function name')
+def app_not_found_alert(app, message):
+    return ErrorAlert('{} was not added due to the following error:\n{}'.format(app, message))
 
-def function_already_added_alert():
-    return ErrorAlert('Function already added to this application')
 
-def func_add_success_alert(function):
-    return SuccessAlert('{} added successfully'.format(function))
-
-#add parameter alerts
-def no_param_type_alert():
-    return ErrorAlert('Please provide the type of the parameter')
-
-def no_param_index_alert():
-    return ErrorAlert('Please provide the position of the parameter')
-
-def param_already_added_alert():
-    return ErrorAlert('Parameter already added to this position')
-
-def param_add_success_alert():
-    return SuccessAlert('Parameter successfully added')
-
-#manage parameter alerts:
-def no_param_selected_alert():
-    return ErrorAlert('Please select a parameter first')
-
-#trace alerts
+# Alert(s) for tracing
 def trace_error_alert(error):
-    return Alert([P('There was an error with tracing'), P(error)], color='danger', duration=6000, dismissable=True)
+    return Alert([P('There was an error with tracing'), P(error)],
+                 color='danger', duration=6000, dismissable=True)
 
-#load output alerts
+
+# Alert(s) for static output
 def load_output_success_alert():
     return SuccessAlert('Output loaded')
+
 
 def output_empty_alert():
     return ErrorAlert('Please provide the output of a BCC trace run')
 
-#configuration save alerts
+
+# Alert(s) for configuration
 def empty_command_config_alert():
     return ErrorAlert('Please provide a command')
+
 
 def save_config_success_alert():
     return SuccessAlert('Configuration saved')

@@ -18,19 +18,11 @@ class ProcessException(Exception):
 
 # Model for tracing realtime
 class DynamicModel(BaseModel):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, persistence):
+        super().__init__(persistence)
         self._thread_enabled = False
         self._thread_error = None
         self._process_error = None
-
-    # Start tracing with the functions given in a dict
-    def trace_dict(self, dict_to_trace):
-        try:
-            functions = self.parse_args_from_dict(dict_to_trace)
-            self.start_trace(functions)
-        except ProcessException as e:
-            self._process_error = str(e)
 
     # Start tracing with the functions given in a configuration file
     def trace_yaml(self, config_path):
@@ -99,33 +91,6 @@ class DynamicModel(BaseModel):
     # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled
-
-    # Convert dictionary of functions to trace into properly
-    # structured list of args to be used by the trace tool
-    @staticmethod
-    def parse_args_from_dict(trace_dict):
-        def params_to_ordered_list_of_pairs(params):
-            param_list = [(param, params[param]) for param in params]
-            param_list.sort(key=itemgetter(0))
-            return param_list
-
-        trace_list = []
-        for app in trace_dict:
-            functions = trace_dict[app]
-            for function in functions:
-                func_formula = '{}:{}'.format(app, function)
-                params = trace_dict[app][function]
-                if params:
-                    param_list = params_to_ordered_list_of_pairs(params)
-                    func_formula = '{} "{}", {}'.format(
-                        func_formula,
-                        ' '.join([param[1] for param in param_list]),
-                        ', '.join([param[0] for param in param_list]))
-                trace_list.append(func_formula)
-
-        if not trace_list:
-            raise ProcessException('No functions to trace')
-        return trace_list
 
     # Parse config file containing funtions to trace
     @staticmethod

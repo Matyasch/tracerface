@@ -1,12 +1,15 @@
 from model.base import BaseModel
 from model.dynamic import DynamicModel
 from model.static import StaticModel
+from persistence.persistence import Persistence
+from viewmodel.trace_setup import Setup
 
 
 # Transforms data into format usable by the layout
 class ViewModel:
-    def __init__(self):
-        self._model = BaseModel()
+    def __init__(self, setup):
+        self._model = BaseModel(Persistence())
+        self._setup = setup
 
     # Return list of nodes in a format usable to the view
     def get_nodes(self):
@@ -62,17 +65,18 @@ class ViewModel:
 
     # Event for static output submit button clicked
     def output_submit_btn_clicked(self, text):
-        self._model = StaticModel()
+        self._model = StaticModel(Persistence())
         self._model.load_text(text)
 
     # Event for starting trace with functions given in dictionary
-    def trace_with_ui_elements(self, trace_dict):
-        self._model = DynamicModel()
-        self._model.trace_dict(trace_dict)
+    def trace_with_ui_elements(self):
+        self._model = DynamicModel(Persistence())
+        arguments = self._setup.generate_bcc_args()
+        self._model.start_trace(arguments)
 
     # Event for starting trace with functions given in config file
     def trace_with_config_file(self, config_path):
-        self._model = DynamicModel()
+        self._model = DynamicModel(Persistence())
         self._model.trace_yaml(config_path)
 
     # Event for tracing stopped
@@ -94,3 +98,57 @@ class ViewModel:
     # Return status of tracing
     def trace_active(self):
         return self._model.trace_active()
+
+    # Returns a dict of pairs of functions name and False
+    def add_app(self, app):
+        if app:
+            self._setup.initialize_app(app)
+
+    # Remove application from getting traced
+    def remove_app(self, app):
+        if app:
+            self._setup.remove_app(app)
+
+    # Returns apps currently saved in model
+    def get_apps(self):
+        return self._setup.get_apps()
+
+    # Returns functions which are set to be traced
+    def get_traced_functions_for_app(self, app):
+        if not app:
+            return []
+        app_setup = self._setup.get_setup_of_app(app)
+        return [func for func in app_setup if app_setup[func]['traced']]
+
+    # Returns functions which are not set to be traced
+    def get_not_traced_functions_for_app(self, app):
+        if not app:
+            return []
+        app_setup = self._setup.get_setup_of_app(app)
+        return [func for func in app_setup if not app_setup[func]['traced']]
+
+    # Sets up a function to be traced
+    def add_function(self, app, function):
+        if app and function:
+            self._setup.add_function(app, function)
+
+    # Removes a function from traced ones
+    def remove_function(self, app, function):
+        if app and function:
+            self._setup.remove_function(app, function)
+
+    # Returns the indexes where a parameter is set for tracing
+    def get_parameters(self, app, function):
+        if app and function:
+            return self._setup.get_parameters(app, function)
+        return {}
+
+    # Sets up a parameter to be traced
+    def add_parameter(self, app, function, index, format):
+        if app and function and index and format:
+            self._setup.add_parameter(app, function, index, format)
+
+    # Removes a parameter from traced ones
+    def remove_parameter(self, app, function, index):
+        if app and function and index:
+            self._setup.remove_parameter(app, function, int(index))

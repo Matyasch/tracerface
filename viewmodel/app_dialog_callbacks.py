@@ -10,101 +10,117 @@ import view.alerts as alerts
 
 
 # Update shown selection of functions for application
-def update_functions(app, to_trace):
-    @app.callback(Output('functions-select', 'options'),
-        [Input('add-function-button', 'n_clicks'),
+# and handling function adding and removal
+def update_functions_traced(app, view_model):
+    output = Output('functions-traced-select', 'options')
+    input = [
+        Input('add-function-button', 'n_clicks'),
         Input('remove-func-button', 'n_clicks'),
-        Input('applications-select', 'value')],
-        [State('function-name', 'value'),
-        State('functions-select', 'options'),
-        State('functions-select', 'value')])
-    def change_options(manage, remove, app, func_name, functions, selected_func):
+        Input('applications-select', 'value')
+    ]
+    state = [
+        State('functions-not-traced-select', 'value'),
+        State('functions-traced-select', 'value')
+    ]
+    @app.callback(output, input, state)
+    def update_options(add, remove, app, func_to_add, func_to_remove):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'add-function-button' and manage and func_name and func_name not in [function['label'] for function in functions]:
-            return functions + [{'label': func_name, 'value': func_name}]
-        elif id == 'remove-func-button' and remove and selected_func:
-            return [func for func in functions if func['value'] != selected_func]
-        elif id == 'applications-select' and app:
-            options = to_trace[app] or []
-            return [{"label": name, "value": name} for name in options]
-        raise PreventUpdate
+
+        if id == 'add-function-button':
+            view_model.add_function(app, func_to_add)
+        elif id == 'remove-func-button':
+            view_model.remove_function(app, func_to_remove)
+
+        functions = view_model.get_traced_functions_for_app(app)
+        return [{'label': function, 'value': function} for function in functions]
 
 
 # Clear values of input elements in dialog
-def clear_dialog(app):
-    @app.callback(Output('function-name', 'value'),
-        [Input('app-dialog', 'is_open')])
-    def clear_dialog_when_opened(open):
+def update_functions_not_traced(app, view_model):
+    output = Output('functions-not-traced-select', 'options')
+    input = [Input('functions-traced-select', 'options')]
+    state = [State('applications-select', 'value')]
+    @app.callback(output, input, state)
+    def update_options(change, app):
+        if app:
+            functions = view_model.get_not_traced_functions_for_app(app)
+            return [{'label': function, 'value': function} for function in functions]
+        return []
+
+
+# Clear values of input elements in dialog
+def clear_traced_dropdown_menu(app):
+    output = Output('functions-traced-select', 'value')
+    input = [
+        Input('remove-func-button', 'n_clicks'),
+        Input('app-dialog', 'is_open')
+    ]
+    @app.callback(output, input)
+    def clear_dialog_when_opened(remove, open):
+        return None
+
+
+# Clear values of input elements in dialog
+def clear_not_traced_dropdown_menu(app):
+    output = Output('functions-not-traced-select', 'value')
+    input = [
+        Input('add-function-button', 'n_clicks'),
+        Input('app-dialog', 'is_open')
+    ]
+    @app.callback(output, input)
+    def clear_dialog_when_opened(add, open):
         return None
 
 
 # Disable function managagement buttons if no function is selected
-def disable_buttons(app):
-    output = [Output('manage-params-button', 'disabled'), Output('remove-func-button', 'disabled')]
-    input = [Input('functions-select', 'value')]
+def disable_manage_function_buttons(app):
+    output = [
+        Output('manage-params-button', 'disabled'),
+        Output('remove-func-button', 'disabled')
+    ]
+    input = [Input('functions-traced-select', 'value')]
     @app.callback(output, input)
     def disable(function):
         disabled = not function
         return disabled, disabled
 
 
+# Disable function managagement buttons if no function is selected
+def disable_add_function_button(app):
+    output = Output('add-function-button', 'disabled')
+    input = [Input('functions-not-traced-select', 'value')]
+    @app.callback(output, input)
+    def disable(function):
+        return not function
+
+
 # Open dialog window
-def open(app):
-    @app.callback(Output('app-dialog', 'is_open'),
-        [Input('manage-functions-button', 'n_clicks'),
-        Input('close-app-dialog', 'n_clicks')],
-        [State('applications-select', 'value')])
-    def open_app_dialog(open, close, app):
+def open_or_close_dialog(app):
+    output = Output('app-dialog', 'is_open')
+    input = [
+        Input('manage-functions-button', 'n_clicks'),
+        Input('close-app-dialog', 'n_clicks')
+    ]
+    @app.callback(output, input)
+    def open_or_close(open, close):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'manage-functions-button' and open and app:
+        if id == 'manage-functions-button':
             return True
-        elif id == 'close-app-dialog' and close:
+        elif id == 'close-app-dialog':
             return False
         raise PreventUpdate
 
 
 # Update header of the dialog with the name of the application
 def update_header(app):
-    @app.callback(Output('app-dialog-header', 'children'),
-        [Input('applications-select', 'value')])
+    output = Output('app-dialog-header', 'children')
+    intput = [Input('applications-select', 'value')]
+    @app.callback(output, intput)
     def update_app_dialog_header(app):
         if app:
             return 'Manage functions of {}'.format(app)
         raise PreventUpdate
-
-
-# Add function to be traced for application
-def add_function(app, to_trace):
-    @app.callback(Output('add-func-notification', 'children'),
-        [Input('add-function-button', 'n_clicks')],
-        [State('function-name', 'value'),
-        State('functions-select', 'options'),
-        State('applications-select', 'value')])
-    def show_add_func_alert(add_click, name, functions, app):
-        if add_click:
-            if not name:
-                return alerts.empty_function_name_alert()
-            elif name in [function['label'] for function in functions]:
-                return alerts.function_already_added_alert()
-            else:
-                to_trace[app][name] = {}
-                return alerts.func_add_success_alert(name)
-        raise PreventUpdate
-
-
-# Remove function from traced ones for application
-def remove_function(app, to_trace):
-    @app.callback(Output('functions-select', 'value'),
-        [Input('remove-func-button', 'n_clicks'),
-        Input('app-dialog', 'is_open')],
-        [State('functions-select', 'value'),
-        State('applications-select', 'value')])
-    def add_or_remove_function(remove, open, func, app):
-        if remove and func:
-            if func in to_trace[app]:
-                del to_trace[app][func]
-        return None

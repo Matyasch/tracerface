@@ -3,6 +3,7 @@ from pathlib import Path
 from pytest import fixture
 
 from tests.integration.asserts import assert_results
+from viewmodel.trace_setup import Setup
 from viewmodel.viewmodel import ViewModel
 
 
@@ -13,7 +14,7 @@ def static_output():
 
 
 def test_static_model(static_output):
-    viewmodel = ViewModel()
+    viewmodel = ViewModel(Setup())
 
     viewmodel.output_submit_btn_clicked(static_output)
 

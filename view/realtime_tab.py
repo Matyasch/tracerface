@@ -1,5 +1,5 @@
 import dash_bootstrap_components as dbc
-from dash_core_components import Interval
+import dash_core_components as dcc
 import dash_daq as daq
 import dash_html_components as html
 
@@ -10,7 +10,8 @@ import view.styles as styles
 # Implementation of Realtime tab
 class RealtimeTab(dbc.Tab):
     def __init__(self):
-        super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab', children=self._content(), tab_style={"margin-left": "auto"})
+        super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab',
+                         children=self._content(), tab_style={"margin-left": "auto"})
 
     def _content(self):
         return html.Div(
@@ -48,17 +49,19 @@ class RealtimeTab(dbc.Tab):
     def _manage_apps_group(self):
         return dbc.FormGroup([
             dbc.Label('Manage applications'),
-            dbc.Select(
+            dcc.Dropdown(
                 id='applications-select',
-                options=[]),
+                placeholder='Select application to manage'),
             dbc.Button('Manage functions',
                 id='manage-functions-button',
                 color='success',
+                disabled=True,
                 className='mr-1',
                 style=styles.button_style()),
             dbc.Button('Remove application',
                 id='remove-app-button',
                 color='danger',
+                disabled=True,
                 className='mr-1',
                 style=styles.button_style()),
             html.Div(
@@ -98,7 +101,7 @@ class RealtimeTab(dbc.Tab):
             style=styles.button_style())
 
     def _timer(self):
-        return Interval(
+        return dcc.Interval(
             id='timer',
             interval=1*500, # in milliseconds
             n_intervals=0,

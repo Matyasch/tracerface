@@ -4,8 +4,8 @@ from model.parse_stack import parse_stack
 
 # Model for graph creation with static text
 class StaticModel(BaseModel):
-    def __init__(self):
-         super().__init__()
+    def __init__(self, persistence):
+         super().__init__(persistence)
 
     # Load raw bcc trace input
     def load_text(self, raw_text):

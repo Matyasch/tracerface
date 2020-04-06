@@ -10,111 +10,103 @@ import view.alerts as alerts
 
 
 # Open dialog window
-def open(app):
-    @app.callback(Output('func-dialog', 'is_open'),
-        [Input('manage-params-button', 'n_clicks'),
-        Input('close-func-dialog', 'n_clicks')],
-        [State('functions-select', 'value')])
-    def open_func_dialog(open_click, close_click, function):
+def open_or_close_dialog(app):
+    output = Output('func-dialog', 'is_open')
+    input = [
+        Input('manage-params-button', 'n_clicks'),
+        Input('close-func-dialog', 'n_clicks')
+    ]
+    @app.callback(output, input)
+    def open_or_close(open, close):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'manage-params-button' and open_click and function:
+
+        if id == 'manage-params-button':
             return True
-        elif id == 'close-func-dialog' and close_click:
+        elif id == 'close-func-dialog':
             return False
         raise PreventUpdate
 
 
 # Clear values of input elements in dialog
 def clear_dialog(app):
-    @app.callback([Output('param-type', 'value'),
-        Output('param-index', 'value')],
-        [Input('func-dialog', 'is_open')])
+    output = [
+        Output('param-type', 'value'),
+        Output('param-index', 'value')
+    ]
+    input = [Input('func-dialog', 'is_open')]
+    @app.callback(output, input)
     def clear_dialog_when_opened(open):
-        return None, ''
+        return None, None
 
 
 # Update name of function to configure in header
 def update_header(app):
-    @app.callback(Output('func-dialog-header', 'children'),
-        [Input('functions-select', 'value')])
+    output = Output('func-dialog-header', 'children')
+    input = [Input('functions-traced-select', 'value')]
+    @app.callback(output, input)
     def update_func_dialog(func):
-        if func:
-            return 'Manage parameters of {}'.format(func)
-        raise PreventUpdate
+        return 'Manage parameters of {}'.format(func)
 
 
 # Update shown selection of parameters for function
-def update_parameters(app, to_trace):
-    @app.callback(Output('params-select', 'options'),
-        [Input('add-param-button', 'n_clicks'),
+# and handle adding or removing parameter for tracing
+def update_parameters(app, view_model):
+    output = Output('params-select', 'options')
+    input = [
+        Input('add-param-button', 'n_clicks'),
         Input('remove-param-button', 'n_clicks'),
-        Input('functions-select', 'value')],
-        [State('param-index', 'value'),
+        Input('functions-traced-select', 'value')
+    ]
+    state = [
+        State('param-index', 'value'),
         State('param-type', 'value'),
-        State('params-select', 'options'),
         State('params-select', 'value'),
-        State('applications-select', 'value')])
-    def add_param(add, remove, selected_func, index, format_spec, params, selected_param, selected_app):
+        State('applications-select', 'value')
+    ]
+    @app.callback(output, input, state)
+    def add_param(add, remove, function, index, format, param_to_remove, app):
         if not callback_context.triggered:
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'add-param-button' and add and format_spec and index and 'arg{}'.format(index) not in [param['label'].split(' : ')[0] for param in params]:
-            return params + [{'label': 'arg{} : {}'.format(index, format_spec.split(':')[1]), 'value': (index, format_spec)}]
-        elif id == 'remove-param-button' and selected_param:
-            return [param for param in params if param['label'].split(' : ')[0] != 'arg{}'.format(selected_param[0])]
-        elif id == 'functions-select' and selected_func and selected_app:
-            params = to_trace[selected_app][selected_func] or []
-            return [{"label": '{} : {}'.format(name, params[name]), "value": (int(name.split('arg')[1]), params[name])} for name in params]
-        raise PreventUpdate
+
+        if id == 'add-param-button' and index not in view_model.get_parameters(app, function):
+            view_model.add_parameter(app, function, index, format)
+        elif id == 'remove-param-button':
+            view_model.remove_parameter(app, function, param_to_remove)
+
+        parameters = view_model.get_parameters(app, function)
+        return [
+            {
+                'label': 'arg{} : {}'.format(index, parameters[index]),
+                'value': index
+            } for index in parameters
+        ]
 
 
 # Remove parameter from traced ones for function
-def remove_parameter(app, to_trace):
-    @app.callback(Output('params-select', 'value'),
-        [Input('remove-param-button', 'n_clicks'),
-        Input('func-dialog', 'is_open')],
-        [State('params-select', 'value'),
-        State('functions-select', 'value'),
-        State('applications-select', 'value')])
-    def remove_param(remove, open, selected_param, func, app):
-        if remove and selected_param:
-            param_name = 'arg{}'.format(selected_param[0])
-            if param_name in to_trace[app][func]:
-                del to_trace[app][func][param_name]
+def clear_param_select(app):
+    output = Output('params-select', 'value')
+    input = [Input('remove-param-button', 'n_clicks')]
+    @app.callback(output, input)
+    def remove_param(remove):
         return None
 
 
-# Add parameter to trace for function
-def add_parameter(app, to_trace):
-    @app.callback(Output('add-param-notification', 'children'),
-        [Input('add-param-button', 'n_clicks')],
-        [State('param-index', 'value'),
-        State('param-type', 'value'),
-        State('params-select', 'options'),
-        State('functions-select', 'value'),
-        State('applications-select', 'value')])
-    def show_alert(add, index, format_spec, params, func, app):
-        if add:
-            if not format_spec:
-                return alerts.no_param_type_alert()
-            elif not index:
-                return alerts.no_param_index_alert()
-            elif 'arg{}'.format(index) in [param['label'].split(' : ')[0] for param in params]:
-                return alerts.param_already_added_alert()
-            else:
-                to_trace[app][func]['arg{}'.format(index)] = format_spec.split(':')[1]
-                return alerts.param_add_success_alert()
-        raise PreventUpdate
-
-
 # Show alert if no parameter is selected while trying to remove one
-def show_param_not_selected_alert(app):
-    @app.callback(Output('remove-param-notification', 'children'),
-        [Input('remove-param-button', 'n_clicks')],
-        [State('params-select', 'value')])
-    def show_alert(remove, function):
-        if remove and not function:
-            return alerts.no_param_selected_alert()
-        raise PreventUpdate
+def disable_add_button(app, view_model):
+    output = Output('add-param-button', 'disabled')
+    input = [
+        Input('param-index', 'value'),
+        Input('param-type', 'value'),
+        Input('params-select', 'options')
+    ]
+    state = [
+        State('functions-traced-select', 'value'),
+        State('applications-select', 'value')
+    ]
+    @app.callback(output, input, state)
+    def disable(index, format, options_changed, function, app):
+        valid = format and index and int(index) not in view_model.get_parameters(app, function)
+        return not valid

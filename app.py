@@ -3,13 +3,14 @@ from dash_bootstrap_components.themes import BOOTSTRAP
 
 from view.layout import Layout
 from viewmodel.callbacks import CallbackManager
+from viewmodel.trace_setup import Setup
 from viewmodel.viewmodel import ViewModel
 
 
 # Class to store the application's resources
 class App:
     def __init__(self):
-        self._view_model = ViewModel()
+        self._view_model = ViewModel(Setup())
         self._app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
         self._app.layout = Layout()
         self._app.title = 'Tracerface'
