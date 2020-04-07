@@ -11,6 +11,9 @@
 # Copyright (C) 2016 Sasha Goldshtein.
 
 from __future__ import print_function
+import sys
+sys.path.append('/usr/lib/python3/dist-packages')
+
 from bcc import BPF, USDT
 from functools import partial
 from time import sleep, strftime
@@ -20,7 +23,7 @@ import re
 import ctypes as ct
 import os
 import traceback
-import sys
+
 
 class Probe(object):
         probe_count = 0
