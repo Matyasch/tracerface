@@ -6,8 +6,6 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-import view.alerts as alerts
-
 
 # Open dialog window
 def open_or_close_dialog(app):

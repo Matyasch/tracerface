@@ -16,7 +16,7 @@ sys.path.append('/usr/lib/python3/dist-packages')
 
 from bcc import BPF, USDT
 from functools import partial
-from time import sleep, strftime
+from time import strftime
 import time
 import argparse
 import re
@@ -651,57 +651,6 @@ BPF_PERF_OUTPUT(%s);
 
 class Tool(object):
         DEFAULT_PERF_BUFFER_PAGES = 64
-        examples = """
-EXAMPLES:
-
-trace do_sys_open
-        Trace the open syscall and print a default trace message when entered
-trace 'do_sys_open "%s", arg2'
-        Trace the open syscall and print the filename being opened
-trace 'do_sys_open "%s", arg2' -n main
-        Trace the open syscall and only print event that process names containing "main"
-trace 'do_sys_open "%s", arg2' -f config
-        Trace the open syscall and print the filename being opened filtered by "config"
-trace 'sys_read (arg3 > 20000) "read %d bytes", arg3'
-        Trace the read syscall and print a message for reads >20000 bytes
-trace 'r::do_sys_open "%llx", retval'
-        Trace the return from the open syscall and print the return value
-trace 'c:open (arg2 == 42) "%s %d", arg1, arg2'
-        Trace the open() call from libc only if the flags (arg2) argument is 42
-trace 'c:malloc "size = %d", arg1'
-        Trace malloc calls and print the size being allocated
-trace 'p:c:write (arg1 == 1) "writing %d bytes to STDOUT", arg3'
-        Trace the write() call from libc to monitor writes to STDOUT
-trace 'r::__kmalloc (retval == 0) "kmalloc failed!"'
-        Trace returns from __kmalloc which returned a null pointer
-trace 'r:c:malloc (retval) "allocated = %x", retval'
-        Trace returns from malloc and print non-NULL allocated buffers
-trace 't:block:block_rq_complete "sectors=%d", args->nr_sector'
-        Trace the block_rq_complete kernel tracepoint and print # of tx sectors
-trace 'u:pthread:pthread_create (arg4 != 0)'
-        Trace the USDT probe pthread_create when its 4th argument is non-zero
-trace 'p::SyS_nanosleep(struct timespec *ts) "sleep for %lld ns", ts->tv_nsec'
-        Trace the nanosleep syscall and print the sleep duration in ns
-trace -c /sys/fs/cgroup/system.slice/workload.service '__x64_sys_nanosleep' '__x64_sys_clone'
-        Trace nanosleep/clone syscall calls only under workload.service
-        cgroup hierarchy.
-trace -I 'linux/fs.h' \\
-      'p::uprobe_register(struct inode *inode) "a_ops = %llx", inode->i_mapping->a_ops'
-        Trace the uprobe_register inode mapping ops, and the symbol can be found
-        in /proc/kallsyms
-trace -I 'kernel/sched/sched.h' \\
-      'p::__account_cfs_rq_runtime(struct cfs_rq *cfs_rq) "%d", cfs_rq->runtime_remaining'
-        Trace the cfs scheduling runqueue remaining runtime. The struct cfs_rq is defined
-        in kernel/sched/sched.h which is in kernel source tree and not in kernel-devel
-        package.  So this command needs to run at the kernel source tree root directory
-        so that the added header file can be found by the compiler.
-trace -I 'net/sock.h' \\
-      'udpv6_sendmsg(struct sock *sk) (sk->sk_dport == 13568)'
-        Trace udpv6 sendmsg calls only if socket's destination port is equal
-        to 53 (DNS; 13568 in big endian order)
-trace -I 'linux/fs_struct.h' 'mntns_install "users = %d", $task->fs->users'
-        Trace the number of users accessing the file system of the current task
-"""
 
         def __init__(self):
                 parser = argparse.ArgumentParser(description="Attach to " +

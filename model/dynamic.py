@@ -1,5 +1,4 @@
 from multiprocessing import Queue
-from operator import itemgetter
 from pathlib import Path
 from queue import Empty
 from threading import Thread

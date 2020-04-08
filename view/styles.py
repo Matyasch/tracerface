@@ -27,23 +27,30 @@ def base_node_style():
             'color': 'grey',
             'background-color': 'white',
             'border-width': '1',
-            'padding': '5px'}}
+            'padding': '5px'
+        }
+    }
 
 
 def green_node_style(yellow_count, search):
     return {
-            'selector': '[count > 0][count < {}][name *= "{}"]'.format(yellow_count, search),
-            'style': {
-                'border-color': 'green',
-                'color': 'green'}}
+        'selector': '[count > 0][count < {}][name *= "{}"]'.format(yellow_count, search),
+        'style': {
+            'border-color': 'green',
+            'color': 'green'
+        }
+    }
 
 
 def yellow_node_style(yellow_count, red_count, search):
     return {
-        'selector': '[count >= {}][count < {}][name *= "{}"]'.format(yellow_count, red_count, search),
+        'selector': '[count >= {}][count < {}][name *= "{}"]'.format(yellow_count,
+                                                                     red_count, search),
         'style': {
             'border-color': 'orange',
-            'color': 'orange'}}
+            'color': 'orange'
+        }
+    }
 
 
 def red_node_style(red_count, search):
@@ -51,7 +58,9 @@ def red_node_style(red_count, search):
         'selector': '[count >= {}][name *= "{}"]'.format(red_count, search),
         'style': {
             'border-color': 'red',
-            'color': 'red'}}
+            'color': 'red'
+        }
+    }
 
 
 def base_edge_style():
@@ -62,7 +71,9 @@ def base_edge_style():
             'target-arrow-shape': 'triangle',
             'target-arrow-color': '#ccc',
             'label': 'data(params)',
-            'line-color': '#ccc'}}
+            'line-color': '#ccc'
+        }
+    }
 
 
 def green_edge_style(yellow_count, search):
@@ -71,7 +82,9 @@ def green_edge_style(yellow_count, search):
         'style': {
             'line-color': 'green',
             'target-arrow-color': 'green',
-            'width': '1'}}
+            'width': '1'
+        }
+    }
 
 
 def yellow_edge_style(yellow_count, red_count, search):
@@ -80,7 +93,9 @@ def yellow_edge_style(yellow_count, red_count, search):
         'style': {
             'line-color': 'orange',
             'target-arrow-color': 'orange',
-            'width': '1'}}
+            'width': '1'
+        }
+    }
 
 
 def red_edge_style(red_count, search):
@@ -89,4 +104,6 @@ def red_edge_style(red_count, search):
         'style': {
             'line-color': 'red',
             'target-arrow-color': 'red',
-            'width': '1'}}
+            'width': '1'
+        }
+    }

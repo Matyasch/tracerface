@@ -26,11 +26,13 @@ class Graph(Cytoscape):
             styles.base_edge_style(),
             styles.green_edge_style(yellow_count, search),
             styles.yellow_edge_style(yellow_count, red_count, search),
-            styles.red_edge_style(red_count, search)]
+            styles.red_edge_style(red_count, search)
+        ]
 
     @staticmethod
     def layout(spacing=2, animate=False):
         return {
             'name': 'dagre',
             'spacingFactor': spacing,
-            'animate': animate}
+            'animate': animate
+        }

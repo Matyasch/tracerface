@@ -9,4 +9,5 @@ class Layout(Row):
     def __init__(self):
         super().__init__([
             Col(Graph(), width=9),
-            Col(Dashboard())])
+            Col(Dashboard())
+        ])

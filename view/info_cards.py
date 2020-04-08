@@ -14,7 +14,9 @@ class BaseInfoCard(dbc.Card):
                 dbc.ListGroup(
                     [dbc.ListGroupItem(', '.join(param)) for param in params],
                     className='scrollable',
-                    style={'max-height': '200px'})])]
+                    style={'max-height': '200px'})
+            ])
+        ]
 
 
 # Info card for nodes/functions

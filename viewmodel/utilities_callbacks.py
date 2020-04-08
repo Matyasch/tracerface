@@ -2,7 +2,6 @@
 This module contains all callbacks regarding the utilities tab
 '''
 from dash.dependencies import Input, Output
-from dash.exceptions import PreventUpdate
 from view.utilities_tab import UtilitiesTab
 
 from view.graph import Graph

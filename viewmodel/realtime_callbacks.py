@@ -6,7 +6,6 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
-from view.realtime_tab import RealtimeTab
 
 
 # Disable function managagement buttons if no function is selected

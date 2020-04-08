@@ -6,8 +6,6 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-import view.alerts as alerts
-
 
 # Update shown selection of functions for application
 # and handling function adding and removal

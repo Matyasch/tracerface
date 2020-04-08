@@ -2,7 +2,6 @@ from model.base import BaseModel
 from model.dynamic import DynamicModel
 from model.static import StaticModel
 from persistence.persistence import Persistence
-from viewmodel.trace_setup import Setup
 
 
 # Transforms data into format usable by the layout

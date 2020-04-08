@@ -38,7 +38,8 @@ class RealtimeTab(dbc.Tab):
                     id='add-app-button',
                     color='primary',
                     className='mr-1'),
-                    width=2)]),
+                    width=2)
+            ]),
             dbc.FormText('Write path to runnable and click add'),
             html.Div(
                 id='add-app-notification',
@@ -109,4 +110,8 @@ class RealtimeTab(dbc.Tab):
 
     @staticmethod
     def config_path_swtich(disabled=False):
-        return [{"label": "Use config file instead", "value": 'config', 'disabled': disabled}]
+        return [{
+            "label": "Use config file instead",
+            "value": 'config',
+            'disabled': disabled
+        }]
