@@ -104,8 +104,10 @@ def update_apps_dropdown_options(app, view_model):
     def update_options(add, remove, app_to_add, app_to_remove):
         if not callback_context.triggered:
             raise PreventUpdate
+        id = callback_context.triggered[0]['prop_id'].split('.')[0]
+
         alert = None
-        if add:
+        if id == 'add-app-button':
             if app_to_add not in view_model.get_apps():
                 try:
                     view_model.add_app(app_to_add)
@@ -114,7 +116,7 @@ def update_apps_dropdown_options(app, view_model):
                     alert = alerts.app_not_found_alert(app_to_add, e)
             else:
                 alert = alerts.app_already_added_alert()
-        elif remove:
+        elif id == 'remove-app-button':
             view_model.remove_app(app_to_remove)
         return [{"label": app, "value": app} for app in view_model.get_apps()], alert
 
