@@ -20,10 +20,6 @@ class ErrorAlert(BaseAlert):
         super().__init__(message=message, color='danger')
 
 
-def app_already_added_alert():
-    return ErrorAlert('Application already added')
-
-
 def add_success_alert(item):
     return SuccessAlert('{} added successfully'.format(item))
 

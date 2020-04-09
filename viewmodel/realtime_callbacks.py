@@ -22,12 +22,16 @@ def disable_manage_app_buttons(app):
 
 
 # Disable function managagement buttons if no function is selected
-def disable_add_app_button(app):
+# or if application is already added
+def disable_add_app_button(app, view_model):
     output = Output('add-app-button', 'disabled')
-    input = [Input('application-path', 'value')]
+    input = [
+        Input('application-path', 'value'),
+        Input('applications-select', 'options')
+    ]
     @app.callback(output, input)
-    def disable(app):
-        return not app
+    def disable(app, options):
+        return not app or app in view_model.get_apps()
 
 
 # Stop tracing if an error occurs
@@ -107,14 +111,11 @@ def update_apps_dropdown_options(app, view_model):
 
         alert = None
         if id == 'add-app-button':
-            if app_to_add not in view_model.get_apps():
-                try:
-                    view_model.add_app(app_to_add)
-                    alert = alerts.add_success_alert(app_to_add)
-                except ValueError as e:
-                    alert = alerts.app_not_found_alert(app_to_add, e)
-            else:
-                alert = alerts.app_already_added_alert()
+            try:
+                view_model.add_app(app_to_add)
+                alert = alerts.add_success_alert(app_to_add)
+            except ValueError as e:
+                alert = alerts.app_not_found_alert(app_to_add, e)
         elif id == 'remove-app-button':
             view_model.remove_app(app_to_remove)
         return [{"label": app, "value": app} for app in view_model.get_apps()], alert

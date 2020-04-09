@@ -36,7 +36,7 @@ class CallbackManager:
         func_dialog_callbacks.disable_add_button(app=app, view_model=view_model)
 
         realtime_callbacks.disable_interface_on_trace(app=app)
-        realtime_callbacks.disable_add_app_button(app=app)
+        realtime_callbacks.disable_add_app_button(app=app, view_model=view_model)
         realtime_callbacks.disable_manage_app_buttons(app=app)
         realtime_callbacks.start_or_stop_trace(app=app, view_model=view_model)
         realtime_callbacks.stop_trace_on_error(app=app, view_model=view_model)
