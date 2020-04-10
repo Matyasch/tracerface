@@ -67,19 +67,15 @@ class ViewModel:
         self._model = StaticModel(Persistence())
         self._model.load_text(text)
 
-    # Event for starting trace with functions given in dictionary
-    def trace_with_ui_elements(self):
+    # Create arguments from setup and start tracing
+    def start_trace(self):
         self._model = DynamicModel(Persistence())
         arguments = self._setup.generate_bcc_args()
+        print(arguments)
         self._model.start_trace(arguments)
 
-    # Event for starting trace with functions given in config file
-    def trace_with_config_file(self, config_path):
-        self._model = DynamicModel(Persistence())
-        self._model.trace_yaml(config_path)
-
-    # Event for tracing stopped
-    def trace_btn_turned_off(self):
+    # Stop trace
+    def stop_trace(self):
         self._model.stop_trace()
 
     # Event for setting colors
@@ -151,3 +147,7 @@ class ViewModel:
     def remove_parameter(self, app, function, index):
         if app and function and index:
             self._setup.remove_parameter(app, function, int(index))
+
+    def load_config_file(self, path):
+        if path:
+            self._setup.load_from_file(path)

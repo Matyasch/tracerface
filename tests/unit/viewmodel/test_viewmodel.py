@@ -179,12 +179,12 @@ def test_output_submit_btn_clicked_uses_static_model(model):
 
 
 @mock.patch('viewmodel.viewmodel.DynamicModel')
-def test_trace_with_ui_elements_uses_dynamic_model(model):
+def test_start_trace_uses_dynamic_model(model):
     setup = mock.Mock()
     setup.generate_bcc_args.return_value = 'dummy args'
     viewmodel = ViewModel(setup)
 
-    viewmodel.trace_with_ui_elements()
+    viewmodel.start_trace()
 
     assert viewmodel._model == model.return_value
     model.return_value.start_trace.assert_called_once()
@@ -192,24 +192,12 @@ def test_trace_with_ui_elements_uses_dynamic_model(model):
 
 
 @mock.patch('viewmodel.viewmodel.DynamicModel')
-def test_trace_with_config_file_uses_dynamic_model(model):
-    setup = Setup()
-    viewmodel = ViewModel(setup)
-
-    viewmodel.trace_with_config_file('dummy path')
-
-    assert viewmodel._model == model.return_value
-    model.return_value.trace_yaml.assert_called_once()
-    model.return_value.trace_yaml.assert_called_with('dummy path')
-
-
-@mock.patch('viewmodel.viewmodel.DynamicModel')
-def test_trace_btn_turned_off_uses_dynamic_model(model):
+def test_stop_trace_uses_dynamic_model(model):
     setup = Setup()
     viewmodel = ViewModel(setup)
     viewmodel._model = model.return_value
 
-    viewmodel.trace_btn_turned_off()
+    viewmodel.stop_trace()
 
     model.return_value.stop_trace.assert_called_once()
 

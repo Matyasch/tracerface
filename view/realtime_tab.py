@@ -87,19 +87,19 @@ class RealtimeTab(dbc.Tab):
     def _config_path_group(self):
         return dbc.FormGroup(
             children=[
-                dbc.Checklist(
-                    options=self.config_path_swtich(),
-                    value=[],
-                    id="use-config-file-switch",
-                    switch=True),
-                dbc.Collapse(
-                    dbc.Input(
+                dbc.Label('Load setup from file'),
+                dbc.Row([
+                    dbc.Col(dbc.Input(
                         id='config-file-path',
                         type='text',
-                        placeholder='/path/to/config'),
-                    id="config-file-input-collapse")
-            ],
-            style=styles.button_style())
+                        placeholder='/path/to/config')),
+                    dbc.Col(dbc.Button('Load',
+                        id='load-config-button',
+                        color='primary',
+                        className='mr-1'),
+                        width=2)
+                ])
+            ])
 
     def _timer(self):
         return dcc.Interval(

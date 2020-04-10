@@ -12,7 +12,7 @@ source "$ROOT_DIR/bcc-env.inc.sh"
 
 python3 -m virtualenv "$VIRTUALENV_DIR"
 source "$ROOT_DIR/bin-python/bin/activate"
-pip3 --disable-pip-version-check install --no-cache-dir --requirement test-requirements.txt > "$VIRTUALENV_DIR/pip-install.log"
+pip3 --disable-pip-version-check install --no-cache-dir --requirement requirements-test.txt > "$VIRTUALENV_DIR/pip-install.log"
 
 # Run unit tests
 echo "Running unit tests"

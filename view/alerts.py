@@ -20,12 +20,12 @@ class ErrorAlert(BaseAlert):
         super().__init__(message=message, color='danger')
 
 
-def add_success_alert(item):
-    return SuccessAlert('{} added successfully'.format(item))
+def add_app_success_alert(item):
+    return SuccessAlert('Application added')
 
 
-def app_not_found_alert(app, message):
-    return ErrorAlert('{} was not added due to the following error:\n{}'.format(app, message))
+def load_setup_success_alert(item):
+    return SuccessAlert('Setup loaded')
 
 
 # Alert(s) for tracing

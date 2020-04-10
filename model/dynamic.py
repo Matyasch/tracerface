@@ -70,7 +70,7 @@ class DynamicModel(BaseModel):
         queue = Queue()
         trace_process = TraceProcess(queue=queue, args=args)
         monitoring = Thread(target=self.monitor_tracing, args=[queue, trace_process])
-
+        print(args)
         trace_process.start()
         monitoring.start()
 
@@ -90,44 +90,3 @@ class DynamicModel(BaseModel):
     # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled
-
-    # Parse config file containing funtions to trace
-    @staticmethod
-    def parse_args_from_file(config_path):
-        try:
-            path = Path(config_path)
-        except TypeError:
-            raise ProcessException('Please provide a path to the configuration file')
-
-        try:
-            content = yaml.safe_load(path.read_text())
-        except yaml.scanner.ScannerError:
-            raise ProcessException('Config file at {} has to be YAML format'.format(str(config_path)))
-        except FileNotFoundError:
-            raise ProcessException('Could not find configuration file at {}'.format(str(config_path)))
-        except IsADirectoryError:
-            raise ProcessException('{} is a directory, not a file'.format(str(config_path)))
-        except Exception:
-            raise ProcessException('Unknown error happened while processing config file')
-
-        trace_list = []
-
-        try:
-            for app in content:
-                for func in content[app]:
-                    if isinstance(func, dict):
-                        params_specs = list(func.values())[0]
-                        func_formula = '{}:{} "{}", {}'.format(
-                            app,
-                            list(func.keys())[0],
-                            ' '.join(params_specs),
-                            ', '.join(['arg{}'.format(i+1) for i in range(len(params_specs))]))
-                    else:
-                        func_formula = '{}:{}'.format(app, func)
-                    trace_list.append(func_formula)
-        except TypeError:
-            raise ProcessException('Could not process configuration file')
-
-        if not trace_list:
-            raise ProcessException('No functions to trace')
-        return trace_list

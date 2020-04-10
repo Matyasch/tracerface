@@ -1,4 +1,6 @@
+from pathlib import Path
 from subprocess import CalledProcessError, check_output
+import yaml
 
 from model.dynamic import ProcessException
 
@@ -11,8 +13,8 @@ class Setup:
     def initialize_app(self, path):
         try:
             symbols = check_output(['nm', path]).decode().rstrip().split('\n')
-        except CalledProcessError as e:
-            raise ValueError('Could not find binary at given path')
+        except CalledProcessError:
+            raise ValueError('Could not find binary at {}'.format(path))
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}
         for function in functions:
@@ -36,7 +38,10 @@ class Setup:
 
     # Sets up a function to be traced
     def add_function(self, app, function):
-        self._setup[app][function]['traced'] = True
+        try:
+            self._setup[app][function]['traced'] = True
+        except KeyError:
+            raise ValueError('No function named {} was found in {}'.format(function, app))
 
     # Removes a function from traced ones
     def remove_function(self, app, function):
@@ -72,3 +77,26 @@ class Setup:
         if not arguments:
             raise ProcessException('No functions to trace')
         return arguments
+
+    def load_from_file(self, path):
+        try:
+            content = Path(path).read_text()
+        except FileNotFoundError:
+            raise ValueError('Could not find config file at {}'.format(path))
+        except IsADirectoryError:
+            raise ValueError('{} is a directory, not a file'.format(path))
+
+        try:
+            config = yaml.safe_load(content)
+        except yaml.parser.ParserError:
+            raise ValueError('File format is incorrect')
+
+        try:
+            for app in config:
+                self.initialize_app(app)
+                for function in config[app]:
+                    self.add_function(app, function)
+                    for index in config[app][function]:
+                        self.add_parameter(app, function, index, config[app][function][index])
+        except TypeError:
+            raise ValueError('File format is incorrect')

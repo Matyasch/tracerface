@@ -18,7 +18,7 @@ def functions_to_trace():
     }
 
 
-def test_dynamic_model_with_trace_dict(functions_to_trace):
+def test_trace(functions_to_trace):
     test_app = str(Path.cwd().joinpath('tests/integration/resources/test_application'))
 
     viewmodel = ViewModel(Setup())
@@ -30,9 +30,9 @@ def test_dynamic_model_with_trace_dict(functions_to_trace):
     viewmodel.add_parameter(test_app, 'func1', '2', '%s')
     viewmodel.add_parameter(test_app, 'func2', '1', '%d')
 
-    viewmodel.trace_with_ui_elements() # start monitoring
+    viewmodel.start_trace() # start monitoring
     time.sleep(5) # BCC trace needs a bit of time to setup
     subprocess.run(test_app) # run monitored application
-    viewmodel.trace_btn_turned_off() # stop monitoring
+    viewmodel.stop_trace() # stop monitoring
 
     assert_results(viewmodel.get_nodes(), viewmodel.get_edges())

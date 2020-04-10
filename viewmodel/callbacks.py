@@ -38,11 +38,11 @@ class CallbackManager:
         realtime_callbacks.disable_interface_on_trace(app=app)
         realtime_callbacks.disable_add_app_button(app=app, view_model=view_model)
         realtime_callbacks.disable_manage_app_buttons(app=app)
+        realtime_callbacks.disable_load_config_button(app=app)
         realtime_callbacks.start_or_stop_trace(app=app, view_model=view_model)
         realtime_callbacks.stop_trace_on_error(app=app, view_model=view_model)
         realtime_callbacks.clear_selected_app(app=app)
         realtime_callbacks.update_apps_dropdown_options(app=app, view_model=view_model)
-        realtime_callbacks.open_config_file_input(app=app)
 
         static_callbacks.load_output(app=app)
 

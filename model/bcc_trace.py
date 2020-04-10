@@ -655,8 +655,7 @@ class Tool(object):
         def __init__(self):
                 parser = argparse.ArgumentParser(description="Attach to " +
                   "functions and print trace messages.",
-                  formatter_class=argparse.RawDescriptionHelpFormatter,
-                  epilog=Tool.examples)
+                  formatter_class=argparse.RawDescriptionHelpFormatter)
                 parser.add_argument("-b", "--buffer-pages", type=int,
                   default=Tool.DEFAULT_PERF_BUFFER_PAGES,
                   help="number of pages to use for perf_events ring buffer "

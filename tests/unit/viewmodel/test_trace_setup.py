@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 from pytest import fixture, raises
+from yaml.parser import ParserError
 
 from model.dynamic import ProcessException
 from viewmodel.trace_setup import Setup
@@ -200,3 +201,45 @@ def test_generate_bcc_args_with_multiple_values():
         'app2:func3 "%s %d", arg1, arg5',
         'app2:func4 "%s %f", arg1, arg2',
     ]
+
+
+@patch('viewmodel.trace_setup.Path.read_text')
+def test_load_from_file_raises_exception_if_file_not_found(read):
+    def side_effect():
+        raise FileNotFoundError
+
+    read.side_effect = side_effect
+    setup = Setup()
+    with raises(ValueError):
+        setup.load_from_file('.non/existent/path')
+
+
+@patch('viewmodel.trace_setup.Path.read_text')
+def test_load_from_file_raises_exception_if_file_is_directory(read):
+    def side_effect():
+        raise IsADirectoryError
+
+    read.side_effect = side_effect
+    setup = Setup()
+    with raises(ValueError):
+        setup.load_from_file('.non/existent/path')
+
+
+@patch('viewmodel.trace_setup.yaml.safe_load')
+@patch('viewmodel.trace_setup.Path.read_text')
+def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
+    def side_effect(content):
+        raise ParserError
+
+    load.side_effect = side_effect
+    setup = Setup()
+    with raises(ValueError):
+        setup.load_from_file('dummy/path')
+
+
+@patch('viewmodel.trace_setup.yaml.safe_load', return_value={'.non/existent/path' : {}})
+@patch('viewmodel.trace_setup.Path.read_text')
+def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
+    setup = Setup()
+    with raises(ValueError):
+        setup.load_from_file('dummy/path')

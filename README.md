@@ -26,17 +26,18 @@ For tests, run the ```run-tests.sh``` wrapper script. For integration tests too 
 
 ### **Or load from a config file**
 
-You can also add the applications, functions and parameters from a yaml file instead:
+You can also add the applications, functions and parameters from a yaml file instead in the following format:
 
 ```yaml
 app1:
-  - func1
-  - func2:
-    - ’%s’
-    - ’%d’
+  func1: {}
+  func2:
+    1: '%s'
+    3: '%d'
 app2:
-  - func3
+  func3: {}
 ```
+
 Check in the checkbox labeled with **Use config file instead** and then paste the path of the file into the appeared input box. Once you are done, start tracing.
 
 ### **Start tracing**
