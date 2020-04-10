@@ -34,12 +34,18 @@ def disable_add_app_button(app, view_model):
         return not app or app in view_model.get_apps()
 
 
+# Disable config load button if no path is provided
 def disable_load_config_button(app):
     output = Output('load-config-button', 'disabled')
     input = [Input('config-file-path', 'value')]
     @app.callback(output, input)
     def disable(path):
         return not path
+
+
+# Disable power button while no functions are given to trace
+def disable_trace_button(app, view_model):
+    output = Output('trace-button', 'on')
 
 
 # Stop tracing if an error occurs

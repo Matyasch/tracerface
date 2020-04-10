@@ -9,27 +9,12 @@ from model.parse_stack import parse_stack
 from model.trace_utils import TraceProcess, STACK_END_PATTERN
 
 
-# Special exception class to handle all exceptions
-# during processing functions to trace
-class ProcessException(Exception):
-    pass
-
-
 # Model for tracing realtime
 class DynamicModel(BaseModel):
     def __init__(self, persistence):
         super().__init__(persistence)
         self._thread_enabled = False
         self._thread_error = None
-        self._process_error = None
-
-    # Start tracing with the functions given in a configuration file
-    def trace_yaml(self, config_path):
-        try:
-            functions = self.parse_args_from_file(config_path)
-            self.start_trace(functions)
-        except ProcessException as e:
-            self._process_error = str(e)
 
     # While tracing, consume items from the queue and process them
     def monitor_tracing(self, queue, process):
@@ -62,6 +47,9 @@ class DynamicModel(BaseModel):
     # Clear errors and persistence, initialize values needed for tracing,
     # build argument list then start tracing and monitoring its output
     def start_trace(self, functions):
+        if not functions:
+            self._thread_error = 'No functions to trace'
+            return
         self._thread_error = None
         self._thread_enabled = True
         self._persistence.clear()
@@ -70,7 +58,6 @@ class DynamicModel(BaseModel):
         queue = Queue()
         trace_process = TraceProcess(queue=queue, args=args)
         monitoring = Thread(target=self.monitor_tracing, args=[queue, trace_process])
-        print(args)
         trace_process.start()
         monitoring.start()
 
@@ -82,10 +69,6 @@ class DynamicModel(BaseModel):
     # Returns error happening while an active trace
     def thread_error(self):
         return self._thread_error
-
-    # Returns error happening during the procession of functions to trace
-    def process_error(self):
-        return self._process_error
 
     # Returns status wether tracing is currently active or not
     def trace_active(self):

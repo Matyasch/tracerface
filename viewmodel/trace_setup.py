@@ -2,8 +2,6 @@ from pathlib import Path
 from subprocess import CalledProcessError, check_output
 import yaml
 
-from model.dynamic import ProcessException
-
 
 class Setup:
     def __init__(self):
@@ -74,8 +72,6 @@ class Setup:
                             ' '.join([params[index] for index in params]),
                             ', '.join(['arg{}'.format(index) for index in params]))
                     arguments.append(argument)
-        if not arguments:
-            raise ProcessException('No functions to trace')
         return arguments
 
     def load_from_file(self, path):

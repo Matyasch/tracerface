@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/m-sch/tracerface.svg?branch=master)](https://travis-ci.org/m-sch/tracerface)
 [![Python](https://img.shields.io/lgtm/grade/python/g/m-sch/tracerface.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/m-sch/tracerface/context:python)
 
-An interactive web-app tool built with [dash](https://dash.plot.ly/) for call-graph visualisation in realtime, using the [BCC](https://github.com/iovisor/bcc) trace tool.
+An interactive web-app built with [dash](https://dash.plot.ly/) for call-graph visualisation in realtime, using [BCC](https://github.com/iovisor/bcc) trace.
 
 ![trace][trace_pic]
 
@@ -24,9 +24,9 @@ For tests, run the ```run-tests.sh``` wrapper script. For integration tests too 
 * Add functions you wish to trace selecting an added binary under **Manage applications** and then clicking on **Manage functions**.
 * You can also define traced parameters for a function by clicking the  **Manage parameters** button.
 
-### **Or load from a config file**
+### **Or load from a file**
 
-You can also add the applications, functions and parameters from a yaml file instead in the following format:
+You can add applications, functions and parameters from a yaml file instead in the following format:
 
 ```yaml
 app1:

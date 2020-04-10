@@ -71,7 +71,6 @@ class ViewModel:
     def start_trace(self):
         self._model = DynamicModel(Persistence())
         arguments = self._setup.generate_bcc_args()
-        print(arguments)
         self._model.start_trace(arguments)
 
     # Stop trace

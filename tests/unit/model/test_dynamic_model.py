@@ -2,7 +2,7 @@ from pytest import raises
 from queue import Empty
 from unittest.mock import Mock, patch
 
-from model.dynamic import DynamicModel, ProcessException
+from model.dynamic import DynamicModel
 from model.parse_stack import Stack
 from model.trace_utils import STACK_END_PATTERN
 
@@ -13,7 +13,6 @@ def test_empty_model():
 
     assert not model._thread_enabled
     assert model._thread_error == None
-    assert model._process_error == None
     assert model._persistence == persistence
 
 
@@ -125,12 +124,18 @@ def test_start_trace(process, thread):
     model.start_trace(['dummy', 'functions'])
 
     assert model._thread_error == None
-    assert model._process_error == None
     assert model._thread_enabled
     thread.assert_called_once()
     thread.return_value.start.assert_called_once()
     process.assert_called_once()
     process.return_value.start.assert_called_once()
+
+
+def test_start_trace_without_functions():
+    model = DynamicModel(Mock())
+    model.start_trace([])
+
+    assert model._thread_error == 'No functions to trace'
 
 
 def test_stop_trace():
@@ -149,13 +154,6 @@ def test_thread_error_returns_error():
     model._thread_error = 'Dummy Error'
 
     assert model.thread_error() == 'Dummy Error'
-
-
-def test_process_error_returns_error():
-    model = DynamicModel(Mock())
-    model._process_error = 'Dummy Error'
-
-    assert model.process_error() == 'Dummy Error'
 
 
 def test_trace_active_returns_thread_enabled():

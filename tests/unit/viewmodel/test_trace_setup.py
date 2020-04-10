@@ -3,8 +3,8 @@ from unittest.mock import patch
 from pytest import fixture, raises
 from yaml.parser import ParserError
 
-from model.dynamic import ProcessException
 from viewmodel.trace_setup import Setup
+
 
 @fixture
 def init_setup():
@@ -155,32 +155,6 @@ def test_remove_parameter():
             'func': {'traced': False, 'parameters': {1: '%s'}}
         }
     }
-
-
-def test_generate_bcc_args_raises_exception_on_empty_dict():
-    setup = Setup()
-
-    with raises(ProcessException) as e:
-        setup.generate_bcc_args()
-    assert str(e.value) == 'No functions to trace'
-
-
-def test_generate_bcc_args_raises_exception_on_only_apps():
-    setup = Setup()
-    setup._setup = {'app1': {}, 'app2': {}}
-
-    with raises(ProcessException) as e:
-        setup.generate_bcc_args()
-    assert str(e.value) == 'No functions to trace'
-
-
-def test_generate_bcc_args_raises_exception_with_only_untraced_functions():
-    setup = Setup()
-    setup._setup = {'app': {'func': {'traced': False, 'parameters': {}}}}
-
-    with raises(ProcessException) as e:
-        setup.generate_bcc_args()
-    assert str(e.value) == 'No functions to trace'
 
 
 def test_generate_bcc_args_with_multiple_values():
