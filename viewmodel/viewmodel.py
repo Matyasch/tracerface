@@ -63,9 +63,10 @@ class ViewModel:
         return self._model.max_count()
 
     # Event for static output submit button clicked
-    def output_submit_btn_clicked(self, text):
-        self._model = StaticModel(Persistence())
-        self._model.load_text(text)
+    def load_output(self, path):
+        if path:
+            self._model = StaticModel(Persistence())
+            self._model.load_output(path)
 
     # Create arguments from setup and start tracing
     def start_trace(self):

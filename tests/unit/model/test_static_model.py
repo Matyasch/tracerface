@@ -1,26 +1,26 @@
+from pathlib import Path
 from unittest.mock import call, Mock, patch
 
 from model.static import StaticModel
 from model.parse_stack import Stack
-from persistence.persistence import Persistence
 
 
-def test_empty_model():
-    persistence = Persistence()
+def test_model_initialization():
+    persistence = Mock()
     model = StaticModel(persistence)
 
     assert model._persistence == persistence
 
 
-@patch('model.static.parse_stack', return_value=Stack(nodes='dummy_nodes', edges='dummy_edges'))
-def test_load_text(parse_stack):
+def test_load_output():
+    test_file_path = Path.cwd().joinpath(
+        'tests', 'integration', 'resources', 'test_static_output'
+    )
     persistence = Mock()
     persistence.get_nodes.return_value = {}
     model = StaticModel(persistence)
 
-    model.load_text('first\nstack\n\nsecond\nstack')
+    model.load_output(str(test_file_path))
 
-    assert persistence.load_edges.call_args == call('dummy_edges')
-    assert persistence.load_edges.call_count == 2
-    assert persistence.load_nodes.call_args == call('dummy_nodes')
-    assert persistence.load_nodes.call_count == 2
+    assert persistence.load_edges.call_count == 8
+    assert persistence.load_nodes.call_count == 8

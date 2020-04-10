@@ -16,7 +16,7 @@ pip3 --disable-pip-version-check install --no-cache-dir --requirement requiremen
 
 # Run unit tests
 echo "Running unit tests"
-python3 -m pytest -p no:cacheprovider tests/unit/
+python3 -m pytest -vvv -p no:cacheprovider tests/unit/
 
 # Run integration tests
 if [ "$EUID" -ne 0 ]; then

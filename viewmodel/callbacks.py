@@ -44,7 +44,7 @@ class CallbackManager:
         realtime_callbacks.clear_selected_app(app=app)
         realtime_callbacks.update_apps_dropdown_options(app=app, view_model=view_model)
 
-        static_callbacks.load_output(app=app)
+        static_callbacks.disable_load_button(app=app)
 
         utilities_callbacks.update_color_slider(app=app, view_model=view_model)
         utilities_callbacks.update_searchbar(app=app, view_model=view_model)

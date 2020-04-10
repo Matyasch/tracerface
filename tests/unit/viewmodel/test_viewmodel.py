@@ -167,15 +167,15 @@ def test_color_counts_return_value_from_model(model):
 
 
 @mock.patch('viewmodel.viewmodel.StaticModel')
-def test_output_submit_btn_clicked_uses_static_model(model):
+def test_load_output_uses_static_model(model):
     setup = Setup()
     viewmodel = ViewModel(setup)
 
-    viewmodel.output_submit_btn_clicked('dummy text')
+    viewmodel.load_output('dummy path')
 
     assert viewmodel._model == model.return_value
-    model.return_value.load_text.assert_called_once()
-    model.return_value.load_text.assert_called_with('dummy text')
+    model.return_value.load_output.assert_called_once()
+    model.return_value.load_output.assert_called_with('dummy path')
 
 
 @mock.patch('viewmodel.viewmodel.DynamicModel')

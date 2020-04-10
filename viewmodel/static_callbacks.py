@@ -8,14 +8,9 @@ import view.alerts as alerts
 
 
 # Load output of bcc trace output
-def load_output(app):
-    @app.callback(Output('load-output-notification', 'children'),
-        [Input('submit-button', 'n_clicks')],
-        [State('output-textarea', 'value')])
-    def show_alert(click, content):
-        if click:
-            if content:
-                return alerts.load_output_success_alert()
-            else:
-                return alerts.output_empty_alert()
-        raise PreventUpdate
+def disable_load_button(app):
+    output = Output('load-output-button', 'disabled')
+    input = [Input('output-path', 'value')]
+    @app.callback(output, input)
+    def disable(content):
+        return not content
