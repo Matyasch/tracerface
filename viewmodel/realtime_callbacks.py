@@ -43,6 +43,15 @@ def disable_load_config_button(app):
         return not path
 
 
+# Load output of bcc trace output
+def disable_load_button(app):
+    output = Output('load-output-button', 'disabled')
+    input = [Input('output-path', 'value')]
+    @app.callback(output, input)
+    def disable(content):
+        return not content
+
+
 # Stop tracing if an error occurs
 def stop_trace_on_error(app, view_model):
     output = [
@@ -78,15 +87,12 @@ def start_or_stop_trace(app, view_model):
 
 # Disable parts of the interface while tracing is active
 def disable_interface_on_trace(app):
-    output = [
-        Output('static-tab', 'disabled'),
-        Output('utilities-tab', 'disabled')
-    ]
+    output = Output('utilities-tab', 'disabled')
     input = [Input('timer', 'disabled')]
     @app.callback(output, input)
     def switch_disables(timer_off):
         trace_on = not timer_off
-        return trace_on, trace_on
+        return trace_on
 
 
 # Add or remove applications, load content of config file

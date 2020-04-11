@@ -10,15 +10,16 @@ import view.styles as styles
 # Implementation of Realtime tab
 class RealtimeTab(dbc.Tab):
     def __init__(self):
-        super().__init__(label='Realtime', tab_id='realtime-tab', id='realtime-tab',
+        super().__init__(label='Tools', tab_id='realtime-tab', id='realtime-tab',
                          children=self._content(), tab_style={"margin-left": "auto"})
 
     def _content(self):
         return html.Div(
             children=[
                 self._add_app_group(),
-                self._manage_apps_group(),
                 self._config_path_group(),
+                self._manage_apps_group(),
+                self._load_output_group(),
                 self._trace_group(),
                 self._timer(),
                 ManageApplicationDialog(),
@@ -40,7 +41,6 @@ class RealtimeTab(dbc.Tab):
                     className='mr-1'),
                     width=2)
             ]),
-            dbc.FormText('Write path to runnable and click add'),
             html.Div(
                 id='add-app-notification',
                 children=None,
@@ -100,6 +100,26 @@ class RealtimeTab(dbc.Tab):
                         width=2)
                 ])
             ])
+
+    def _load_output_group(self):
+        return dbc.FormGroup([
+            dbc.Label('Load output of BCC trace run'),
+            dbc.Row([
+                dbc.Col(dbc.Input(
+                    id='output-path',
+                    type='text',
+                    placeholder='/path/to/file')),
+                dbc.Col(dbc.Button('Load',
+                    id='load-output-button',
+                    color='primary',
+                    className='mr-1'),
+                    width=2)
+            ]),
+            html.Div(
+                id='load-output-notification',
+                children=None,
+                style=styles.button_style())
+        ])
 
     def _timer(self):
         return dcc.Interval(
