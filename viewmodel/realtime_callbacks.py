@@ -56,8 +56,6 @@ def stop_trace_on_error(app, view_model):
         if timer_tick and trace_on:
             if view_model.thread_error():
                 return False, alerts.trace_error_alert(view_model.thread_error())
-            elif view_model.process_error():
-                return False, alerts.trace_error_alert(view_model.process_error())
             elif not view_model.trace_active():
                 return False, alerts.trace_error_alert('Tracing stopped unexpected')
         raise PreventUpdate
