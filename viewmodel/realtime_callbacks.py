@@ -43,11 +43,6 @@ def disable_load_config_button(app):
         return not path
 
 
-# Disable power button while no functions are given to trace
-def disable_trace_button(app, view_model):
-    output = Output('trace-button', 'on')
-
-
 # Stop tracing if an error occurs
 def stop_trace_on_error(app, view_model):
     output = [

@@ -1,4 +1,4 @@
-from pytest import fixture
+from pytest import fixture, raises
 import unittest.mock as mock
 
 from viewmodel.trace_setup import Setup
@@ -166,8 +166,35 @@ def test_color_counts_return_value_from_model(model):
     assert viewmodel.max_count() == 4
 
 
-@mock.patch('viewmodel.viewmodel.StaticModel')
-def test_load_output_uses_static_model(model):
+@mock.patch('viewmodel.viewmodel.Path.read_text')
+def test_load_output_from_directory(read):
+    def side_effect():
+        raise IsADirectoryError
+
+    read.side_effect = side_effect
+    setup = Setup()
+    viewmodel = ViewModel(setup)
+
+    with raises(ValueError):
+        viewmodel.load_output('/direcory/path')
+
+
+@mock.patch('viewmodel.viewmodel.Path.read_text')
+def test_load_output_from_directory(read):
+    def side_effect():
+        raise FileNotFoundError
+
+    read.side_effect = side_effect
+    setup = Setup()
+    viewmodel = ViewModel(setup)
+
+    with raises(ValueError):
+        viewmodel.load_output('.non/existent/path')
+
+
+@mock.patch('viewmodel.viewmodel.Path.read_text', return_value='dummy text')
+@mock.patch('viewmodel.viewmodel.DynamicModel')
+def test_load_output_uses_model(model, read):
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -175,7 +202,7 @@ def test_load_output_uses_static_model(model):
 
     assert viewmodel._model == model.return_value
     model.return_value.load_output.assert_called_once()
-    model.return_value.load_output.assert_called_with('dummy path')
+    model.return_value.load_output.assert_called_with('dummy text')
 
 
 @mock.patch('viewmodel.viewmodel.DynamicModel')

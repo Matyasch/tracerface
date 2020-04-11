@@ -1,8 +1,6 @@
 from multiprocessing import Queue
-from pathlib import Path
 from queue import Empty
 from threading import Thread
-import yaml
 
 from model.base import BaseModel
 from model.parse_stack import parse_stack
@@ -73,3 +71,11 @@ class DynamicModel(BaseModel):
     # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled
+
+    def load_output(self, text):
+        stacks = [stack.split('\n') for stack in text.split('\n\n')]
+        for stack in stacks:
+            graph = parse_stack(stack)
+            self._persistence.load_edges(graph.edges)
+            self._persistence.load_nodes(graph.nodes)
+        self.init_colors()

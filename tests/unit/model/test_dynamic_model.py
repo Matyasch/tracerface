@@ -1,3 +1,4 @@
+from pathlib import Path
 from pytest import raises
 from queue import Empty
 from unittest.mock import Mock, patch
@@ -161,3 +162,18 @@ def test_trace_active_returns_thread_enabled():
     model._thread_enabled = True
 
     assert model.trace_active()
+
+
+def test_load_output():
+    test_file_path = Path.cwd().joinpath(
+        'tests', 'integration', 'resources', 'test_static_output'
+    )
+    text = test_file_path.read_text()
+    persistence = Mock()
+    persistence.get_nodes.return_value = {}
+    model = DynamicModel(persistence)
+
+    model.load_output(text)
+
+    assert persistence.load_edges.call_count == 8
+    assert persistence.load_nodes.call_count == 8

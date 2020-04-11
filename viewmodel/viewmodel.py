@@ -1,6 +1,7 @@
+from pathlib import Path
+
 from model.base import BaseModel
 from model.dynamic import DynamicModel
-from model.static import StaticModel
 from persistence.persistence import Persistence
 
 
@@ -64,9 +65,16 @@ class ViewModel:
 
     # Event for static output submit button clicked
     def load_output(self, path):
-        if path:
-            self._model = StaticModel(Persistence())
-            self._model.load_output(path)
+        if not path:
+            return
+        try:
+            text = Path(path).read_text()
+        except FileNotFoundError:
+            raise ValueError('Could not find output file at {}'.format(path))
+        except IsADirectoryError:
+            raise ValueError('{} is a directory, not a file'.format(path))
+        self._model = DynamicModel(Persistence())
+        self._model.load_output(text)
 
     # Create arguments from setup and start tracing
     def start_trace(self):
