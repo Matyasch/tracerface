@@ -2,17 +2,49 @@ from multiprocessing import Queue
 from queue import Empty
 from threading import Thread
 
-from model.base import BaseModel
 from model.parse_stack import parse_stack
 from model.trace_utils import TraceProcess, STACK_END_PATTERN
 
 
-# Model for tracing realtime
-class DynamicModel(BaseModel):
+# Model for tracing and parsing the output
+class Model:
     def __init__(self, persistence):
-        super().__init__(persistence)
+        self._persistence = persistence
         self._thread_enabled = False
         self._thread_error = None
+
+    # returns all nodes in a list
+    def get_nodes(self):
+        return self._persistence.get_nodes()
+
+    # returns all edges in a list
+    def get_edges(self):
+        return self._persistence.get_edges()
+
+    # returns the lower bound for coloring elements yellow
+    def yellow_count(self):
+        return self._persistence.get_yellow()
+
+    # returns the lower bound for coloring elements red
+    def red_count(self):
+        return self._persistence.get_red()
+
+    # returns the maximum number of calls among nodes
+    def max_count(self):
+        call_counts = [node['call_count'] for node in self._persistence.get_nodes().values()]
+        if call_counts:
+            return max(call_counts)
+        return 0
+
+    # set new values for the coloring bounds
+    def set_range(self, yellow, red):
+        self._persistence.update_colors(yellow, red)
+
+    # initialize color boundaries to default values based on maximum count
+    def init_colors(self):
+        yellow = round(self.max_count()/3)
+        red = round(self.max_count()*2/3)
+        self._persistence.update_colors(yellow, red)
 
     # While tracing, consume items from the queue and process them
     def monitor_tracing(self, queue, process):

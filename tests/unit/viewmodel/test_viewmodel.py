@@ -44,7 +44,7 @@ def edges():
     }
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_viewmodel_initialization(model):
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -53,7 +53,7 @@ def test_viewmodel_initialization(model):
     assert viewmodel._setup == setup
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_get_nodes(model, nodes, edges):
     model.return_value.get_nodes.return_value = nodes
     setup = Setup()
@@ -80,7 +80,7 @@ def test_get_nodes(model, nodes, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_get_edges(model, nodes, edges):
     model.return_value.get_nodes.return_value = nodes
     model.return_value.get_edges.return_value = edges
@@ -115,7 +115,7 @@ def test_get_edges(model, nodes, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_get_param_visuals(model, edges):
     model.return_value.get_edges.return_value = edges
     setup = Setup()
@@ -126,7 +126,7 @@ def test_get_param_visuals(model, edges):
     assert viewmodel.get_param_visuals_for_edge(('dummy_hash2', 'dummy_hash3')) == '...'
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_get_params_of_edge(model, edges):
     model.return_value.get_edges.return_value = edges
     setup = Setup()
@@ -139,7 +139,7 @@ def test_get_params_of_edge(model, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_get_params_of_node(model, edges, nodes):
     model.return_value.get_nodes.return_value = nodes
     model.return_value.get_edges.return_value = edges
@@ -152,7 +152,7 @@ def test_get_params_of_node(model, edges, nodes):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_color_counts_return_value_from_model(model):
     model.return_value.yellow_count.return_value = 4
     model.return_value.red_count.return_value = 4
@@ -193,7 +193,7 @@ def test_load_output_from_directory(read):
 
 
 @mock.patch('viewmodel.viewmodel.Path.read_text', return_value='dummy text')
-@mock.patch('viewmodel.viewmodel.DynamicModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_load_output_uses_model(model, read):
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -205,8 +205,8 @@ def test_load_output_uses_model(model, read):
     model.return_value.load_output.assert_called_with('dummy text')
 
 
-@mock.patch('viewmodel.viewmodel.DynamicModel')
-def test_start_trace_uses_dynamic_model(model):
+@mock.patch('viewmodel.viewmodel.Model')
+def test_start_trace_uses_model(model):
     setup = mock.Mock()
     setup.generate_bcc_args.return_value = 'dummy args'
     viewmodel = ViewModel(setup)
@@ -218,8 +218,8 @@ def test_start_trace_uses_dynamic_model(model):
     model.return_value.start_trace.assert_called_with('dummy args')
 
 
-@mock.patch('viewmodel.viewmodel.DynamicModel')
-def test_stop_trace_uses_dynamic_model(model):
+@mock.patch('viewmodel.viewmodel.Model')
+def test_stop_trace_uses_model(model):
     setup = Setup()
     viewmodel = ViewModel(setup)
     viewmodel._model = model.return_value
@@ -229,7 +229,7 @@ def test_stop_trace_uses_dynamic_model(model):
     model.return_value.stop_trace.assert_called_once()
 
 
-@mock.patch('viewmodel.viewmodel.BaseModel')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_set_range_uses_model(model):
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -240,8 +240,8 @@ def test_set_range_uses_model(model):
     model.return_value.set_range.assert_called_with('dummy', 'range')
 
 
-@mock.patch('viewmodel.viewmodel.DynamicModel.thread_error', return_value='dummy_error')
-@mock.patch('viewmodel.viewmodel.DynamicModel')
+@mock.patch('viewmodel.viewmodel.Model.thread_error', return_value='dummy_error')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_thread_error_uses_model(model, error):
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -250,8 +250,8 @@ def test_thread_error_uses_model(model, error):
     assert viewmodel.thread_error() == 'dummy_error'
 
 
-@mock.patch('viewmodel.viewmodel.DynamicModel.process_error', return_value='dummy_error')
-@mock.patch('viewmodel.viewmodel.DynamicModel')
+@mock.patch('viewmodel.viewmodel.Model.process_error', return_value='dummy_error')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_process_error_uses_model(model, error):
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -260,8 +260,8 @@ def test_process_error_uses_model(model, error):
     assert viewmodel.process_error() == 'dummy_error'
 
 
-@mock.patch('viewmodel.viewmodel.DynamicModel.trace_active', return_value='dummy_status')
-@mock.patch('viewmodel.viewmodel.DynamicModel')
+@mock.patch('viewmodel.viewmodel.Model.trace_active', return_value='dummy_status')
+@mock.patch('viewmodel.viewmodel.Model')
 def test_trace_active_uses_model(model, error):
     setup = Setup()
     viewmodel = ViewModel(setup)

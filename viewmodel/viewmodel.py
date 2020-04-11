@@ -1,14 +1,13 @@
 from pathlib import Path
 
-from model.base import BaseModel
-from model.dynamic import DynamicModel
+from model.model import Model
 from persistence.persistence import Persistence
 
 
 # Transforms data into format usable by the layout
 class ViewModel:
     def __init__(self, setup):
-        self._model = BaseModel(Persistence())
+        self._model = Model(Persistence())
         self._setup = setup
 
     # Return list of nodes in a format usable to the view
@@ -73,12 +72,12 @@ class ViewModel:
             raise ValueError('Could not find output file at {}'.format(path))
         except IsADirectoryError:
             raise ValueError('{} is a directory, not a file'.format(path))
-        self._model = DynamicModel(Persistence())
+        self._model = Model(Persistence())
         self._model.load_output(text)
 
     # Create arguments from setup and start tracing
     def start_trace(self):
-        self._model = DynamicModel(Persistence())
+        self._model = Model(Persistence())
         arguments = self._setup.generate_bcc_args()
         self._model.start_trace(arguments)
 
