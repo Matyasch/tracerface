@@ -9,28 +9,62 @@ class ViewModel:
     def __init__(self, setup):
         self._model = Model(Persistence())
         self._setup = setup
+        self._expanded_elements = []
 
     # Return list of nodes in a format usable to the view
     def get_nodes(self):
-        return [{
-            'data': {
-                'id': node,
-                'name': self._model.get_nodes()[node]['name'],
-                'source': self._model.get_nodes()[node]['source'],
-                'count': self._model.get_nodes()[node]['call_count']}
-            } for node in self._model.get_nodes()]
+        return [
+            {
+                'data': {
+                    'id': node_id,
+                    'name': self._model.get_nodes()[node_id]['name'],
+                    'info': self.get_info_text_for_node(node_id),
+                    'source': self._model.get_nodes()[node_id]['source'],
+                    'count': self._model.get_nodes()[node_id]['call_count']
+                }
+            } for node_id in self._model.get_nodes()
+        ]
 
     # Return list of edges in a format usable to the view
     def get_edges(self):
-        return [{
-            'data': {
-                'source': edge[0],
-                'target': edge[1],
-                'params': self.get_param_visuals_for_edge(edge),
-                'call_count': self._model.get_edges()[edge]['call_count'],
-                'caller_name': self._model.get_nodes()[edge[0]]['name'],
-                'called_name': self._model.get_nodes()[edge[1]]['name']}
-            } for edge in self._model.get_edges()]
+        return [
+            {
+                'data': {
+                    'source': edge[0],
+                    'target': edge[1],
+                    'params': self.get_param_visuals_for_edge(edge),
+                    'call_count': self._model.get_edges()[edge]['call_count'],
+                    'caller_name': self._model.get_nodes()[edge[0]]['name'],
+                    'called_name': self._model.get_nodes()[edge[1]]['name'],
+                    'info': self.get_info_text_for_edge(edge)
+                }
+            } for edge in self._model.get_edges()
+        ]
+
+    def get_info_text_for_node(self, id):
+        node = self._model.get_nodes()[id]
+        text = '{}\nSource: {}\nCalled {} times'.format(
+            node['name'],
+            node['source'],
+            node['call_count'])
+        params = self.get_params_of_node(id)
+        if len(params) > 0:
+            text = '{}\nWith parameters:\n{}'.format(
+                text,
+                '\n'.join([', '.join(param) for param in params])
+            )
+        return text
+
+    def get_info_text_for_edge(self, id):
+        edge = self._model.get_edges()[id]
+        text = 'Call made {} times'.format(edge['call_count'])
+        params = self.get_params_of_edge(id[0], id[1])
+        if len(params) > 0:
+            text = '{}\nWith parameters:\n{}'.format(
+                text,
+                '\n'.join([', '.join(param) for param in params])
+            )
+        return text
 
     # Return label of a given edge based on its parameters
     def get_param_visuals_for_edge(self, edge):
@@ -158,3 +192,12 @@ class ViewModel:
     def load_config_file(self, path):
         if path:
             self._setup.load_from_file(path)
+
+    def element_clicked(self, id):
+        if id in self._expanded_elements:
+            self._expanded_elements.remove(id)
+        else:
+            self._expanded_elements.append(id)
+
+    def get_expanded_elements(self):
+        return self._expanded_elements

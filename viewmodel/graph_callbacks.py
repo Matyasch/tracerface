@@ -7,8 +7,8 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 from view.alerts import ErrorAlert
-from view.info_cards import EdgeInfoCard, NodeInfoCard
 from view.graph import Graph
+from view.styles import expanded_style
 
 
 # Update nodes and edges in graph
@@ -37,43 +37,30 @@ def update_graph_elements(app, view_model):
         return view_model.get_nodes() + view_model.get_edges(), alert
 
 
+# Display or hide inforamtion about edges and nodes
 # Update colors of the graph
 def update_graph_style(app, view_model):
     output = Output('graph', 'stylesheet')
     input = [
         Input('slider', 'value'),
         Input('searchbar', 'value'),
-        Input('graph', 'elements')
-    ]
-    @app.callback(output, input)
-    def update_style(slider, search, elements):
-        if not callback_context.triggered:
-            raise PreventUpdate
-
-        id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'slider':
-            view_model.set_range(slider[0], slider[1])
-        return Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
-
-
-# Display info card for clicked element in graph
-def display_info_card(app, view_model):
-    output = Output('info-card', 'children')
-    input = [
+        Input('graph', 'elements'),
         Input('graph', 'tapNodeData'),
-        Input('graph', 'tapEdgeData'),
-        Input('graph', 'elements')
+        Input('graph', 'tapEdgeData')
     ]
     @app.callback(output, input)
-    def update_node_info(node, edge, elements):
+    def update_style(slider, search, elements, node, edge):
         if not callback_context.triggered:
             raise PreventUpdate
 
-        id = callback_context.triggered[0]['prop_id'].split('.')[1]
-        if id == 'tapNodeData' and node:
-            return NodeInfoCard(node, view_model.get_params_of_node(node['id']))
-        elif id == 'tapEdgeData' and edge:
-            return EdgeInfoCard(edge, view_model.get_params_of_edge(edge['source'], edge['target']))
-        elif id == 'elements' and elements:
-            return None
-        raise PreventUpdate
+        input = callback_context.triggered[0]['prop_id'].split('.')
+        if input[0] == 'slider':
+            view_model.set_range(slider[0], slider[1])
+        if input[0] == 'graph' and input[1] == 'tapNodeData' and node:
+            view_model.element_clicked(node['id'])
+        if input[0] == 'graph' and input[1] == 'tapEdgeData' and edge:
+            view_model.element_clicked(edge['id'])
+
+        base_styles = Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
+        node_styles = [expanded_style(id) for id in view_model.get_expanded_elements()]
+        return base_styles + node_styles

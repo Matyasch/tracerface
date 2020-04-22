@@ -18,7 +18,7 @@ def base_node_style():
     return {
         'selector': 'node',
         'style': {
-            'content': 'data(name)',
+            'label': 'data(name)',
             'text-valign': 'center',
             'width': 'label',
             'height': 'label',
@@ -28,6 +28,16 @@ def base_node_style():
             'background-color': 'white',
             'border-width': '1',
             'padding': '5px'
+        }
+    }
+
+
+def expanded_style(node_id):
+    return {
+        'selector': '#{}'.format(node_id),
+        'style': {
+            'label': 'data(info)',
+            'text-wrap': 'wrap'
         }
     }
 

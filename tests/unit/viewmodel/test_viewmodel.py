@@ -63,17 +63,20 @@ def test_get_nodes(model, nodes, edges):
         {'data': {
             'count': 0,
             'id': 'dummy_hash1',
+            'info': 'dummy_name1\nSource: dummy_source1\nCalled 0 times',
             'name': 'dummy_name1',
             'source': 'dummy_source1'
         }},
         {'data': {'count': 1,
             'id': 'dummy_hash2',
+            'info': 'dummy_name2\nSource: dummy_source2\nCalled 1 times',
             'name': 'dummy_name2',
             'source': 'dummy_source2'
         }},
         {'data': {
             'count': 2,
             'id': 'dummy_hash3',
+            'info': 'dummy_name3\nSource: dummy_source1\nCalled 2 times',
             'name': 'dummy_name3',
             'source': 'dummy_source1'
         }}
@@ -94,7 +97,8 @@ def test_get_edges(model, nodes, edges):
             'caller_name': 'dummy_name1',
             'params': '',
             'source': 'dummy_hash1',
-            'target': 'dummy_hash2'
+            'target': 'dummy_hash2',
+            'info': 'Call made 0 times',
         }},
         {'data': {
             'call_count': 3,
@@ -102,7 +106,8 @@ def test_get_edges(model, nodes, edges):
             'caller_name': 'dummy_name1',
             'params': 'dummy_param',
             'source': 'dummy_hash1',
-            'target': 'dummy_hash3'
+            'target': 'dummy_hash3',
+            'info': 'Call made 3 times\nWith parameters:\ndummy_param'
         }},
         {'data': {
             'call_count': 4,
@@ -110,7 +115,8 @@ def test_get_edges(model, nodes, edges):
             'caller_name': 'dummy_name2',
             'params': '...',
             'source': 'dummy_hash2',
-            'target': 'dummy_hash3'
+            'target': 'dummy_hash3',
+            'info': 'Call made 4 times\nWith parameters:\ndummy_param1\ndummy_param2\ndummy_param3'
         }}
     ]
 
@@ -379,3 +385,18 @@ def test_remove_parameter():
 
     viewmodel.remove_parameter('app', 'func', '0')
     setup.remove_parameter.assert_called_with('app', 'func', 0)
+
+
+def test_expanded_elements():
+    setup = mock.Mock()
+    viewmodel = ViewModel(setup)
+
+    viewmodel.element_clicked('dummy_id1')
+    assert 'dummy_id1' in viewmodel._expanded_elements
+
+    viewmodel.element_clicked('dummy_id2')
+    assert 'dummy_id1' in viewmodel._expanded_elements
+    assert 'dummy_id2' in viewmodel._expanded_elements
+
+    viewmodel.element_clicked('dummy_id1')
+    assert 'dummy_id1' not in viewmodel._expanded_elements
