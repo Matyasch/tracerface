@@ -61,6 +61,8 @@ def update_graph_style(app, view_model):
         if input[0] == 'graph' and input[1] == 'tapEdgeData' and edge:
             view_model.element_clicked(edge['id'])
 
+        if not search:
+            search = ''
         base_styles = Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
         node_styles = [expanded_style(id) for id in view_model.get_expanded_elements()]
         return base_styles + node_styles

@@ -6,6 +6,8 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import view.alerts as alerts
+from view.graph import Graph
+from view.dashboard import Dashboard
 
 
 # Disable function managagement buttons if no function is selected
@@ -70,7 +72,6 @@ def stop_trace_on_error(app, view_model):
         raise PreventUpdate
 
 
-# TODO: if no functions, don't let turn on
 # Start realtime tracing
 def start_or_stop_trace(app, view_model):
     output = Output('timer', 'disabled')
@@ -85,14 +86,33 @@ def start_or_stop_trace(app, view_model):
         return not trace_on
 
 
-# Disable parts of the interface while tracing is active
-def disable_interface_on_trace(app):
-    output = Output('utilities-tab', 'disabled')
-    input = [Input('timer', 'disabled')]
+# Update color slider based on graph and set colors
+def update_color_slider(app, view_model):
+    output = Output('slider-div', 'children')
+    input = [
+        Input('graph', 'elements'),
+        Input('timer', 'disabled')
+    ]
     @app.callback(output, input)
-    def switch_disables(timer_off):
-        trace_on = not timer_off
-        return trace_on
+    def update(elements, timer_off):
+        if not callback_context.triggered:
+            raise PreventUpdate
+
+        disabled = view_model.max_count() < 1 or not timer_off
+        return Dashboard.slider(view_model.yellow_count(), view_model.red_count(), view_model.max_count(), disabled)
+
+
+# Disable parts of the interface while tracing is active
+def disable_searchbar(app, view_model):
+    output = Output('searchbar', 'disabled')
+    input = [
+        Input('graph', 'elements'),
+        Input('timer', 'disabled')
+    ]
+    @app.callback(output, input)
+    def switch_disables(elements, timer_off):
+        disabled = view_model.max_count() < 1 or not timer_off
+        return disabled
 
 
 # Add or remove applications, load content of config file
@@ -137,9 +157,23 @@ def update_apps_dropdown_options(app, view_model):
 
 # Update value of application selection on application removal
 def clear_selected_app(app):
-    @app.callback(Output('applications-select', 'value'),
-        [Input('remove-app-button', 'n_clicks')])
+    output = Output('applications-select', 'value')
+    input = [Input('remove-app-button', 'n_clicks')]
+    @app.callback(output, input)
     def clear_value(remove):
         if remove:
             return None
         raise PreventUpdate
+
+
+# Save animation status and spacing between nodes
+def update_graph_layout(app, view_model):
+    output = Output('graph', 'layout')
+    input = [
+        Input('animate-switch', 'value'),
+        Input('node-spacing-input', 'value')
+    ]
+    @app.callback(output, input)
+    def update_spacing_and_animate(animate_switch, spacing):
+        animate = len(animate_switch) == 1
+        return Graph.layout(spacing=spacing, animate=animate)
