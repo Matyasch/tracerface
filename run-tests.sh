@@ -4,15 +4,18 @@ set -e
 # Script for running tests properly
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-VIRTUALENV_DIR="$ROOT_DIR/bin-python"
+VIRTUALENV_DIR="$ROOT_DIR/.venv-test"
+
+if ! [ -f "/usr/lib/python3/dist-packages/bcc/__init__.py" ]; then
+    echo "Please install the python3-bcc package"
+    exit 1
+fi
 
 # Prepare environment
 echo "Preparing environment"
-source "$ROOT_DIR/bcc-env.inc.sh"
-
-python3 -m virtualenv "$VIRTUALENV_DIR"
-source "$ROOT_DIR/bin-python/bin/activate"
-pip3 --disable-pip-version-check install --no-cache-dir --requirement requirements-test.txt > "$VIRTUALENV_DIR/pip-install.log"
+python3 -m venv "$VIRTUALENV_DIR"
+source "$VIRTUALENV_DIR/bin/activate"
+pip install -r requirements-test.txt > "$VIRTUALENV_DIR/pip-install.log"
 
 # Run unit tests
 echo "Running unit tests"
