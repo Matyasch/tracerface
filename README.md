@@ -3,14 +3,16 @@
 [![Build Status](https://travis-ci.org/m-sch/tracerface.svg?branch=master)](https://travis-ci.org/m-sch/tracerface)
 [![Python](https://img.shields.io/lgtm/grade/python/g/m-sch/tracerface.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/m-sch/tracerface/context:python)
 
-An interactive web-app built with [dash](https://dash.plot.ly/) for call-graph visualisation in realtime, using [BCC](https://github.com/iovisor/bcc) trace.
+An interactive web-app built with [dash][dash_docs] for call-graph visualisation in realtime, using [BCC][bcc_repo] trace.
 
 ![trace][trace_pic]
 
 ## Installation
 
-1. Install the ```python3-bcc``` package: `sudo apt install python3-bcc`
-2. Clone this repo
+Packages from iovisor are required to run as others may be outdated.
+1. Get to the point where you can install iovisor packages, by following their [installation guide][bcc_install]
+2. Install the ```python3-bcc``` package
+3. Clone this repo
 
 ## Usage
 
@@ -47,4 +49,7 @@ Click on the grey power button to start tracing. After it has turned green, run 
 
 On the **Static** tab you can copy the output of a trace output to the given input box to draw the call-graph.
 
+[dash_docs]: https://dash.plot.ly/
+[bcc_repo]: https://github.com/iovisor/bcc
+[bcc_install]: https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---binary
 [trace_pic]: https://github.com/m-sch/tracerface/blob/master/assets/trace.gif
