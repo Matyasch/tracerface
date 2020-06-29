@@ -18,36 +18,45 @@ Packages from iovisor are required to run as others may be outdated.
 
 Run ```run.sh``` with superuser privileges. The privileges are needed for bcc trace to access the kernel. Use the ```--help``` argument for more information about arguemnts.
 
-For tests, run the ```run-tests.sh``` wrapper script. For integration tests too you have to run it with superuser privileges for the previous reasons.
+Run the ```run-tests.sh``` script for tests. For integration tests too you have to run it with superuser privileges for the previous reasons.
+
+## Features
 
 ### **Select what to trace on the GUI**
 
-* Add the applications you wish to monitor on the **Realtime** tab.
-* Add functions you wish to trace selecting an added binary under **Manage applications** and then clicking on **Manage functions**.
-* You can also define traced parameters for a function by clicking the  **Manage parameters** button.
+* Add binaries or built-in functions you wish to monitor.
+* Set functions you wish to trace by managing functions of an application.
+* Define traced parameters for a function by managing parameters.
 
-### **Or load from a file**
+### **Load setup from file**
 
-You can add applications, functions and parameters from a yaml file instead in the following format:
+You can add binaries, functions and parameters from a yaml file instead:
 
 ```yaml
-app1:
+/path/to/app1:
   func1: {}
   func2:
-    1: '%s'
+    1: '%s' # position and format of parameter
     3: '%d'
-app2:
+/path/to/app2:
   func3: {}
+/path/to/app3: {} # need to set functions to trace in UI
 ```
 
-Check in the checkbox labeled with **Use config file instead** and then paste the path of the file into the appeared input box. Once you are done, start tracing.
+If you want to trace built-in functions, you can write them as if they were functions of a binary, but on the binary level:
+
+```yaml
+/path/to/app:
+  func: {}
+do_sys_open: {} # built-in functions do not need path
+```
 
 ### **Start tracing**
-Click on the grey power button to start tracing. After it has turned green, run the application(s) and watch as the call-graph gets drawn on the screen.
+Click on the grey power button to start tracing. After it turns green, the functions are getting traced.
 
-### **Output analysis**
+### **Load output of BCC trace run**
 
-On the **Static** tab you can copy the output of a trace output to the given input box to draw the call-graph.
+Create the interactive call-graph of a given bcc trace output
 
 [dash_docs]: https://dash.plot.ly/
 [bcc_repo]: https://github.com/iovisor/bcc
