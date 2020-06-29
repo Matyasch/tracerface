@@ -3,7 +3,7 @@ from queue import Empty
 from threading import Thread
 
 from model.parse_stack import parse_stack
-from model.trace_utils import TraceProcess, STACK_END_PATTERN
+from model.trace_process import TraceProcess
 
 
 # Model for tracing and parsing the output
@@ -47,32 +47,33 @@ class Model:
         self._persistence.update_colors(yellow, red)
 
     # While tracing, consume items from the queue and process them
-    def monitor_tracing(self, queue, process):
+    def _monitor_tracing(self, trace_process):
         calls = []
+        last_line_was_empty = False # call-stack ends when two empty lines follow eachother
         while self._thread_enabled:
             # If process died unexpectedly, report error
-            if not process.is_alive():
+            if not trace_process.is_alive():
                 self._thread_error = 'Tracing stopped unexpectedly'
                 break
-            try:
-                # Get only one item at a time from the queue, in case
-                # tracing gets stopped but queue keeps getting items
-                # so we keep checking the loop condition.
-                output = queue.get_nowait()
-                if output == STACK_END_PATTERN:
-                    stack = parse_stack(calls)
-                    self._persistence.load_edges(stack.edges)
-                    self._persistence.load_nodes(stack.nodes)
-                    self.init_colors()
-                    calls.clear()
-                else:
-                    calls.append(output)
-            except Empty:
-                pass
-        # If tracing was stopped by the user, terminate tracing process
-        if(process.is_alive()):
-            process.terminate()
-            process.join()
+            output = trace_process.get_output()
+            # call-stack ended
+            if output == '\n' and last_line_was_empty:
+                stack = parse_stack(calls)
+                self._persistence.load_edges(stack.edges)
+                self._persistence.load_nodes(stack.nodes)
+                self.init_colors()
+                calls.clear()
+            # new line after a regular output
+            elif output == '\n':
+                last_line_was_empty = True
+            # regular output from bcc trace
+            elif output:
+                last_line_was_empty = False
+                calls.append(output)
+        # Terminate process when tracing is stopped by the user
+        if trace_process.is_alive():
+            trace_process.terminate()
+            trace_process.join()
 
     # Clear errors and persistence, initialize values needed for tracing,
     # build argument list then start tracing and monitoring its output
@@ -86,8 +87,8 @@ class Model:
 
         args = ['', '-UK'] + [fr'{function}' for function in functions]
         queue = Queue()
-        trace_process = TraceProcess(queue=queue, args=args)
-        monitoring = Thread(target=self.monitor_tracing, args=[queue, trace_process])
+        trace_process = TraceProcess(args=args)
+        monitoring = Thread(target=self._monitor_tracing, args=(trace_process,))
         trace_process.start()
         monitoring.start()
 
