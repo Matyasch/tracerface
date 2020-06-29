@@ -8,10 +8,5 @@ before_install:
 
 install: pip install -r requirements-test.txt
 
-env:
-  - TESTFOLDER=tests/unit/model
-  - TESTFOLDER=tests/unit/persistence
-  - TESTFOLDER=tests/unit/viewmodel
-
 script:
-  - pytest $TESTFOLDER
+  - pytest tests/unit/
