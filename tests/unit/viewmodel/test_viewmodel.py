@@ -276,15 +276,28 @@ def test_trace_active_uses_model(model, error):
     assert viewmodel.trace_active() == 'dummy_status'
 
 
-def test_add_app():
+def test_add_app_leaves_setup_untouched_with_invalid_arguments():
     setup = mock.Mock()
     viewmodel = ViewModel(setup)
 
     viewmodel.add_app(None)
     assert not setup.initialize_app.called
 
+
+def test_add_app_adds_app_as_binary_to_setup_if_no_exception_happens():
+    setup = mock.Mock()
+    viewmodel = ViewModel(setup)
     viewmodel.add_app('app')
-    setup.initialize_app.assert_called_with('app')
+    setup.initialize_binary.assert_called_with('app')
+
+
+def test_add_app_adds_app_as_built_in_to_setup_exception_happens():
+    setup = mock.Mock()
+    setup.initialize_binary.side_effect = ValueError()
+    viewmodel = ViewModel(setup)
+    viewmodel.add_app('app')
+    setup.initialize_binary.assert_called_with('app')
+    setup.initialize_built_in.assert_called_with('app')
 
 
 def test_remove_app():
@@ -330,7 +343,7 @@ def test_get_not_traced_functions_for_app():
     assert viewmodel.get_not_traced_functions_for_app('dummy') == ['func2']
 
 
-def test_add_function():
+def test_add_function_leaves_setup_untouched_with_invalid_arguments():
     setup = mock.Mock()
     viewmodel = ViewModel(setup)
 
@@ -339,21 +352,31 @@ def test_add_function():
     viewmodel.add_function(None, 'func')
     assert not setup.add_function.called
 
+
+def test_add_function_adds_function_to_setup():
+    setup = mock.Mock()
+    viewmodel = ViewModel(setup)
+
     viewmodel.add_function('app', 'func')
-    setup.add_function.assert_called_with('app', 'func')
+    setup.setup_function_to_trace.assert_called_with('app', 'func')
 
 
-def test_remove_function():
+def test_remove_function_leaves_setup_untouched_with_invalid_arguments():
     setup = mock.Mock()
     viewmodel = ViewModel(setup)
 
     viewmodel.remove_function(None, None)
     viewmodel.remove_function('app', None)
     viewmodel.remove_function(None, 'func')
-    assert not setup.remove_function.called
+    assert not setup.remove_function_from_trace.called
+
+
+def test_remove_function_removes_function_from_setup():
+    setup = mock.Mock()
+    viewmodel = ViewModel(setup)
 
     viewmodel.remove_function('app', 'func')
-    setup.remove_function.assert_called_with('app', 'func')
+    setup.remove_function_from_trace.assert_called_with('app', 'func')
 
 
 def test_get_parameters():

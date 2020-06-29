@@ -139,17 +139,20 @@ def update_apps_dropdown_options(app, view_model):
 
         alert = None
         if id == 'add-app-button':
-            try:
-                view_model.add_app(app_to_add)
+            err_message = view_model.add_app(app_to_add)
+            if err_message:
+                alert = alerts.WarningAlert(err_message)
+            else:
                 alert = alerts.add_app_success_alert(app_to_add)
-            except ValueError as msg:
-                alert = alerts.ErrorAlert(str(msg))
         elif id == 'remove-app-button':
             view_model.remove_app(app_to_remove)
         elif id == 'load-config-button':
             try:
-                view_model.load_config_file(config_path)
-                alert = alerts.load_setup_success_alert(config_path)
+                err_message = view_model.load_config_file(config_path)
+                if err_message:
+                    alert = alerts.WarningAlert(err_message)
+                else:
+                    alert = alerts.load_setup_success_alert(config_path)
             except ValueError as msg:
                 alert = alerts.ErrorAlert(str(msg))
         return [{"label": app, "value": app} for app in view_model.get_apps()], alert
@@ -158,10 +161,13 @@ def update_apps_dropdown_options(app, view_model):
 # Update value of application selection on application removal
 def clear_selected_app(app):
     output = Output('applications-select', 'value')
-    input = [Input('remove-app-button', 'n_clicks')]
+    input = [
+        Input('remove-app-button', 'n_clicks'),
+        Input('add-app-button', 'n_clicks')
+    ]
     @app.callback(output, input)
-    def clear_value(remove):
-        if remove:
+    def clear_value(add, remove):
+        if add or remove:
             return None
         raise PreventUpdate
 

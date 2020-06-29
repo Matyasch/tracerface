@@ -20,6 +20,12 @@ class ErrorAlert(BaseAlert):
         super().__init__(message=message, color='danger')
 
 
+# Style for alerts singaling error
+class WarningAlert(BaseAlert):
+    def __init__(self, message):
+        super().__init__(message=message, color='warning')
+
+
 def add_app_success_alert(item):
     return SuccessAlert('Application added')
 

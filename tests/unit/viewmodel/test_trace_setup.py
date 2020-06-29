@@ -26,10 +26,10 @@ def test_empty_setup():
 
 
 @patch('viewmodel.trace_setup.check_output', return_value=b'func1\nfunc2\nfunc3\n')
-def test_initialize_app(nm):
+def test_initialize_binary(nm):
     setup = Setup()
 
-    setup.initialize_app('app')
+    setup.initialize_binary('app')
 
     assert setup._setup == {
         'app': {
@@ -50,6 +50,18 @@ def test_remove_app(init_setup):
         'app1': {
             'func1': {'traced': False, 'parameters': {}},
             'func3': {'traced': False, 'parameters': {}}
+        }
+    }
+
+
+def test_initialize_built_in():
+    setup = Setup()
+
+    setup.initialize_built_in('app')
+
+    assert setup._setup == {
+        'built-ins': {
+            'app': {'traced': True, 'parameters': {}},
         }
     }
 
@@ -75,11 +87,11 @@ def test_get_setup_of_app(init_setup):
     }
 
 
-def test_add_function(init_setup):
+def test_setup_function_to_trace(init_setup):
     setup = Setup()
     setup._setup = init_setup
 
-    setup.add_function('app1', 'func1')
+    setup.setup_function_to_trace('app1', 'func1')
 
     assert setup._setup == {
         'app1': {
@@ -92,12 +104,12 @@ def test_add_function(init_setup):
     }
 
 
-def test_remove_function(init_setup):
+def test_remove_function_from_trace(init_setup):
     setup = Setup()
     setup._setup = init_setup
 
-    setup.add_function('app1', 'func1')
-    setup.remove_function('app1', 'func1')
+    setup.setup_function_to_trace('app1', 'func1')
+    setup.remove_function_from_trace('app1', 'func1')
 
     assert setup._setup == {
         'app1': {
@@ -199,7 +211,7 @@ def test_load_from_file_raises_exception_if_file_is_directory(read):
         setup.load_from_file('.non/existent/path')
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load')
+@patch('viewmodel.trace_setup.yaml.safe_load', return_value='not_yaml')
 @patch('viewmodel.trace_setup.Path.read_text')
 def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
     def side_effect(content):
@@ -211,9 +223,10 @@ def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
         setup.load_from_file('dummy/path')
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load', return_value={'.non/existent/path' : {}})
+@patch('viewmodel.trace_setup.yaml.safe_load', return_value={'built_in' : {}})
 @patch('viewmodel.trace_setup.Path.read_text')
-def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
+def test_load_from_file_adds_built_in_if_binary_not_found(read, load):
     setup = Setup()
-    with raises(ValueError):
-        setup.load_from_file('dummy/path')
+    setup.load_from_file('dummy/path')
+    assert 'built-ins' in setup._setup
+    assert 'built_in' in setup._setup['built-ins']

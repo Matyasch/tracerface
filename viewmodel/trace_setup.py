@@ -8,11 +8,14 @@ class Setup:
         self._setup = {}
 
     # initialize app and its functions for tracing
-    def initialize_app(self, path):
+    def initialize_binary(self, path):
+        if path in self._setup:
+            return
         try:
             symbols = check_output(['nm', path]).decode().rstrip().split('\n')
         except CalledProcessError:
-            raise ValueError('Could not find binary at {}'.format(path))
+            raise ValueError('Could not find binary at {}, so it is assumed to be a built-in function'.format(path))
+
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}
         for function in functions:
@@ -21,6 +24,14 @@ class Setup:
                 'parameters': {}
             }
         self._setup[path] = init_state
+
+    def initialize_built_in(self, func_name):
+        if 'built-ins' not in self._setup:
+            self._setup['built-ins'] = {}
+        self._setup['built-ins'][func_name] = {
+            'traced': True,
+            'parameters': {}
+        }
 
     # Remove application from getting traced
     def remove_app(self, app):
@@ -35,14 +46,14 @@ class Setup:
         return self._setup[app]
 
     # Sets up a function to be traced
-    def add_function(self, app, function):
+    def setup_function_to_trace(self, app, function):
         try:
             self._setup[app][function]['traced'] = True
         except KeyError:
             raise ValueError('No function named {} was found in {}'.format(function, app))
 
     # Removes a function from traced ones
-    def remove_function(self, app, function):
+    def remove_function_from_trace(self, app, function):
         self._setup[app][function]['traced'] = False
 
     # Returns the indexes where a parameter is set for tracing
@@ -64,7 +75,10 @@ class Setup:
         for app in self._setup:
             for function in self._setup[app]:
                 if self._setup[app][function]['traced']:
-                    argument = '{}:{}'.format(app, function)
+                    if app == 'built-ins':
+                        argument = function
+                    else:
+                        argument = '{}:{}'.format(app, function)
                     params = self._setup[app][function]['parameters']
                     if params:
                         argument = '{} "{}", {}'.format(
@@ -85,14 +99,22 @@ class Setup:
         try:
             config = yaml.safe_load(content)
         except yaml.parser.ParserError:
-            raise ValueError('File format is incorrect')
+            raise ValueError('File needs to be yaml format')
 
         try:
+            err_message = ''
             for app in config:
-                self.initialize_app(app)
-                for function in config[app]:
-                    self.add_function(app, function)
-                    for index in config[app][function]:
-                        self.add_parameter(app, function, index, config[app][function][index])
+                try:
+                    self.initialize_binary(app)
+                    for function in config[app]:
+                        self.setup_function_to_trace(app, function)
+                        for index in config[app][function]:
+                            self.add_parameter(app, function, index, config[app][function][index])
+                except ValueError:
+                    self.initialize_built_in(app)
+                    for index in config[app]:
+                        self.add_parameter('built-ins', app, index, config[app][index])
+                    err_message = 'Some binaries were not found so they were assumed to be built-in functions'
+            return err_message
         except TypeError:
             raise ValueError('File format is incorrect')

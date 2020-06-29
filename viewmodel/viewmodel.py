@@ -137,8 +137,12 @@ class ViewModel:
 
     # Returns a dict of pairs of functions name and False
     def add_app(self, app):
-        if app:
-            self._setup.initialize_app(app)
+        try:
+            self._setup.initialize_binary(app)
+            return ''
+        except ValueError as err:
+            self._setup.initialize_built_in(app)
+            return str(err)
 
     # Remove application from getting traced
     def remove_app(self, app):
@@ -166,12 +170,12 @@ class ViewModel:
     # Sets up a function to be traced
     def add_function(self, app, function):
         if app and function:
-            self._setup.add_function(app, function)
+            self._setup.setup_function_to_trace(app, function)
 
     # Removes a function from traced ones
     def remove_function(self, app, function):
         if app and function:
-            self._setup.remove_function(app, function)
+            self._setup.remove_function_from_trace(app, function)
 
     # Returns the indexes where a parameter is set for tracing
     def get_parameters(self, app, function):
@@ -191,7 +195,7 @@ class ViewModel:
 
     def load_config_file(self, path):
         if path:
-            self._setup.load_from_file(path)
+            return self._setup.load_from_file(path)
 
     def element_clicked(self, id):
         if id in self._expanded_elements:
