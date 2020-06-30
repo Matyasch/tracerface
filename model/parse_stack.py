@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 '''
 Parse bcc trace output by processing it line by line.
 Two neighbouring lines are considered at a time
@@ -5,13 +6,14 @@ where the former is the called function
 and the latter is the caller function
 '''
 from collections import namedtuple
+from hashlib import sha256
 from re import compile
 
 
 # Regex patterns to match in bcc trace output
-FUNCTION_PATTERN = compile(r'^b\'(.+)\+.*\s\[(.+)\]')
-PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
-HEADER_PATTERN = compile(r'^PID\s+TID\s+COMM\s+FUNC')
+_FUNCTION_PATTERN = compile(r'^b\'(.+)\+.*\s\[(.+)\]')
+_PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
+_HEADER_PATTERN = compile(r'^PID\s+TID\s+COMM\s+FUNC')
 
 
 # Struct to contains a call-stack from bcc trace output
@@ -19,7 +21,7 @@ Stack = namedtuple('Stack', 'nodes edges')
 
 
 # Create node for a function with its name and source
-def create_node(regex):
+def _create_node(regex):
     node_dict = {}
     node_dict['name'] = regex.group(1)
     node_dict['source'] = regex.group(2)
@@ -27,7 +29,7 @@ def create_node(regex):
 
 
 # Add edge to the edges to be returned
-def expand_edges(called, caller, edges, params, traced):
+def _expand_edges(called, caller, edges, params, traced):
     edge_id = (caller, called)
     # If the edge is not already present then add it to the list
     if edge_id not in edges:
@@ -40,7 +42,7 @@ def expand_edges(called, caller, edges, params, traced):
 
 
 # Add node to the nodes to be returned
-def expand_nodes(node_dict, node_hash, nodes, called):
+def _expand_nodes(node_dict, node_hash, nodes, called):
     # If the node is not already present then add it to the list
     if node_hash not in nodes:
         nodes[node_hash] = node_dict
@@ -51,8 +53,8 @@ def expand_nodes(node_dict, node_hash, nodes, called):
 
 
 # Get parameters from a single stack
-def get_params(header):
-    params = PARAMS_PATTERN.match(header)
+def _get_params(header):
+    params = _PARAMS_PATTERN.match(header)
     if params:
         return [param.lstrip('b').strip("'") for param in params.group(1).rstrip('\r').split(' ') if param != '']
     return None
@@ -62,12 +64,12 @@ def parse_stack(stack):
     if not stack:
         return Stack(nodes={}, edges={})
 
-    if HEADER_PATTERN.match(stack[0]):
+    if _HEADER_PATTERN.match(stack[0]):
         stack.pop(0)
     if not stack:
         return Stack(nodes={}, edges={})
 
-    params = get_params(stack.pop(0))
+    params = _get_params(stack.pop(0))
 
     nodes = {}
     edges = {}
@@ -75,13 +77,13 @@ def parse_stack(stack):
     traced = True
     while stack:
         call = stack.pop(0)
-        caller = FUNCTION_PATTERN.match(call)
+        caller = _FUNCTION_PATTERN.match(call)
         if caller:
-            caller_node = create_node(caller)
-            caller_hash = str(hash(frozenset(caller_node.items())))
-            expand_nodes(caller_node, caller_hash, nodes, called_hash)
+            caller_node = _create_node(caller)
+            caller_hash = sha256(repr(caller_node).encode()).hexdigest()
+            _expand_nodes(caller_node, caller_hash, nodes, called_hash)
             if called_hash:
-                expand_edges(called_hash, caller_hash, edges, params, traced)
+                _expand_edges(called_hash, caller_hash, edges, params, traced)
                 params = None
                 traced = False
             called_hash = caller_hash
