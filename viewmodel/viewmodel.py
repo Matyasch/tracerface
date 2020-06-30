@@ -1,13 +1,14 @@
 from pathlib import Path
 
 from model.model import Model
-from persistence.persistence import Persistence
+from persistence.call_graph import CallGraph
 
 
 # Transforms data into format usable by the layout
 class ViewModel:
     def __init__(self, setup):
-        self._model = Model(Persistence())
+        self._call_graph = CallGraph()
+        self._model = Model(self._call_graph)
         self._setup = setup
         self._expanded_elements = []
 
@@ -17,12 +18,12 @@ class ViewModel:
             {
                 'data': {
                     'id': node_id,
-                    'name': self._model.get_nodes()[node_id]['name'],
+                    'name': self._call_graph.get_nodes()[node_id]['name'],
                     'info': self.get_info_text_for_node(node_id),
-                    'source': self._model.get_nodes()[node_id]['source'],
-                    'count': self._model.get_nodes()[node_id]['call_count']
+                    'source': self._call_graph.get_nodes()[node_id]['source'],
+                    'count': self._call_graph.get_nodes()[node_id]['call_count']
                 }
-            } for node_id in self._model.get_nodes()
+            } for node_id in self._call_graph.get_nodes()
         ]
 
     # Return list of edges in a format usable to the view
@@ -33,16 +34,16 @@ class ViewModel:
                     'source': edge[0],
                     'target': edge[1],
                     'params': self.get_param_visuals_for_edge(edge),
-                    'call_count': self._model.get_edges()[edge]['call_count'],
-                    'caller_name': self._model.get_nodes()[edge[0]]['name'],
-                    'called_name': self._model.get_nodes()[edge[1]]['name'],
+                    'call_count': self._call_graph.get_edges()[edge]['call_count'],
+                    'caller_name': self._call_graph.get_nodes()[edge[0]]['name'],
+                    'called_name': self._call_graph.get_nodes()[edge[1]]['name'],
                     'info': self.get_info_text_for_edge(edge)
                 }
-            } for edge in self._model.get_edges()
+            } for edge in self._call_graph.get_edges()
         ]
 
     def get_info_text_for_node(self, id):
-        node = self._model.get_nodes()[id]
+        node = self._call_graph.get_nodes()[id]
         text = '{}\nSource: {}\nCalled {} times'.format(
             node['name'],
             node['source'],
@@ -56,7 +57,7 @@ class ViewModel:
         return text
 
     def get_info_text_for_edge(self, id):
-        edge = self._model.get_edges()[id]
+        edge = self._call_graph.get_edges()[id]
         text = 'Call made {} times'.format(edge['call_count'])
         params = self.get_params_of_edge(id[0], id[1])
         if len(params) > 0:
@@ -68,7 +69,7 @@ class ViewModel:
 
     # Return label of a given edge based on its parameters
     def get_param_visuals_for_edge(self, edge):
-        calls = self._model.get_edges()[edge]['params']
+        calls = self._call_graph.get_edges()[edge]['params']
         if len(calls) == 0:
             return ''
         elif len(calls) == 1:
@@ -77,24 +78,24 @@ class ViewModel:
 
     # Return parameters for an edge defined by its source and target
     def get_params_of_edge(self, source, target):
-        return self._model.get_edges()[(source, target)]['params']
+        return self._call_graph.get_edges()[(source, target)]['params']
 
     # Return parameters for a node defined by its id/hash
     def get_params_of_node(self, node_id):
-        params_by_functions = [self._model.get_edges()[edge]['params'] for edge in self._model.get_edges() if str(edge[1]) == node_id]
+        params_by_functions = [self._call_graph.get_edges()[edge]['params'] for edge in self._call_graph.get_edges() if str(edge[1]) == node_id]
         return [params for calls in params_by_functions for params in calls]
 
     # Return lower bound of call count for functions colored with yellow
     def yellow_count(self):
-        return round(self._model.yellow_count())
+        return self._call_graph.get_yellow()
 
     # Return lower bound of call count for functions colored with red
     def red_count(self):
-        return round(self._model.red_count())
+        return self._call_graph.get_red()
 
     # Return the maximum of call counts for all functions
     def max_count(self):
-        return self._model.max_count()
+        return self._call_graph.max_count()
 
     # Event for static output submit button clicked
     def load_output(self, path):
@@ -106,12 +107,14 @@ class ViewModel:
             raise ValueError('Could not find output file at {}'.format(path))
         except IsADirectoryError:
             raise ValueError('{} is a directory, not a file'.format(path))
-        self._model = Model(Persistence())
+        self._call_graph.clear()
+        self._model = Model(self._call_graph)
         self._model.load_output(text)
 
     # Create arguments from setup and start tracing
     def start_trace(self):
-        self._model = Model(Persistence())
+        self._call_graph.clear()
+        self._model = Model(self._call_graph)
         arguments = self._setup.generate_bcc_args()
         self._model.start_trace(arguments)
 
@@ -121,7 +124,7 @@ class ViewModel:
 
     # Event for setting colors
     def set_range(self, range_bottom, range_top):
-        self._model.set_range(range_bottom, range_top)
+        self._call_graph.set_colors(range_bottom, range_top)
 
     # Return error happening while tracing
     def thread_error(self):

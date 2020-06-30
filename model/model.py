@@ -8,43 +8,10 @@ from model.trace_process import TraceProcess
 
 # Model for tracing and parsing the output
 class Model:
-    def __init__(self, persistence):
-        self._persistence = persistence
+    def __init__(self, call_graph):
+        self._call_graph = call_graph
         self._thread_enabled = False
         self._thread_error = None
-
-    # returns all nodes in a list
-    def get_nodes(self):
-        return self._persistence.get_nodes()
-
-    # returns all edges in a list
-    def get_edges(self):
-        return self._persistence.get_edges()
-
-    # returns the lower bound for coloring elements yellow
-    def yellow_count(self):
-        return self._persistence.get_yellow()
-
-    # returns the lower bound for coloring elements red
-    def red_count(self):
-        return self._persistence.get_red()
-
-    # returns the maximum number of calls among nodes
-    def max_count(self):
-        call_counts = [node['call_count'] for node in self._persistence.get_nodes().values()]
-        if call_counts:
-            return max(call_counts)
-        return 0
-
-    # set new values for the coloring bounds
-    def set_range(self, yellow, red):
-        self._persistence.update_colors(yellow, red)
-
-    # initialize color boundaries to default values based on maximum count
-    def init_colors(self):
-        yellow = round(self.max_count()/3)
-        red = round(self.max_count()*2/3)
-        self._persistence.update_colors(yellow, red)
 
     # While tracing, consume items from the queue and process them
     def _monitor_tracing(self, trace_process):
@@ -59,9 +26,9 @@ class Model:
             # call-stack ended
             if output == '\n' and last_line_was_empty:
                 stack = parse_stack(calls)
-                self._persistence.load_edges(stack.edges)
-                self._persistence.load_nodes(stack.nodes)
-                self.init_colors()
+                self._call_graph.load_edges(stack.edges)
+                self._call_graph.load_nodes(stack.nodes)
+                self._call_graph.init_colors()
                 calls.clear()
             # new line after a regular output
             elif output == '\n':
@@ -83,7 +50,6 @@ class Model:
             return
         self._thread_error = None
         self._thread_enabled = True
-        self._persistence.clear()
 
         args = ['', '-UK'] + [fr'{function}' for function in functions]
         queue = Queue()
@@ -95,7 +61,7 @@ class Model:
     # Stop tracing and initialize colors
     def stop_trace(self):
         self._thread_enabled = False
-        self.init_colors()
+        self._call_graph.init_colors()
 
     # Returns error happening while an active trace
     def thread_error(self):
@@ -109,6 +75,6 @@ class Model:
         stacks = [stack.split('\n') for stack in text.split('\n\n')]
         for stack in stacks:
             graph = parse_stack(stack)
-            self._persistence.load_edges(graph.edges)
-            self._persistence.load_nodes(graph.nodes)
-        self.init_colors()
+            self._call_graph.load_edges(graph.edges)
+            self._call_graph.load_nodes(graph.nodes)
+        self._call_graph.init_colors()

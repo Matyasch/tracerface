@@ -1,6 +1,8 @@
-# Representation of the graph containing
-# the nodes, edges and the colors set to it
-class Persistence:
+#!/usr/bin/env python3
+
+# Representation of the call graph
+# generated through the tracing
+class CallGraph:
     def __init__(self):
         self._nodes = {}
         self._edges = {}
@@ -41,9 +43,11 @@ class Persistence:
     def clear(self):
         self._nodes = {}
         self._edges = {}
+        self._yellow = 0
+        self._red = 0
 
-    # Save both colors
-    def update_colors(self, yellow, red):
+    # Set bounds for yellow and red coloring
+    def set_colors(self, yellow, red):
         self._yellow = yellow
         self._red = red
 
@@ -54,3 +58,17 @@ class Persistence:
     # Return lower bound of call count to color with red
     def get_red(self):
         return self._red
+
+    # returns the maximum number of calls among nodes
+    def max_count(self):
+        call_counts = [node['call_count'] for node in self._nodes.values()]
+        if call_counts:
+            return max(call_counts)
+        return 0
+
+    # initialize color boundaries to default values based on maximum count
+    def init_colors(self):
+        max_count = self.max_count()
+        new_yellow = round(max_count / 3)
+        new_red = new_yellow * 2
+        self.set_colors(new_yellow, new_red)

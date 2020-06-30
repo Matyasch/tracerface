@@ -44,20 +44,10 @@ def edges():
     }
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_viewmodel_initialization(model):
-    setup = Setup()
-    viewmodel = ViewModel(setup)
-
-    assert viewmodel._model == model.return_value
-    assert viewmodel._setup == setup
-
-
-@mock.patch('viewmodel.viewmodel.Model')
-def test_get_nodes(model, nodes, edges):
-    model.return_value.get_nodes.return_value = nodes
-    setup = Setup()
-    viewmodel = ViewModel(setup)
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_get_nodes(call_graph, nodes, edges):
+    call_graph.return_value.get_nodes.return_value = nodes
+    viewmodel = ViewModel(mock.Mock)
 
     assert viewmodel.get_nodes() == [
         {'data': {
@@ -83,10 +73,10 @@ def test_get_nodes(model, nodes, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_get_edges(model, nodes, edges):
-    model.return_value.get_nodes.return_value = nodes
-    model.return_value.get_edges.return_value = edges
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_get_edges(call_graph, nodes, edges):
+    call_graph.return_value.get_nodes.return_value = nodes
+    call_graph.return_value.get_edges.return_value = edges
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -121,9 +111,9 @@ def test_get_edges(model, nodes, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_get_param_visuals(model, edges):
-    model.return_value.get_edges.return_value = edges
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_get_param_visuals(call_graph, edges):
+    call_graph.return_value.get_edges.return_value = edges
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -132,9 +122,9 @@ def test_get_param_visuals(model, edges):
     assert viewmodel.get_param_visuals_for_edge(('dummy_hash2', 'dummy_hash3')) == '...'
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_get_params_of_edge(model, edges):
-    model.return_value.get_edges.return_value = edges
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_get_params_of_edge(call_graph, edges):
+    call_graph.return_value.get_edges.return_value = edges
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -145,10 +135,10 @@ def test_get_params_of_edge(model, edges):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_get_params_of_node(model, edges, nodes):
-    model.return_value.get_nodes.return_value = nodes
-    model.return_value.get_edges.return_value = edges
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_get_params_of_node(call_graph, edges, nodes):
+    call_graph.return_value.get_nodes.return_value = nodes
+    call_graph.return_value.get_edges.return_value = edges
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -158,11 +148,11 @@ def test_get_params_of_node(model, edges, nodes):
     ]
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_color_counts_return_value_from_model(model):
-    model.return_value.yellow_count.return_value = 4
-    model.return_value.red_count.return_value = 4
-    model.return_value.max_count.return_value = 4
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_color_counts_return_value_from_call_graph(call_graph):
+    call_graph.return_value.get_yellow.return_value = 4
+    call_graph.return_value.get_red.return_value = 4
+    call_graph.return_value.max_count.return_value = 4
 
     setup = Setup()
     viewmodel = ViewModel(setup)
@@ -235,15 +225,15 @@ def test_stop_trace_uses_model(model):
     model.return_value.stop_trace.assert_called_once()
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_set_range_uses_model(model):
+@mock.patch('viewmodel.viewmodel.CallGraph')
+def test_set_range_uses_call_graph(call_graph):
     setup = Setup()
     viewmodel = ViewModel(setup)
 
     viewmodel.set_range('dummy', 'range')
 
-    model.return_value.set_range.assert_called_once()
-    model.return_value.set_range.assert_called_with('dummy', 'range')
+    call_graph.return_value.set_colors.assert_called_once()
+    call_graph.return_value.set_colors.assert_called_with('dummy', 'range')
 
 
 @mock.patch('viewmodel.viewmodel.Model.thread_error', return_value='dummy_error')
