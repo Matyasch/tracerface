@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from model.model import Model
+from model.parse_stack import parse_stack
+from model.trace_controller import TraceController
 from persistence.call_graph import CallGraph
 
 
@@ -8,7 +9,7 @@ from persistence.call_graph import CallGraph
 class ViewModel:
     def __init__(self, setup):
         self._call_graph = CallGraph()
-        self._model = Model(self._call_graph)
+        self._trace_controller = TraceController(self._call_graph)
         self._setup = setup
         self._expanded_elements = []
 
@@ -108,19 +109,24 @@ class ViewModel:
         except IsADirectoryError:
             raise ValueError('{} is a directory, not a file'.format(path))
         self._call_graph.clear()
-        self._model = Model(self._call_graph)
-        self._model.load_output(text)
+        self._trace_controller = TraceController(self._call_graph)
+        stacks = [stack.split('\n') for stack in text.split('\n\n')]
+        for stack in stacks:
+            graph = parse_stack(stack)
+            self._call_graph.load_edges(graph.edges)
+            self._call_graph.load_nodes(graph.nodes)
+        self._call_graph.init_colors()
 
     # Create arguments from setup and start tracing
     def start_trace(self):
         self._call_graph.clear()
-        self._model = Model(self._call_graph)
+        self._trace_controller = TraceController(self._call_graph)
         arguments = self._setup.generate_bcc_args()
-        self._model.start_trace(arguments)
+        self._trace_controller.start_trace(arguments)
 
     # Stop trace
     def stop_trace(self):
-        self._model.stop_trace()
+        self._trace_controller.stop_trace()
 
     # Event for setting colors
     def set_range(self, range_bottom, range_top):
@@ -128,15 +134,15 @@ class ViewModel:
 
     # Return error happening while tracing
     def thread_error(self):
-        return self._model.thread_error()
+        return self._trace_controller.thread_error()
 
     # Return error happening while processing functions to trace
     def process_error(self):
-        return self._model.process_error()
+        return self._trace_controller.process_error()
 
     # Return status of tracing
     def trace_active(self):
-        return self._model.trace_active()
+        return self._trace_controller.trace_active()
 
     # Returns a dict of pairs of functions name and False
     def add_app(self, app):

@@ -1,8 +1,12 @@
+from pathlib import Path
 from pytest import fixture, raises
 import unittest.mock as mock
 
+from model.parse_stack import Stack
 from viewmodel.trace_setup import Setup
 from viewmodel.viewmodel import ViewModel
+
+from tests.integration.test_trace import EXPECTED_NODES
 
 
 @fixture
@@ -177,10 +181,7 @@ def test_load_output_from_directory(read):
 
 @mock.patch('viewmodel.viewmodel.Path.read_text')
 def test_load_output_from_directory(read):
-    def side_effect():
-        raise FileNotFoundError
-
-    read.side_effect = side_effect
+    read.side_effect = FileNotFoundError
     setup = Setup()
     viewmodel = ViewModel(setup)
 
@@ -188,41 +189,43 @@ def test_load_output_from_directory(read):
         viewmodel.load_output('.non/existent/path')
 
 
-@mock.patch('viewmodel.viewmodel.Path.read_text', return_value='dummy text')
-@mock.patch('viewmodel.viewmodel.Model')
-def test_load_output_uses_model(model, read):
+def test_load_output():
+    test_file_path = Path(__file__).absolute().parent.parent.parent.joinpath(
+        'integration', 'resources', 'test_static_output'
+    )
     setup = Setup()
     viewmodel = ViewModel(setup)
+    viewmodel.load_output(str(test_file_path))
+    result_nodes = viewmodel.get_nodes()
+    sorted_nodes = sorted(result_nodes, key = lambda i: i['data']['name'])
+    for result, expected in zip(sorted_nodes, EXPECTED_NODES):
+        assert result['data']['name'] == expected['name']
+        assert result['data']['count'] == expected['count']
+        assert result['data']['source'] == expected['source']
 
-    viewmodel.load_output('dummy path')
 
-    assert viewmodel._model == model.return_value
-    model.return_value.load_output.assert_called_once()
-    model.return_value.load_output.assert_called_with('dummy text')
-
-
-@mock.patch('viewmodel.viewmodel.Model')
-def test_start_trace_uses_model(model):
+@mock.patch('viewmodel.viewmodel.TraceController')
+def test_start_trace_uses_trace_controller(trace_controller):
     setup = mock.Mock()
     setup.generate_bcc_args.return_value = 'dummy args'
     viewmodel = ViewModel(setup)
 
     viewmodel.start_trace()
 
-    assert viewmodel._model == model.return_value
-    model.return_value.start_trace.assert_called_once()
-    model.return_value.start_trace.assert_called_with('dummy args')
+    assert viewmodel._trace_controller == trace_controller.return_value
+    trace_controller.return_value.start_trace.assert_called_once()
+    trace_controller.return_value.start_trace.assert_called_with('dummy args')
 
 
-@mock.patch('viewmodel.viewmodel.Model')
-def test_stop_trace_uses_model(model):
+@mock.patch('viewmodel.viewmodel.TraceController')
+def test_stop_trace_uses_trace_controller(trace_controller):
     setup = Setup()
     viewmodel = ViewModel(setup)
-    viewmodel._model = model.return_value
+    viewmodel._trace_controller= trace_controller.return_value
 
     viewmodel.stop_trace()
 
-    model.return_value.stop_trace.assert_called_once()
+    trace_controller.return_value.stop_trace.assert_called_once()
 
 
 @mock.patch('viewmodel.viewmodel.CallGraph')
@@ -236,32 +239,32 @@ def test_set_range_uses_call_graph(call_graph):
     call_graph.return_value.set_colors.assert_called_with('dummy', 'range')
 
 
-@mock.patch('viewmodel.viewmodel.Model.thread_error', return_value='dummy_error')
-@mock.patch('viewmodel.viewmodel.Model')
-def test_thread_error_uses_model(model, error):
+@mock.patch('viewmodel.viewmodel.TraceController.thread_error', return_value='dummy_error')
+@mock.patch('viewmodel.viewmodel.TraceController')
+def test_thread_error_uses_trace_controller(trace_controller, error):
     setup = Setup()
     viewmodel = ViewModel(setup)
-    viewmodel._model = model
+    viewmodel._trace_controller= trace_controller
 
     assert viewmodel.thread_error() == 'dummy_error'
 
 
-@mock.patch('viewmodel.viewmodel.Model.process_error', return_value='dummy_error')
-@mock.patch('viewmodel.viewmodel.Model')
-def test_process_error_uses_model(model, error):
+@mock.patch('viewmodel.viewmodel.TraceController.process_error', return_value='dummy_error')
+@mock.patch('viewmodel.viewmodel.TraceController')
+def test_process_error_uses_trace_controller(trace_controller, error):
     setup = Setup()
     viewmodel = ViewModel(setup)
-    viewmodel._model = model
+    viewmodel._trace_controller= trace_controller
 
     assert viewmodel.process_error() == 'dummy_error'
 
 
-@mock.patch('viewmodel.viewmodel.Model.trace_active', return_value='dummy_status')
-@mock.patch('viewmodel.viewmodel.Model')
-def test_trace_active_uses_model(model, error):
+@mock.patch('viewmodel.viewmodel.TraceController.trace_active', return_value='dummy_status')
+@mock.patch('viewmodel.viewmodel.TraceController')
+def test_trace_active_uses_trace_controller(trace_controller, error):
     setup = Setup()
     viewmodel = ViewModel(setup)
-    viewmodel._model = model
+    viewmodel._trace_controller= trace_controller
 
     assert viewmodel.trace_active() == 'dummy_status'
 

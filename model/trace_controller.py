@@ -6,8 +6,10 @@ from model.parse_stack import parse_stack
 from model.trace_process import TraceProcess
 
 
-# Model for tracing and parsing the output
-class Model:
+# The TraceController class manages the lifecycle
+# of the tracing process, consumes and parses its
+# outputs, and loads them into the given CallGraph
+class TraceController:
     def __init__(self, call_graph):
         self._call_graph = call_graph
         self._thread_enabled = False
@@ -70,11 +72,3 @@ class Model:
     # Returns status wether tracing is currently active or not
     def trace_active(self):
         return self._thread_enabled
-
-    def load_output(self, text):
-        stacks = [stack.split('\n') for stack in text.split('\n\n')]
-        for stack in stacks:
-            graph = parse_stack(stack)
-            self._call_graph.load_edges(graph.edges)
-            self._call_graph.load_nodes(graph.nodes)
-        self._call_graph.init_colors()

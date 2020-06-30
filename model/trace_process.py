@@ -7,8 +7,8 @@ import sys
 from model.bcc_trace import Tool
 
 
-# Special Queue class with write method
-# as an alias for put.
+# Special Queue class with a write and flush method
+# which can be used to write text streams into
 class WritableQueue(Queue):
     def write(self, s):
         self.put(s)
@@ -16,8 +16,8 @@ class WritableQueue(Queue):
         pass
 
 
-# Speacial Process class which runs the tracing and
-# starts a thread to put its prints into the queue.
+# Speacial Process class which runs the tracing
+# and makes it possible to retrieve its output.
 class TraceProcess(multiprocessing.Process):
     def __init__(self, args):
         super().__init__()
@@ -25,7 +25,6 @@ class TraceProcess(multiprocessing.Process):
         self._args = args
 
     def run(self):
-        self._alive = True
         with redirect_stdout(self._queue):
             self._run_bcc_trace()
 
