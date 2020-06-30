@@ -1,7 +1,7 @@
 # Visualisation tool for BCC trace
 
-[![Build Status](https://travis-ci.org/m-sch/tracerface.svg?branch=master)](https://travis-ci.org/m-sch/tracerface)
-[![Python](https://img.shields.io/lgtm/grade/python/g/m-sch/tracerface.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/m-sch/tracerface/context:python)
+[![Build Status](https://travis-ci.org/Matyasch/tracerface.svg?branch=master)](https://travis-ci.org/Matyasch/tracerface)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/Matyasch/tracerface.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/Matyasch/tracerface/context:python)
 
 An interactive web-app built with [dash][dash_docs] for call-graph visualisation in realtime, using [BCC][bcc_repo] trace.
 
@@ -61,4 +61,4 @@ Create the interactive call-graph of a given bcc trace output
 [dash_docs]: https://dash.plot.ly/
 [bcc_repo]: https://github.com/iovisor/bcc
 [bcc_install]: https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---binary
-[trace_pic]: https://github.com/m-sch/tracerface/blob/master/assets/trace.gif
+[trace_pic]: https://github.com/Matyasch/tracerface/blob/master/assets/trace.gif
