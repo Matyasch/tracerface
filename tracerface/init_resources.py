@@ -6,10 +6,10 @@ from tracerface.callbacks import (
     func_dialog_callbacks,
     graph_callbacks
 )
-from tracerface.trace_controller import TraceController
 from tracerface.call_graph import CallGraph
+from tracerface.trace_controller import TraceController
 from tracerface.web_ui.layout import Layout
-from tracerface.trace_setup import Setup
+from tracerface.web_ui.trace_setup import Setup
 
 
 # Initialize all callbacks used by the application

@@ -4,9 +4,9 @@ import time
 
 from pytest import fixture
 
-from tracerface.trace_controller import TraceController
 from tracerface.call_graph import CallGraph
-from tracerface.trace_setup import Setup
+from tracerface.trace_controller import TraceController
+from tracerface.web_ui.trace_setup import Setup
 from tracerface.web_ui.ui_format import (
     convert_edges_to_cytoscape_format,
     convert_nodes_to_cytoscape_format

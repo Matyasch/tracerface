@@ -6,9 +6,9 @@ from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
 import tracerface.web_ui.alerts as alerts
-from tracerface.web_ui.graph import Graph
 from tracerface.web_ui.dashboard import Dashboard
-from tracerface.trace_setup import SetupError
+from tracerface.web_ui.graph import Graph
+from tracerface.web_ui.trace_setup import SetupError
 
 
 # Disable function managagement buttons if no function is selected
