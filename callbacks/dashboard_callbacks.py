@@ -8,6 +8,7 @@ from dash.exceptions import PreventUpdate
 import view.alerts as alerts
 from view.graph import Graph
 from view.dashboard import Dashboard
+from viewmodel.trace_setup import SetupError
 
 
 # Disable function managagement buttons if no function is selected
@@ -21,19 +22,6 @@ def disable_manage_app_buttons(app):
     def disable(app):
         disabled = not app
         return disabled, disabled
-
-
-# Disable function managagement buttons if no function is selected
-# or if application is already added
-def disable_add_app_button(app, view_model):
-    output = Output('add-app-button', 'disabled')
-    input = [
-        Input('application-path', 'value'),
-        Input('applications-select', 'options')
-    ]
-    @app.callback(output, input)
-    def disable(app, options):
-        return not app or app in view_model.get_apps()
 
 
 # Disable config load button if no path is provided
@@ -55,7 +43,7 @@ def disable_load_button(app):
 
 
 # Stop tracing if an error occurs
-def stop_trace_on_error(app, view_model):
+def stop_trace_on_error(app, trace_controller):
     output = [
         Output('trace-button', 'on'),
         Output('trace-error-notification', 'children')
@@ -65,29 +53,30 @@ def stop_trace_on_error(app, view_model):
     @app.callback(output, input, state)
     def stop_trace(timer_tick, trace_on):
         if timer_tick and trace_on:
-            if view_model.thread_error():
-                return False, alerts.trace_error_alert(view_model.thread_error())
-            elif not view_model.trace_active():
+            if trace_controller.thread_error():
+                return False, alerts.trace_error_alert(trace_controller.thread_error())
+            elif not trace_controller.trace_active():
                 return False, alerts.trace_error_alert('Tracing stopped unexpected')
         raise PreventUpdate
 
 
 # Start realtime tracing
-def start_or_stop_trace(app, view_model):
+def start_or_stop_trace(app, call_graph, setup, trace_controller):
     output = Output('timer', 'disabled')
     input = [Input('trace-button', 'on')]
     state = [State('timer', 'disabled')]
     @app.callback(output, input, state)
     def switch_state(trace_on, timer_disabled):
         if trace_on:
-            view_model.start_trace()
+            call_graph.clear()
+            trace_controller.start_trace(setup.generate_bcc_args())
         elif not timer_disabled:
-            view_model.stop_trace()
+            trace_controller.stop_trace()
         return not trace_on
 
 
 # Update color slider based on graph and set colors
-def update_color_slider(app, view_model):
+def update_color_slider(app, call_graph):
     output = Output('slider-div', 'children')
     input = [
         Input('graph', 'elements'),
@@ -98,12 +87,13 @@ def update_color_slider(app, view_model):
         if not callback_context.triggered:
             raise PreventUpdate
 
-        disabled = view_model.max_count() < 1 or not timer_off
-        return Dashboard.slider(view_model.yellow_count(), view_model.red_count(), view_model.max_count(), disabled)
+        disabled = call_graph.max_count() < 1 or not timer_off
+        return Dashboard.slider(call_graph.get_yellow(), call_graph.get_red(),
+                                call_graph.max_count(), disabled)
 
 
 # Disable parts of the interface while tracing is active
-def disable_searchbar(app, view_model):
+def disable_searchbar(app, call_graph):
     output = Output('searchbar', 'disabled')
     input = [
         Input('graph', 'elements'),
@@ -111,12 +101,12 @@ def disable_searchbar(app, view_model):
     ]
     @app.callback(output, input)
     def switch_disables(elements, timer_off):
-        disabled = view_model.max_count() < 1 or not timer_off
+        disabled = call_graph.max_count() < 1 or not timer_off
         return disabled
 
 
 # Add or remove applications, load content of config file
-def update_apps_dropdown_options(app, view_model):
+def update_apps_dropdown_options(app, setup):
     output = [
         Output('applications-select', 'options'),
         Output('add-app-notification', 'children')
@@ -135,27 +125,32 @@ def update_apps_dropdown_options(app, view_model):
     def update_options(add, remove, load, app_to_add, app_to_remove, config_path):
         if not callback_context.triggered:
             raise PreventUpdate
-        id = callback_context.triggered[0]['prop_id'].split('.')[0]
 
+        id = callback_context.triggered[0]['prop_id'].split('.')[0]
         alert = None
-        if id == 'add-app-button':
-            err_message = view_model.add_app(app_to_add)
-            if err_message:
-                alert = alerts.WarningAlert(err_message)
-            else:
-                alert = alerts.add_app_success_alert(app_to_add)
-        elif id == 'remove-app-button':
-            view_model.remove_app(app_to_remove)
-        elif id == 'load-config-button':
+
+        if id == 'add-app-button' and app_to_add:
             try:
-                err_message = view_model.load_config_file(config_path)
+                setup.initialize_binary(app_to_add)
+                alert = alerts.add_app_success_alert(app_to_add)
+            except SetupError as err:
+                if err.error_cause == SetupError.ErrorCauses.BINARY_NOT_FOUND:
+                    setup.initialize_built_in(app_to_add)
+                    alert = alerts.WarningAlert(str(err))
+                elif err.error_cause == SetupError.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY:
+                    alert = alerts.ErrorAlert(str(err))
+        elif id == 'remove-app-button' and app_to_remove:
+            setup.remove_app(app_to_remove)
+        elif id == 'load-config-button' and config_path:
+            try:
+                err_message = setup.load_from_file(config_path)
                 if err_message:
                     alert = alerts.WarningAlert(err_message)
                 else:
                     alert = alerts.load_setup_success_alert(config_path)
-            except ValueError as msg:
+            except SetupError as msg:
                 alert = alerts.ErrorAlert(str(msg))
-        return [{"label": app, "value": app} for app in view_model.get_apps()], alert
+        return [{"label": app, "value": app} for app in setup.get_apps()], alert
 
 
 # Update value of application selection on application removal
@@ -173,7 +168,7 @@ def clear_selected_app(app):
 
 
 # Save animation status and spacing between nodes
-def update_graph_layout(app, view_model):
+def update_graph_layout(app):
     output = Output('graph', 'layout')
     input = [
         Input('animate-switch', 'value'),

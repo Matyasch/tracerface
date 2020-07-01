@@ -1,6 +1,39 @@
+from enum import Enum
 from pathlib import Path
 from subprocess import CalledProcessError, check_output
 import yaml
+
+
+class SetupError(Exception):
+    class ErrorCauses(Enum):
+        BINARY_ALREADY_ADDED = 1
+        BINARY_NOT_FOUND = 2
+        FUNCTION_NOT_EXISTS_IN_BINARY = 3
+        WRONG_CONFIG_FILE = 4
+
+    def __init__(self, message, cause):
+        super().__init__(message)
+        self._error_cause = cause
+
+    @classmethod
+    def init_binary_already_added(cls, message):
+        return cls(message=message, cause=cls.ErrorCauses.BINARY_ALREADY_ADDED)
+
+    @classmethod
+    def init_binary_not_found(cls, message):
+        return cls(message=message, cause=cls.ErrorCauses.BINARY_NOT_FOUND)
+
+    @classmethod
+    def init_function_not_exists_in_binary(cls, message):
+        return cls(message=message, cause=cls.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY)
+
+    @classmethod
+    def init_wrong_config_file(cls, message):
+        return cls(message=message, cause=cls.ErrorCauses.WRONG_CONFIG_FILE)
+
+    @property
+    def error_cause(self):
+        return self._error_cause
 
 
 class Setup:
@@ -10,11 +43,13 @@ class Setup:
     # initialize app and its functions for tracing
     def initialize_binary(self, path):
         if path in self._setup:
-            return
+            raise SetupError.init_binary_already_added('Binary at {} already added'.format(path))
+
         try:
             symbols = check_output(['nm', path]).decode().rstrip().split('\n')
         except CalledProcessError:
-            raise ValueError('Could not find binary at {}, so it is assumed to be a built-in function'.format(path))
+            err_message = 'Could not find binary at {}, so it is assumed to be a built-in function'.format(path)
+            raise SetupError.init_binary_not_found(err_message)
 
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}
@@ -50,7 +85,8 @@ class Setup:
         try:
             self._setup[app][function]['traced'] = True
         except KeyError:
-            raise ValueError('No function named {} was found in {}'.format(function, app))
+            err_message = 'No function named {} was found in {}'.format(function, app)
+            raise SetupError.init_function_not_exists_in_binary(err_message)
 
     # Removes a function from traced ones
     def remove_function_from_trace(self, app, function):
@@ -92,14 +128,14 @@ class Setup:
         try:
             content = Path(path).read_text()
         except FileNotFoundError:
-            raise ValueError('Could not find config file at {}'.format(path))
+            raise SetupError.init_wrong_config_file('Could not find config file at {}'.format(path))
         except IsADirectoryError:
-            raise ValueError('{} is a directory, not a file'.format(path))
+            raise SetupError.init_wrong_config_file('{} is a directory, not a file'.format(path))
 
         try:
             config = yaml.safe_load(content)
-        except yaml.parser.ParserError:
-            raise ValueError('File needs to be yaml format')
+        except (yaml.parser.ParserError, yaml.scanner.ScannerError):
+            raise SetupError.init_wrong_config_file('File needs to be yaml format')
 
         try:
             err_message = ''
@@ -110,11 +146,15 @@ class Setup:
                         self.setup_function_to_trace(app, function)
                         for index in config[app][function]:
                             self.add_parameter(app, function, index, config[app][function][index])
-                except ValueError:
-                    self.initialize_built_in(app)
-                    for index in config[app]:
-                        self.add_parameter('built-ins', app, index, config[app][index])
-                    err_message = 'Some binaries were not found so they were assumed to be built-in functions'
+                except SetupError as err:
+                    print('AAAAAAAAAAA')
+                    if err.error_cause == SetupError.ErrorCauses.BINARY_NOT_FOUND:
+                        self.initialize_built_in(app)
+                        for index in config[app]:
+                            self.add_parameter('built-ins', app, index, config[app][index])
+                        err_message = 'Some binaries were not found so they were assumed to be built-in functions'
+                    else:
+                        raise
             return err_message
         except TypeError:
-            raise ValueError('File format is incorrect')
+            raise SetupError.init_wrong_config_file('File format is incorrect')

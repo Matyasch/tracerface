@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
 from pytest import fixture, raises
-from yaml.parser import ParserError
+from yaml.parser import ParserError, ScannerError
 
-from viewmodel.trace_setup import Setup
+from viewmodel.trace_setup import Setup, SetupError
 
 
 @fixture
@@ -196,8 +196,9 @@ def test_load_from_file_raises_exception_if_file_not_found(read):
 
     read.side_effect = side_effect
     setup = Setup()
-    with raises(ValueError):
+    with raises(SetupError) as err:
         setup.load_from_file('.non/existent/path')
+    assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
 @patch('viewmodel.trace_setup.Path.read_text')
@@ -207,20 +208,35 @@ def test_load_from_file_raises_exception_if_file_is_directory(read):
 
     read.side_effect = side_effect
     setup = Setup()
-    with raises(ValueError):
+    with raises(SetupError) as err:
         setup.load_from_file('.non/existent/path')
+    assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load', return_value='not_yaml')
+@patch('viewmodel.trace_setup.yaml.safe_load')
 @patch('viewmodel.trace_setup.Path.read_text')
-def test_load_from_file_raises_exception_if_not_yaml_format(read, load):
+def test_load_from_file_raises_exception_on_yaml_parse_error(read, load):
     def side_effect(content):
         raise ParserError
 
     load.side_effect = side_effect
     setup = Setup()
-    with raises(ValueError):
+    with raises(SetupError) as err:
         setup.load_from_file('dummy/path')
+    assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
+
+
+@patch('viewmodel.trace_setup.yaml.safe_load')
+@patch('viewmodel.trace_setup.Path.read_text')
+def test_load_from_file_raises_exception_on_yaml_scan_error(read, load):
+    def side_effect(content):
+        raise ScannerError
+
+    load.side_effect = side_effect
+    setup = Setup()
+    with raises(SetupError) as err:
+        setup.load_from_file('dummy/path')
+    assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
 @patch('viewmodel.trace_setup.yaml.safe_load', return_value={'built_in' : {}})

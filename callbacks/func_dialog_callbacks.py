@@ -50,7 +50,7 @@ def update_header(app):
 
 # Update shown selection of parameters for function
 # and handle adding or removing parameter for tracing
-def update_parameters(app, view_model):
+def update_parameters(app, setup):
     output = Output('params-select', 'options')
     input = [
         Input('add-param-button', 'n_clicks'),
@@ -69,18 +69,20 @@ def update_parameters(app, view_model):
             raise PreventUpdate
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
 
-        if id == 'add-param-button' and index not in view_model.get_parameters(app, function):
-            view_model.add_parameter(app, function, index, format)
-        elif id == 'remove-param-button':
-            view_model.remove_parameter(app, function, param_to_remove)
+        if app and function:
+            if id == 'add-param-button' and index not in setup.get_parameters(app, function):
+                setup.add_parameter(app, function, index, format)
+            elif id == 'remove-param-button':
+                setup.remove_parameter(app, function, int(param_to_remove))
 
-        parameters = view_model.get_parameters(app, function)
-        return [
-            {
-                'label': 'arg{} : {}'.format(index, parameters[index]),
-                'value': index
-            } for index in parameters
-        ]
+            parameters = setup.get_parameters(app, function)
+            return [
+                {
+                    'label': 'arg{} : {}'.format(index, parameters[index]),
+                    'value': index
+                } for index in parameters
+            ]
+        return []
 
 
 # Remove parameter from traced ones for function
@@ -92,8 +94,8 @@ def clear_param_select(app):
         return None
 
 
-# Show alert if no parameter is selected while trying to remove one
-def disable_add_button(app, view_model):
+# Disable add button when not all parameter attributes are set
+def disable_add_button(app, setup):
     output = Output('add-param-button', 'disabled')
     input = [
         Input('param-index', 'value'),
@@ -106,5 +108,5 @@ def disable_add_button(app, view_model):
     ]
     @app.callback(output, input, state)
     def disable(index, format, options_changed, function, app):
-        valid = format and index and int(index) not in view_model.get_parameters(app, function)
+        valid = format and index and int(index) not in setup.get_parameters(app, function)
         return not valid

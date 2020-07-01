@@ -39,7 +39,7 @@ def update_graph_elements(app, view_model):
 
 # Display or hide inforamtion about edges and nodes
 # Update colors of the graph
-def update_graph_style(app, view_model):
+def update_graph_style(app, view_model, call_graph):
     output = Output('graph', 'stylesheet')
     input = [
         Input('slider', 'value'),
@@ -55,7 +55,7 @@ def update_graph_style(app, view_model):
 
         input = callback_context.triggered[0]['prop_id'].split('.')
         if input[0] == 'slider':
-            view_model.set_range(slider[0], slider[1])
+            call_graph.set_colors(slider[0], slider[1])
         if input[0] == 'graph' and input[1] == 'tapNodeData' and node:
             view_model.element_clicked(node['id'])
         if input[0] == 'graph' and input[1] == 'tapEdgeData' and edge:
@@ -63,6 +63,6 @@ def update_graph_style(app, view_model):
 
         if not search:
             search = ''
-        base_styles = Graph.stylesheet(search, view_model.yellow_count(), view_model.red_count())
+        base_styles = Graph.stylesheet(search, call_graph.get_yellow(), call_graph.get_red())
         node_styles = [expanded_style(id) for id in view_model.get_expanded_elements()]
         return base_styles + node_styles

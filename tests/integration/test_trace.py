@@ -4,6 +4,8 @@ import time
 
 from pytest import fixture
 
+from model.trace_controller import TraceController
+from persistence.call_graph import CallGraph
 from viewmodel.trace_setup import Setup
 from viewmodel.viewmodel import ViewModel
 
@@ -46,30 +48,24 @@ def assert_results(result_nodes, result_edges):
         assert result['data']['params'] == expected['params']
 
 
-@fixture
-def functions_to_trace():
-    return {
-        'func1': {'arg1': '%s', 'arg2': '%s'},
-        'func2': {'arg1': '%d'},
-        'func3': {}
-    }
-
-
-def test_trace(functions_to_trace):
+def test_trace():
     test_app = str(Path.cwd().joinpath('tests/integration/resources/test_application'))
 
-    viewmodel = ViewModel(Setup())
-    viewmodel.add_app(test_app)
-    viewmodel.add_function(test_app, 'func1')
-    viewmodel.add_function(test_app, 'func2')
-    viewmodel.add_function(test_app, 'func3')
-    viewmodel.add_parameter(test_app, 'func1', '1', '%s')
-    viewmodel.add_parameter(test_app, 'func1', '2', '%s')
-    viewmodel.add_parameter(test_app, 'func2', '1', '%d')
+    call_graph = CallGraph()
+    setup = Setup()
+    trace_controller = TraceController(call_graph)
+    viewmodel = ViewModel(call_graph, setup, trace_controller)
+    setup.initialize_binary(test_app)
+    setup.setup_function_to_trace(test_app, 'func1')
+    setup.setup_function_to_trace(test_app, 'func2')
+    setup.setup_function_to_trace(test_app, 'func3')
+    setup.add_parameter(test_app, 'func1', '1', '%s')
+    setup.add_parameter(test_app, 'func1', '2', '%s')
+    setup.add_parameter(test_app, 'func2', '1', '%d')
 
-    viewmodel.start_trace() # start monitoring
+    trace_controller.start_trace(setup.generate_bcc_args()) # start monitoring
     time.sleep(5) # BCC trace needs a bit of time to setup
     subprocess.run(test_app) # run monitored application
-    viewmodel.stop_trace() # stop monitoring
+    trace_controller.stop_trace() # stop monitoring
 
     assert_results(viewmodel.get_nodes(), viewmodel.get_edges())

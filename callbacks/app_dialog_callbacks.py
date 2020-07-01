@@ -9,7 +9,7 @@ from dash.exceptions import PreventUpdate
 
 # Update shown selection of functions for application
 # and handling function adding and removal
-def update_functions_traced(app, view_model):
+def update_functions_traced(app, setup):
     output = Output('functions-traced-select', 'options')
     input = [
         Input('add-function-button', 'n_clicks'),
@@ -24,27 +24,31 @@ def update_functions_traced(app, view_model):
     def update_options(add, remove, app, func_to_add, func_to_remove):
         if not callback_context.triggered:
             raise PreventUpdate
+
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-
-        if id == 'add-function-button':
-            view_model.add_function(app, func_to_add)
-        elif id == 'remove-func-button':
-            view_model.remove_function(app, func_to_remove)
-
-        functions = view_model.get_traced_functions_for_app(app)
-        return [{'label': function, 'value': function} for function in functions]
+        if app:
+            if id == 'add-function-button' and func_to_add:
+                setup.setup_function_to_trace(app, func_to_add)
+            elif id == 'remove-func-button' and func_to_remove:
+                setup.remove_function_from_trace(app, func_to_remove)
+            app_setup = setup.get_setup_of_app(app)
+            traced_functions = [func for func in app_setup if app_setup[func]['traced']]
+            return [{'label': function, 'value': function} for function in traced_functions]
+        else:
+            return []
 
 
 # Clear values of input elements in dialog
-def update_functions_not_traced(app, view_model):
+def update_functions_not_traced(app, setup):
     output = Output('functions-not-traced-select', 'options')
     input = [Input('functions-traced-select', 'options')]
     state = [State('applications-select', 'value')]
     @app.callback(output, input, state)
     def update_options(change, app):
         if app:
-            functions = view_model.get_not_traced_functions_for_app(app)
-            return [{'label': function, 'value': function} for function in functions]
+            app_setup = setup.get_setup_of_app(app)
+            not_traced_functions = [func for func in app_setup if not app_setup[func]['traced']]
+            return [{'label': function, 'value': function} for function in not_traced_functions]
         return []
 
 
@@ -83,15 +87,6 @@ def disable_manage_function_buttons(app):
     def disable(function):
         disabled = not function
         return disabled, disabled
-
-
-# Disable function managagement buttons if no function is selected
-def disable_add_function_button(app):
-    output = Output('add-function-button', 'disabled')
-    input = [Input('functions-not-traced-select', 'value')]
-    @app.callback(output, input)
-    def disable(function):
-        return not function
 
 
 # Open dialog window

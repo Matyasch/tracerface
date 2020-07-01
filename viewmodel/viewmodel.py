@@ -1,16 +1,14 @@
 from pathlib import Path
 
 from model.parse_stack import parse_stack
-from model.trace_controller import TraceController
-from persistence.call_graph import CallGraph
 
 
 # Transforms data into format usable by the layout
 class ViewModel:
-    def __init__(self, setup):
-        self._call_graph = CallGraph()
-        self._trace_controller = TraceController(self._call_graph)
+    def __init__(self, call_graph, setup, trace_controller):
+        self._call_graph = call_graph
         self._setup = setup
+        self._trace_controller = trace_controller
         self._expanded_elements = []
 
     # Return list of nodes in a format usable to the view
@@ -86,18 +84,6 @@ class ViewModel:
         params_by_functions = [self._call_graph.get_edges()[edge]['params'] for edge in self._call_graph.get_edges() if str(edge[1]) == node_id]
         return [params for calls in params_by_functions for params in calls]
 
-    # Return lower bound of call count for functions colored with yellow
-    def yellow_count(self):
-        return self._call_graph.get_yellow()
-
-    # Return lower bound of call count for functions colored with red
-    def red_count(self):
-        return self._call_graph.get_red()
-
-    # Return the maximum of call counts for all functions
-    def max_count(self):
-        return self._call_graph.max_count()
-
     # Event for static output submit button clicked
     def load_output(self, path):
         if not path:
@@ -109,102 +95,12 @@ class ViewModel:
         except IsADirectoryError:
             raise ValueError('{} is a directory, not a file'.format(path))
         self._call_graph.clear()
-        self._trace_controller = TraceController(self._call_graph)
         stacks = [stack.split('\n') for stack in text.split('\n\n')]
         for stack in stacks:
             graph = parse_stack(stack)
             self._call_graph.load_edges(graph.edges)
             self._call_graph.load_nodes(graph.nodes)
         self._call_graph.init_colors()
-
-    # Create arguments from setup and start tracing
-    def start_trace(self):
-        self._call_graph.clear()
-        self._trace_controller = TraceController(self._call_graph)
-        arguments = self._setup.generate_bcc_args()
-        self._trace_controller.start_trace(arguments)
-
-    # Stop trace
-    def stop_trace(self):
-        self._trace_controller.stop_trace()
-
-    # Event for setting colors
-    def set_range(self, range_bottom, range_top):
-        self._call_graph.set_colors(range_bottom, range_top)
-
-    # Return error happening while tracing
-    def thread_error(self):
-        return self._trace_controller.thread_error()
-
-    # Return error happening while processing functions to trace
-    def process_error(self):
-        return self._trace_controller.process_error()
-
-    # Return status of tracing
-    def trace_active(self):
-        return self._trace_controller.trace_active()
-
-    # Returns a dict of pairs of functions name and False
-    def add_app(self, app):
-        try:
-            self._setup.initialize_binary(app)
-            return ''
-        except ValueError as err:
-            self._setup.initialize_built_in(app)
-            return str(err)
-
-    # Remove application from getting traced
-    def remove_app(self, app):
-        if app:
-            self._setup.remove_app(app)
-
-    # Returns apps currently saved in model
-    def get_apps(self):
-        return self._setup.get_apps()
-
-    # Returns functions which are set to be traced
-    def get_traced_functions_for_app(self, app):
-        if not app:
-            return []
-        app_setup = self._setup.get_setup_of_app(app)
-        return [func for func in app_setup if app_setup[func]['traced']]
-
-    # Returns functions which are not set to be traced
-    def get_not_traced_functions_for_app(self, app):
-        if not app:
-            return []
-        app_setup = self._setup.get_setup_of_app(app)
-        return [func for func in app_setup if not app_setup[func]['traced']]
-
-    # Sets up a function to be traced
-    def add_function(self, app, function):
-        if app and function:
-            self._setup.setup_function_to_trace(app, function)
-
-    # Removes a function from traced ones
-    def remove_function(self, app, function):
-        if app and function:
-            self._setup.remove_function_from_trace(app, function)
-
-    # Returns the indexes where a parameter is set for tracing
-    def get_parameters(self, app, function):
-        if app and function:
-            return self._setup.get_parameters(app, function)
-        return {}
-
-    # Sets up a parameter to be traced
-    def add_parameter(self, app, function, index, format):
-        if app and function and index and format:
-            self._setup.add_parameter(app, function, index, format)
-
-    # Removes a parameter from traced ones
-    def remove_parameter(self, app, function, index):
-        if app and function and index:
-            self._setup.remove_parameter(app, function, int(index))
-
-    def load_config_file(self, path):
-        if path:
-            return self._setup.load_from_file(path)
 
     def element_clicked(self, id):
         if id in self._expanded_elements:
