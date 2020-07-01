@@ -1,5 +1,3 @@
-from multiprocessing import Queue
-from queue import Empty
 from threading import Thread
 
 from model.parse_stack import parse_stack
@@ -54,7 +52,6 @@ class TraceController:
         self._thread_enabled = True
 
         args = ['', '-UK'] + [fr'{function}' for function in functions]
-        queue = Queue()
         trace_process = TraceProcess(args=args)
         monitoring = Thread(target=self._monitor_tracing, args=(trace_process,))
         trace_process.start()
