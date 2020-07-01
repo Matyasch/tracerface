@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-
 from multiprocessing import get_context
 import sys
 import time
 from unittest import main, mock, TestCase
 
-from model.trace_process import TraceProcess, WritableQueue
+from tracerface.trace_process import TraceProcess, WritableQueue
 
 
 class TestWritableQueue(TestCase):
@@ -20,7 +19,7 @@ class TesTraceProcess(TestCase):
         process = TraceProcess('dummy_args')
         self.assertEqual(process.get_output(), None)
 
-    @mock.patch('model.trace_process.Tool')
+    @mock.patch('tracerface.trace_process.Tool')
     def test_get_value_returns_value_from_tool(self, tool):
         def dummy_print():
             print('dummy_val')
@@ -31,7 +30,7 @@ class TesTraceProcess(TestCase):
         process.join()
         self.assertEqual(process.get_output(), 'dummy_val')
 
-    @mock.patch('model.trace_process.Tool')
+    @mock.patch('tracerface.trace_process.Tool')
     def test_get_value_strips_spaces(self, tool):
         def dummy_print():
             print('         dummy_val         ')
@@ -42,7 +41,7 @@ class TesTraceProcess(TestCase):
         process.join()
         self.assertEqual(process.get_output(), 'dummy_val')
 
-    @mock.patch('model.trace_process.Tool')
+    @mock.patch('tracerface.trace_process.Tool')
     def test_get_value_keeps_empty_line(self, tool):
         def dummy_print():
             print('\n')

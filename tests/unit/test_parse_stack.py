@@ -1,4 +1,4 @@
-from model.parse_stack import parse_stack
+from tracerface.parse_stack import parse_stack
 
 
 def test_parse_stack_returns_empty_graph_for_empty_stack():

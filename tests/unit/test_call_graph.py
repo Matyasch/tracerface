@@ -1,6 +1,6 @@
 from unittest import main, TestCase
 
-from persistence.call_graph import CallGraph
+from tracerface.call_graph import CallGraph
 
 
 class TestConstructor(TestCase):

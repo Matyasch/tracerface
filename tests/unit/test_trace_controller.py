@@ -1,11 +1,11 @@
 from unittest import main, mock, TestCase
 
-from model.trace_controller import TraceController
+from tracerface.trace_controller import TraceController
 
 
 class TestTraceController(TestCase):
-    @mock.patch('model.trace_controller.Thread')
-    @mock.patch('model.trace_controller.TraceProcess')
+    @mock.patch('tracerface.trace_controller.Thread')
+    @mock.patch('tracerface.trace_controller.TraceProcess')
     def test_start_trace_happy_case(self, process, thread):
         trace_controller = TraceController(mock.Mock())
 

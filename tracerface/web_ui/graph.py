@@ -1,6 +1,6 @@
 from dash_cytoscape import Cytoscape, load_extra_layouts
 
-from view.styles import edge_styles, node_styles
+from tracerface.web_ui.styles import edge_styles, node_styles
 
 
 # Implementation of the displayed graph

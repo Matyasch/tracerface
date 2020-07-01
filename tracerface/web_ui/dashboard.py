@@ -4,8 +4,8 @@ import dash_core_components as dcc
 import dash_daq as daq
 import dash_html_components as html
 
-from view.dialogs import ManageApplicationDialog, ManageFunctionDialog
-import view.styles as styles
+from tracerface.web_ui.dialogs import ManageApplicationDialog, ManageFunctionDialog
+from tracerface.web_ui.styles import element_style
 
 # Implementation of the dasboard
 class Dashboard(html.Div):
@@ -29,7 +29,7 @@ class Dashboard(html.Div):
     @staticmethod
     def add_app_group():
         return dbc.FormGroup([
-            dbc.Label('Add application to trace', style=styles.element_style()),
+            dbc.Label('Add application to trace', style=element_style()),
             dbc.Row([
                 dbc.Col(dbc.Input(
                     id='application-path',
@@ -44,7 +44,7 @@ class Dashboard(html.Div):
             html.Div(
                 id='add-app-notification',
                 children=None,
-                style=styles.element_style())
+                style=element_style())
         ])
 
     @staticmethod
@@ -59,17 +59,17 @@ class Dashboard(html.Div):
                 color='success',
                 disabled=True,
                 className='mr-1',
-                style=styles.element_style()),
+                style=element_style()),
             dbc.Button('Remove application',
                 id='remove-app-button',
                 color='danger',
                 disabled=True,
                 className='mr-1',
-                style=styles.element_style()),
+                style=element_style()),
             html.Div(
                 id='manage-apps-notification',
                 children=None,
-                style=styles.element_style())
+                style=element_style())
         ])
 
     @staticmethod
@@ -79,11 +79,11 @@ class Dashboard(html.Div):
                 id='trace-button',
                 on=False,
                 color='#00FF00',
-                style=styles.element_style()),
+                style=element_style()),
             html.Div(
                 id='trace-error-notification',
                 children=None,
-                style=styles.element_style())
+                style=element_style())
         ])
 
     @staticmethod
@@ -122,7 +122,7 @@ class Dashboard(html.Div):
             html.Div(
                 id='load-output-notification',
                 children=None,
-                style=styles.element_style()),
+                style=element_style()),
             dcc.Interval(
                 id='timer',
                 interval=1*500, # in milliseconds
@@ -140,7 +140,7 @@ class Dashboard(html.Div):
                     children=Dashboard.slider(),
                     style={'padding': '40px 0px 20px 0px'})
             ],
-            style=styles.element_style())
+            style=element_style())
 
     @staticmethod
     def search_function_input():
@@ -162,7 +162,7 @@ class Dashboard(html.Div):
                     value=2))
             ],
             row=True,
-            style=styles.element_style())
+            style=element_style())
 
     @staticmethod
     def animate_checklist():

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-
 from argparse import ArgumentParser
 import sys
 
-from app import App
+from tracerface.startup import start
 
 
 def parse_args(args):
@@ -13,11 +12,10 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-# Create application and start it
+# Create resources and start application
 def main(args):
     parsed_args = parse_args(args)
-    app = App()
-    app.start(debug=parsed_args.debug, logging=parsed_args.routes_logging)
+    start(debug=parsed_args.debug, logging=parsed_args.routes_logging)
 
 
 if __name__ == '__main__':

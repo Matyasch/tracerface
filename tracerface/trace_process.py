@@ -4,7 +4,7 @@ from multiprocessing.queues import Queue
 from queue import Empty
 import sys
 
-from model.bcc_trace import Tool
+from tracerface.bcc_trace import Tool
 
 
 # Special Queue class with a write and flush method

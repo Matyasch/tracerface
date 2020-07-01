@@ -1,7 +1,7 @@
 from threading import Thread
 
-from model.parse_stack import parse_stack
-from model.trace_process import TraceProcess
+from tracerface.parse_stack import parse_stack
+from tracerface.trace_process import TraceProcess
 
 
 # The TraceController class manages the lifecycle
@@ -42,8 +42,7 @@ class TraceController:
             trace_process.terminate()
             trace_process.join()
 
-    # Clear errors and persistence, initialize values needed for tracing,
-    # build argument list then start tracing and monitoring its output
+    # Starts tracing of given functions
     def start_trace(self, functions):
         if not functions:
             self._thread_error = 'No functions to trace'

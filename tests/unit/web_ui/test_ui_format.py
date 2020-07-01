@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 from unittest import main, TestCase
 
-from view.ui_format import (
+from tracerface.web_ui.ui_format import (
     convert_edges_to_cytoscape_format,
     convert_nodes_to_cytoscape_format
 )
-
-
 
 
 class TestConvertNodes(TestCase):
@@ -154,3 +152,7 @@ class TestConvertEdges(TestCase):
         }]
         result = convert_edges_to_cytoscape_format(self._nodes(), edges)
         self.assertEqual(result, expected)
+
+
+if __name__ == '__main__':
+    main()

@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from model.parse_stack import parse_stack
+from tracerface.parse_stack import parse_stack
 
 
 def load_trace_output_from_file_to_call_graph(file_path, call_graph):

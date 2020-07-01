@@ -1,7 +1,7 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 
-from view.styles import element_style
+from tracerface.web_ui.styles import element_style
 
 
 # Format specifiers and their labels to show for parameters

@@ -6,11 +6,11 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-from model.load_output import load_trace_output_from_file_to_call_graph
-from view.alerts import ErrorAlert
-from view.graph import Graph
-from view.styles import expanded_style
-from view.ui_format import (
+from tracerface.load_output import load_trace_output_from_file_to_call_graph
+from tracerface.web_ui.alerts import ErrorAlert
+from tracerface.web_ui.graph import Graph
+from tracerface.web_ui.styles import expanded_style
+from tracerface.web_ui.ui_format import (
     convert_edges_to_cytoscape_format,
     convert_nodes_to_cytoscape_format
 )

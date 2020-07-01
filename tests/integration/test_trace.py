@@ -4,10 +4,10 @@ import time
 
 from pytest import fixture
 
-from model.trace_controller import TraceController
-from persistence.call_graph import CallGraph
-from viewmodel.trace_setup import Setup
-from view.ui_format import (
+from tracerface.trace_controller import TraceController
+from tracerface.call_graph import CallGraph
+from tracerface.trace_setup import Setup
+from tracerface.web_ui.ui_format import (
     convert_edges_to_cytoscape_format,
     convert_nodes_to_cytoscape_format
 )
@@ -51,23 +51,32 @@ def assert_results(result_nodes, result_edges):
         assert result['data']['params'] == expected['params']
 
 
-def test_trace():
-    test_app = str(Path.cwd().joinpath('tests/integration/resources/test_application'))
+@fixture
+def test_binary(tmp_path):
+    source_path = Path(__file__).parent.parent.joinpath('resources', 'test_application.c')
+    dest_path = tmp_path.joinpath('test_application')
+    compile_command = ['gcc', '-ggdb3', '-O0', '-fno-omit-frame-pointer', '-o']
+    compile_command += [str(dest_path), str(source_path)]
+    subprocess.run(compile_command)
+    return str(dest_path)
 
+
+def test_trace(test_binary):
     call_graph = CallGraph()
     setup = Setup()
     trace_controller = TraceController(call_graph)
-    setup.initialize_binary(test_app)
-    setup.setup_function_to_trace(test_app, 'func1')
-    setup.setup_function_to_trace(test_app, 'func2')
-    setup.setup_function_to_trace(test_app, 'func3')
-    setup.add_parameter(test_app, 'func1', '1', '%s')
-    setup.add_parameter(test_app, 'func1', '2', '%s')
-    setup.add_parameter(test_app, 'func2', '1', '%d')
+
+    setup.initialize_binary(test_binary)
+    setup.setup_function_to_trace(test_binary, 'func1')
+    setup.setup_function_to_trace(test_binary, 'func2')
+    setup.setup_function_to_trace(test_binary, 'func3')
+    setup.add_parameter(test_binary, 'func1', '1', '%s')
+    setup.add_parameter(test_binary, 'func1', '2', '%s')
+    setup.add_parameter(test_binary, 'func2', '1', '%d')
 
     trace_controller.start_trace(setup.generate_bcc_args()) # start monitoring
     time.sleep(5) # BCC trace needs a bit of time to setup
-    subprocess.run(test_app) # run monitored application
+    subprocess.run(test_binary) # run monitored application
     trace_controller.stop_trace() # stop
 
     edges = convert_edges_to_cytoscape_format(call_graph.get_nodes(), call_graph.get_edges())

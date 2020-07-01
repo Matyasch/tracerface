@@ -3,7 +3,7 @@ from unittest.mock import patch
 from pytest import fixture, raises
 from yaml.parser import ParserError, ScannerError
 
-from viewmodel.trace_setup import Setup, SetupError
+from tracerface.trace_setup import Setup, SetupError
 
 
 @fixture
@@ -25,7 +25,7 @@ def test_empty_setup():
     assert setup._setup == {}
 
 
-@patch('viewmodel.trace_setup.check_output', return_value=b'func1\nfunc2\nfunc3\n')
+@patch('tracerface.trace_setup.check_output', return_value=b'func1\nfunc2\nfunc3\n')
 def test_initialize_binary(nm):
     setup = Setup()
 
@@ -189,7 +189,7 @@ def test_generate_bcc_args_with_multiple_values():
     ]
 
 
-@patch('viewmodel.trace_setup.Path.read_text')
+@patch('tracerface.trace_setup.Path.read_text')
 def test_load_from_file_raises_exception_if_file_not_found(read):
     def side_effect():
         raise FileNotFoundError
@@ -201,7 +201,7 @@ def test_load_from_file_raises_exception_if_file_not_found(read):
     assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
-@patch('viewmodel.trace_setup.Path.read_text')
+@patch('tracerface.trace_setup.Path.read_text')
 def test_load_from_file_raises_exception_if_file_is_directory(read):
     def side_effect():
         raise IsADirectoryError
@@ -213,8 +213,8 @@ def test_load_from_file_raises_exception_if_file_is_directory(read):
     assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load')
-@patch('viewmodel.trace_setup.Path.read_text')
+@patch('tracerface.trace_setup.yaml.safe_load')
+@patch('tracerface.trace_setup.Path.read_text')
 def test_load_from_file_raises_exception_on_yaml_parse_error(read, load):
     def side_effect(content):
         raise ParserError
@@ -226,8 +226,8 @@ def test_load_from_file_raises_exception_on_yaml_parse_error(read, load):
     assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load')
-@patch('viewmodel.trace_setup.Path.read_text')
+@patch('tracerface.trace_setup.yaml.safe_load')
+@patch('tracerface.trace_setup.Path.read_text')
 def test_load_from_file_raises_exception_on_yaml_scan_error(read, load):
     def side_effect(content):
         raise ScannerError
@@ -239,8 +239,8 @@ def test_load_from_file_raises_exception_on_yaml_scan_error(read, load):
     assert err.value.error_cause == SetupError.ErrorCauses.WRONG_CONFIG_FILE
 
 
-@patch('viewmodel.trace_setup.yaml.safe_load', return_value={'built_in' : {}})
-@patch('viewmodel.trace_setup.Path.read_text')
+@patch('tracerface.trace_setup.yaml.safe_load', return_value={'built_in' : {}})
+@patch('tracerface.trace_setup.Path.read_text')
 def test_load_from_file_adds_built_in_if_binary_not_found(read, load):
     setup = Setup()
     setup.load_from_file('dummy/path')
