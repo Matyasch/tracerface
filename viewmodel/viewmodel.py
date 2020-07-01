@@ -5,7 +5,6 @@ class ViewModel:
         self._call_graph = call_graph
         self._setup = setup
         self._trace_controller = trace_controller
-        self._expanded_elements = []
 
     # Return list of nodes in a format usable to the view
     def get_nodes(self):
@@ -79,12 +78,3 @@ class ViewModel:
     def get_params_of_node(self, node_id):
         params_by_functions = [self._call_graph.get_edges()[edge]['params'] for edge in self._call_graph.get_edges() if str(edge[1]) == node_id]
         return [params for calls in params_by_functions for params in calls]
-
-    def element_clicked(self, id):
-        if id in self._expanded_elements:
-            self._expanded_elements.remove(id)
-        else:
-            self._expanded_elements.append(id)
-
-    def get_expanded_elements(self):
-        return self._expanded_elements

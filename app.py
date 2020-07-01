@@ -71,4 +71,4 @@ class App:
         func_dialog_callbacks.disable_add_button(app=app, setup=setup)
 
         graph_callbacks.update_graph_elements(app=app, view_model=view_model, call_graph=call_graph)
-        graph_callbacks.update_graph_style(app=app, view_model=view_model, call_graph=call_graph)
+        graph_callbacks.update_graph_style(app=app, call_graph=call_graph)

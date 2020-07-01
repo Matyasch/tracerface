@@ -78,17 +78,3 @@ def test_get_params_of_node(edges, nodes):
     assert viewmodel.get_params_of_node('dummy_hash3') == [
         ['dummy_param'], ['dummy_param1'], ['dummy_param2'], ['dummy_param3']
     ]
-
-
-def test_expanded_elements():
-    call_graph = CallGraph()
-    viewmodel = ViewModel(call_graph, Setup(), TraceController(call_graph))
-    viewmodel.element_clicked('dummy_id1')
-    assert 'dummy_id1' in viewmodel._expanded_elements
-
-    viewmodel.element_clicked('dummy_id2')
-    assert 'dummy_id1' in viewmodel._expanded_elements
-    assert 'dummy_id2' in viewmodel._expanded_elements
-
-    viewmodel.element_clicked('dummy_id1')
-    assert 'dummy_id1' not in viewmodel._expanded_elements

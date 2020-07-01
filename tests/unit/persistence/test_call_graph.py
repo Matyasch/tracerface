@@ -148,5 +148,19 @@ class TestMaxCount(TestCase):
         self.assertEqual(call_graph.max_count(), 10)
 
 
+class TestExpandElements(TestCase):
+    def test_element_clicked_adds_element_to_returned_elements(self):
+        call_graph = CallGraph()
+        call_graph.element_clicked('dummy_id')
+        self.assertEqual(call_graph.get_expanded_elements(), ['dummy_id'])
+
+    def test_element_clicked_removes_element_to_returned_elements(self):
+        call_graph = CallGraph()
+        call_graph.element_clicked('dummy_id1')
+        call_graph.element_clicked('dummy_id2')
+        call_graph.element_clicked('dummy_id1')
+        self.assertEqual(call_graph.get_expanded_elements(), ['dummy_id2'])
+
+
 if __name__ == '__main__':
     main()

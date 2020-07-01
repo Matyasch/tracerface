@@ -8,6 +8,7 @@ class CallGraph:
         self._edges = {}
         self._yellow = 0
         self._red = 0
+        self._expanded_elements = []
 
     # Merge collection of new nodes to already existing ones
     def load_nodes(self, nodes):
@@ -45,6 +46,7 @@ class CallGraph:
         self._edges = {}
         self._yellow = 0
         self._red = 0
+        self._expanded_elements = []
 
     # Set bounds for yellow and red coloring
     def set_colors(self, yellow, red):
@@ -59,16 +61,27 @@ class CallGraph:
     def get_red(self):
         return self._red
 
-    # returns the maximum number of calls among nodes
+    # Returns the maximum number of calls among nodes
     def max_count(self):
         call_counts = [node['call_count'] for node in self._nodes.values()]
         if call_counts:
             return max(call_counts)
         return 0
 
-    # initialize color boundaries to default values based on maximum count
+    # Initialize color boundaries to default values based on maximum count
     def init_colors(self):
         max_count = self.max_count()
         new_yellow = round(max_count / 3)
         new_red = new_yellow * 2
         self.set_colors(new_yellow, new_red)
+
+    # Add to or remove element from expanded ones when the user clicks on them
+    def element_clicked(self, id):
+        if id in self._expanded_elements:
+            self._expanded_elements.remove(id)
+        else:
+            self._expanded_elements.append(id)
+
+    # Returns all currently expanded elemenets
+    def get_expanded_elements(self):
+        return self._expanded_elements
