@@ -7,7 +7,10 @@ from pytest import fixture
 from model.trace_controller import TraceController
 from persistence.call_graph import CallGraph
 from viewmodel.trace_setup import Setup
-from viewmodel.viewmodel import ViewModel
+from view.ui_format import (
+    convert_edges_to_cytoscape_format,
+    convert_nodes_to_cytoscape_format
+)
 
 
 EXPECTED_NODES = [
@@ -54,7 +57,6 @@ def test_trace():
     call_graph = CallGraph()
     setup = Setup()
     trace_controller = TraceController(call_graph)
-    viewmodel = ViewModel(call_graph, setup, trace_controller)
     setup.initialize_binary(test_app)
     setup.setup_function_to_trace(test_app, 'func1')
     setup.setup_function_to_trace(test_app, 'func2')
@@ -66,6 +68,8 @@ def test_trace():
     trace_controller.start_trace(setup.generate_bcc_args()) # start monitoring
     time.sleep(5) # BCC trace needs a bit of time to setup
     subprocess.run(test_app) # run monitored application
-    trace_controller.stop_trace() # stop monitoring
+    trace_controller.stop_trace() # stop
 
-    assert_results(viewmodel.get_nodes(), viewmodel.get_edges())
+    edges = convert_edges_to_cytoscape_format(call_graph.get_nodes(), call_graph.get_edges())
+    nodes = convert_nodes_to_cytoscape_format(call_graph.get_nodes(), call_graph.get_edges())
+    assert_results(nodes, edges)

@@ -10,10 +10,14 @@ from model.load_output import load_trace_output_from_file_to_call_graph
 from view.alerts import ErrorAlert
 from view.graph import Graph
 from view.styles import expanded_style
+from view.ui_format import (
+    convert_edges_to_cytoscape_format,
+    convert_nodes_to_cytoscape_format
+)
 
 
 # Update nodes and edges in graph
-def update_graph_elements(app, view_model, call_graph):
+def update_graph_elements(app, call_graph):
     output = [
         Output('graph', 'elements'),
         Output('load-output-notification', 'children')
@@ -40,7 +44,9 @@ def update_graph_elements(app, view_model, call_graph):
         elif id == 'load-output-button' :
             alert = ErrorAlert('No path given')
 
-        return view_model.get_nodes() + view_model.get_edges(), alert
+        edges = convert_edges_to_cytoscape_format(call_graph.get_nodes(), call_graph.get_edges())
+        nodes = convert_nodes_to_cytoscape_format(call_graph.get_nodes(), call_graph.get_edges())
+        return nodes + edges, alert
 
 
 # Display or hide inforamtion about edges and nodes

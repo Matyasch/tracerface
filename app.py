@@ -11,7 +11,6 @@ from model.trace_controller import TraceController
 from persistence.call_graph import CallGraph
 from view.layout import Layout
 from viewmodel.trace_setup import Setup
-from viewmodel.viewmodel import ViewModel
 
 
 # Class to store the application's resources
@@ -20,14 +19,12 @@ class App:
         self._call_graph = CallGraph()
         self._trace_controller = TraceController(self._call_graph)
         self._setup = Setup()
-        self._view_model = ViewModel(self._call_graph, self._setup, self._trace_controller)
         self._app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
         self._app.layout = Layout()
         self._app.title = 'Tracerface'
 
         self._setup_callbacks(
             app=self._app,
-            view_model=self._view_model,
             call_graph=self._call_graph,
             setup=self._setup,
             trace_controller=self._trace_controller)
@@ -42,7 +39,7 @@ class App:
             exit(1)
 
     # Initialize all callbacks used by the application
-    def _setup_callbacks(self, app, view_model, call_graph, setup, trace_controller):
+    def _setup_callbacks(self, app, call_graph, setup, trace_controller):
         app_dialog_callbacks.clear_traced_dropdown_menu(app=app)
         app_dialog_callbacks.clear_not_traced_dropdown_menu(app=app)
         app_dialog_callbacks.disable_manage_function_buttons(app=app)
@@ -70,5 +67,5 @@ class App:
         func_dialog_callbacks.update_parameters(app=app, setup=setup)
         func_dialog_callbacks.disable_add_button(app=app, setup=setup)
 
-        graph_callbacks.update_graph_elements(app=app, view_model=view_model, call_graph=call_graph)
+        graph_callbacks.update_graph_elements(app=app, call_graph=call_graph)
         graph_callbacks.update_graph_style(app=app, call_graph=call_graph)
