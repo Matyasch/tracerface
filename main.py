@@ -2,7 +2,10 @@
 from argparse import ArgumentParser
 import sys
 
-from tracerface.startup import start
+from dash import Dash
+from dash_bootstrap_components.themes import BOOTSTRAP
+
+from tracerface.init_resources import initialize
 
 
 def parse_args(args):
@@ -15,7 +18,10 @@ def parse_args(args):
 # Create resources and start application
 def main(args):
     parsed_args = parse_args(args)
-    start(debug=parsed_args.debug, logging=parsed_args.routes_logging)
+    app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
+    initialize(app)
+    silent = not parsed_args.routes_logging
+    app.run_server(debug=parsed_args.debug, dev_tools_silence_routes_logging=silent)
 
 
 if __name__ == '__main__':

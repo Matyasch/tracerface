@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-from dash import Dash
-from dash_bootstrap_components.themes import BOOTSTRAP
 
 from tracerface.callbacks import (
     app_dialog_callbacks,
@@ -45,20 +43,12 @@ def _setup_callbacks(app, call_graph, setup, trace_controller):
     graph_callbacks.update_graph_elements(app, call_graph)
     graph_callbacks.update_graph_style(app, call_graph)
 
-def start(debug, logging):
+# Initialize all resources used by the application
+def initialize(app):
     call_graph = CallGraph()
     trace_controller = TraceController(call_graph)
     setup = Setup()
-
-    app = Dash(__name__, external_stylesheets=[BOOTSTRAP])
     app.layout = Layout()
     app.title = 'Tracerface'
-
     _setup_callbacks(app, call_graph, setup, trace_controller)
 
-    silent = not logging
-    try:
-        app.run_server(debug=debug, dev_tools_silence_routes_logging=silent)
-    except OSError:
-        print('Address already in use!\nDid you already start the application?')
-        exit(1)
