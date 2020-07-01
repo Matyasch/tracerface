@@ -6,13 +6,14 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
+from model.load_output import load_trace_output_from_file_to_call_graph
 from view.alerts import ErrorAlert
 from view.graph import Graph
 from view.styles import expanded_style
 
 
 # Update nodes and edges in graph
-def update_graph_elements(app, view_model):
+def update_graph_elements(app, view_model, call_graph):
     output = [
         Output('graph', 'elements'),
         Output('load-output-notification', 'children')
@@ -23,17 +24,22 @@ def update_graph_elements(app, view_model):
     ]
     state = [State('output-path', 'value')]
     @app.callback(output, input, state)
-    def update_elements(load, time, output_path):
+    def update_elements(load, timer, file_path):
         if not callback_context.triggered:
             raise PreventUpdate
 
         alert = None
         id = callback_context.triggered[0]['prop_id'].split('.')[0]
-        if id == 'load-output-button':
+        if id == 'load-output-button' and file_path:
             try:
-                view_model.load_output(output_path)
-            except ValueError as msg:
-                alert = ErrorAlert(str(msg))
+                load_trace_output_from_file_to_call_graph(file_path, call_graph)
+            except FileNotFoundError:
+                alert = ErrorAlert('Could not find output file at {}'.format(file_path))
+            except IsADirectoryError:
+                alert = ErrorAlert('{} is a directory, not a file'.format(file_path))
+        elif id == 'load-output-button' :
+            alert = ErrorAlert('No path given')
+
         return view_model.get_nodes() + view_model.get_edges(), alert
 
 

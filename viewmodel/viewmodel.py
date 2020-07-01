@@ -1,8 +1,4 @@
-from pathlib import Path
-
-from model.parse_stack import parse_stack
-
-
+#!/usr/bin/env python3
 # Transforms data into format usable by the layout
 class ViewModel:
     def __init__(self, call_graph, setup, trace_controller):
@@ -83,24 +79,6 @@ class ViewModel:
     def get_params_of_node(self, node_id):
         params_by_functions = [self._call_graph.get_edges()[edge]['params'] for edge in self._call_graph.get_edges() if str(edge[1]) == node_id]
         return [params for calls in params_by_functions for params in calls]
-
-    # Event for static output submit button clicked
-    def load_output(self, path):
-        if not path:
-            return
-        try:
-            text = Path(path).read_text()
-        except FileNotFoundError:
-            raise ValueError('Could not find output file at {}'.format(path))
-        except IsADirectoryError:
-            raise ValueError('{} is a directory, not a file'.format(path))
-        self._call_graph.clear()
-        stacks = [stack.split('\n') for stack in text.split('\n\n')]
-        for stack in stacks:
-            graph = parse_stack(stack)
-            self._call_graph.load_edges(graph.edges)
-            self._call_graph.load_nodes(graph.nodes)
-        self._call_graph.init_colors()
 
     def element_clicked(self, id):
         if id in self._expanded_elements:
