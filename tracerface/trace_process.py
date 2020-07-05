@@ -12,6 +12,7 @@ from tracerface.bcc_trace import Tool
 class WritableQueue(Queue):
     def write(self, s):
         self.put(s)
+
     def flush(self):
         pass
 
@@ -26,15 +27,11 @@ class TraceProcess(multiprocessing.Process):
 
     def run(self):
         with redirect_stdout(self._queue):
-            self._run_bcc_trace()
+            sys.argv = self._args
+            Tool().run()
 
     def get_output(self):
         try:
             return self._queue.get_nowait().strip(' ')
         except Empty:
             return None
-
-    # Make sure the process exits in case tracing fails
-    def _run_bcc_trace(self):
-        sys.argv = self._args
-        Tool().run()
