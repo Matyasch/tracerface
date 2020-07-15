@@ -33,9 +33,9 @@ def test_initialize_binary(nm):
 
     assert setup._setup == {
         'app': {
-            'func1': {'traced': False, 'parameters': {}},
-            'func2': {'traced': False, 'parameters': {}},
-            'func3': {'traced': False, 'parameters': {}}
+            'func1': {'mangled': 'func1', 'traced': False, 'parameters': {}},
+            'func2': {'mangled': 'func2', 'traced': False, 'parameters': {}},
+            'func3': {'mangled': 'func3', 'traced': False, 'parameters': {}}
         }
     }
 
@@ -173,19 +173,19 @@ def test_generate_bcc_args_with_multiple_values():
     setup = Setup()
     setup._setup = {
         'app1': {
-            'func1': {'traced': True, 'parameters':{4: '%s', 2: '%d'}},
-            'func2': {'traced': False, 'parameters':{}}
+            'func1': {'mangled': 'mangled1', 'traced': True, 'parameters':{4: '%s', 2: '%d'}},
+            'func2': {'mangled': 'mangled2', 'traced': False, 'parameters':{}}
         },
         'app2': {
-            'func3': {'traced': True, 'parameters':{1: '%s', 5: '%d'}},
-            'func4': {'traced': True, 'parameters':{1: '%s', 2: '%f'}}
+            'func3': {'mangled': 'mangled3', 'traced': True, 'parameters':{1: '%s', 5: '%d'}},
+            'func4': {'mangled': 'mangled4', 'traced': True, 'parameters':{1: '%s', 2: '%f'}}
         }
     }
     result = setup.generate_bcc_args()
     assert result == [
-        'app1:func1 "%s %d", arg4, arg2',
-        'app2:func3 "%s %d", arg1, arg5',
-        'app2:func4 "%s %f", arg1, arg2',
+        'app1:mangled1 "%s %d", arg4, arg2',
+        'app2:mangled3 "%s %d", arg1, arg5',
+        'app2:mangled4 "%s %f", arg1, arg2',
     ]
 
 

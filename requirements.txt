@@ -1,6 +1,6 @@
-wheel
+cxxfilt
 dash
-dash-cytoscape
 dash-bootstrap-components
+dash-cytoscape
 dash-daq
 pyyaml

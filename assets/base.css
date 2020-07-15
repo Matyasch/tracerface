@@ -6,7 +6,4 @@
 
 }
 
-.scrollable{
-  overflow-y: auto;
-  max-height: 240px;
-}
+.VirtualizedSelectOption { white-space: nowrap; overflow: scroll; }

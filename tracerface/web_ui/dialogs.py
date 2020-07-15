@@ -39,7 +39,8 @@ class ManageApplicationDialog(dbc.Modal):
             dbc.Row([
                 dbc.Col(dcc.Dropdown(
                     id='functions-not-traced-select',
-                    placeholder='Select function to set it traced')),
+                    placeholder='Select function to set it traced',
+                    optionHeight=40)),
                 dbc.Col(
                     dbc.Button('Add',
                         id='add-function-button',

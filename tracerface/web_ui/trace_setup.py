@@ -3,6 +3,8 @@ from pathlib import Path
 from subprocess import CalledProcessError, check_output
 import yaml
 
+import cxxfilt
+
 
 class SetupError(Exception):
     class ErrorCauses(Enum):
@@ -54,7 +56,12 @@ class Setup:
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}
         for function in functions:
-            init_state[function] = {
+            try:
+                name = cxxfilt.demangle(function)
+            except cxxfilt.InvalidName:
+                name = function
+            init_state[name] = {
+                'mangled': function,
                 'traced': False,
                 'parameters': {}
             }
@@ -114,7 +121,7 @@ class Setup:
                     if app == 'built-ins':
                         argument = function
                     else:
-                        argument = '{}:{}'.format(app, function)
+                        argument = '{}:{}'.format(app, self._setup[app][function]['mangled'])
                     params = self._setup[app][function]['parameters']
                     if params:
                         argument = '{} "{}", {}'.format(
@@ -147,7 +154,6 @@ class Setup:
                         for index in config[app][function]:
                             self.add_parameter(app, function, index, config[app][function][index])
                 except SetupError as err:
-                    print('AAAAAAAAAAA')
                     if err.error_cause == SetupError.ErrorCauses.BINARY_NOT_FOUND:
                         self.initialize_built_in(app)
                         for index in config[app]:
