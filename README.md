@@ -10,15 +10,16 @@ An interactive web-app built with [dash][dash_docs] for call-graph visualisation
 ## Installation
 
 Packages from iovisor are required to run as others may be outdated.
-1. Get to the point where you can install iovisor packages, by following their [installation guide][bcc_install]
-2. Install the ```python3-bcc``` package
+1. Install the `bcc-tools` package, by following the BCC [installation guide][bcc_install]
+2. Install the `python3-bcc` package
 3. Clone this repo
+> It's important to install `bcc-tools` instead of `bpfcc-tools` as only the former supports python3
 
 ## Usage
 
-Run ```run.sh``` with superuser privileges. The privileges are needed for bcc trace to access the kernel. Use the ```--help``` argument for more information about arguemnts.
+Run `run.sh` with superuser privileges. The privileges are needed for bcc trace to access the kernel. Use the `--help` argument for more information about arguemnts.
 
-Run the ```run-tests.sh``` script for tests. For integration tests too you have to run it with superuser privileges for the previous reasons.
+Run the `run-tests.sh` script for tests. For integration tests too you have to run it with superuser privileges for the previous reasons.
 
 ## Features
 

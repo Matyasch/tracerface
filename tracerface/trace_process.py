@@ -1,10 +1,21 @@
 from contextlib import redirect_stdout
+from importlib import machinery, util
 import multiprocessing
 from multiprocessing.queues import Queue
 from queue import Empty
 import sys
 
-from tracerface.bcc_trace import Tool
+
+# BCC trace is supposed to be run from the terminal.
+# With this hack we can use it as a reuglar class instead.
+def _get_bcc_trace_tool(args):
+    sys.path.append('/usr/lib/python3/dist-packages')
+    loader = machinery.SourceFileLoader('bcc_trace', '/usr/share/bcc/tools/trace')
+    spec = util.spec_from_loader(loader.name, loader)
+    bcc_trace = util.module_from_spec(spec)
+    loader.exec_module(bcc_trace)
+    sys.argv = args
+    return bcc_trace.Tool()
 
 
 # Special Queue class with a write and flush method
@@ -26,9 +37,9 @@ class TraceProcess(multiprocessing.Process):
         self._args = args
 
     def run(self):
+        tool = _get_bcc_trace_tool(self._args)
         with redirect_stdout(self._queue):
-            sys.argv = self._args
-            Tool().run()
+            tool.run()
 
     def get_output(self):
         try:
