@@ -46,9 +46,8 @@ def _setup_callbacks(app, call_graph, setup, trace_controller):
 # Initialize all resources used by the application
 def initialize(app):
     call_graph = CallGraph()
-    trace_controller = TraceController(call_graph)
+    trace_controller = TraceController()
     setup = Setup()
     app.layout = Layout()
     app.title = 'Tracerface'
     _setup_callbacks(app, call_graph, setup, trace_controller)
-

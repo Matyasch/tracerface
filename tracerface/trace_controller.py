@@ -8,13 +8,12 @@ from tracerface.trace_process import TraceProcess
 # of the tracing process, consumes and parses its
 # outputs, and loads them into the given CallGraph
 class TraceController:
-    def __init__(self, call_graph):
-        self._call_graph = call_graph
+    def __init__(self):
         self._thread_enabled = False
         self._thread_error = None
 
     # While tracing, consume items from the queue and process them
-    def _monitor_tracing(self, trace_process):
+    def _monitor_tracing(self, trace_process, call_graph):
         calls = []
         last_line_was_empty = False # call-stack ends when two empty lines follow eachother
         while self._thread_enabled:
@@ -26,9 +25,9 @@ class TraceController:
             # call-stack ended
             if output == '\n' and last_line_was_empty:
                 stack = parse_stack(calls)
-                self._call_graph.load_edges(stack.edges)
-                self._call_graph.load_nodes(stack.nodes)
-                self._call_graph.init_colors()
+                call_graph.load_edges(stack.edges)
+                call_graph.load_nodes(stack.nodes)
+                call_graph.init_colors()
                 calls.clear()
             # new line after a regular output
             elif output == '\n':
@@ -43,7 +42,7 @@ class TraceController:
             trace_process.join()
 
     # Starts tracing of given functions
-    def start_trace(self, functions):
+    def start_trace(self, functions, call_graph):
         if not functions:
             self._thread_error = 'No functions to trace'
             return
@@ -52,19 +51,14 @@ class TraceController:
 
         args = ['', '-UK'] + [fr'{function}' for function in functions]
         trace_process = TraceProcess(args=args)
-        monitoring = Thread(target=self._monitor_tracing, args=(trace_process,))
+        monitoring = Thread(target=self._monitor_tracing, args=(trace_process, call_graph,))
         trace_process.start()
         monitoring.start()
 
     # Stop tracing and initialize colors
     def stop_trace(self):
         self._thread_enabled = False
-        self._call_graph.init_colors()
 
     # Returns error happening while an active trace
     def thread_error(self):
         return self._thread_error
-
-    # Returns status wether tracing is currently active or not
-    def trace_active(self):
-        return self._thread_enabled

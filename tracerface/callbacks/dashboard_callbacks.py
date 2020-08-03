@@ -55,8 +55,6 @@ def stop_trace_on_error(app, trace_controller):
         if timer_tick and trace_on:
             if trace_controller.thread_error():
                 return False, alerts.trace_error_alert(trace_controller.thread_error())
-            elif not trace_controller.trace_active():
-                return False, alerts.trace_error_alert('Tracing stopped unexpected')
         raise PreventUpdate
 
 
@@ -69,7 +67,7 @@ def start_or_stop_trace(app, call_graph, setup, trace_controller):
     def switch_state(trace_on, timer_disabled):
         if trace_on:
             call_graph.clear()
-            trace_controller.start_trace(setup.generate_bcc_args())
+            trace_controller.start_trace(setup.generate_bcc_args(), call_graph)
         elif not timer_disabled:
             trace_controller.stop_trace()
         return not trace_on

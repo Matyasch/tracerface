@@ -64,7 +64,7 @@ def test_binary(tmp_path):
 def test_trace(test_binary):
     call_graph = CallGraph()
     setup = Setup()
-    trace_controller = TraceController(call_graph)
+    trace_controller = TraceController()
 
     setup.initialize_binary(test_binary)
     setup.setup_function_to_trace(test_binary, 'func1')
@@ -74,7 +74,7 @@ def test_trace(test_binary):
     setup.add_parameter(test_binary, 'func1', '2', '%s')
     setup.add_parameter(test_binary, 'func2', '1', '%d')
 
-    trace_controller.start_trace(setup.generate_bcc_args()) # start monitoring
+    trace_controller.start_trace(setup.generate_bcc_args(), call_graph) # start monitoring
     time.sleep(5) # BCC trace needs a bit of time to setup
     subprocess.run(test_binary) # run monitored application
     trace_controller.stop_trace() # stop
