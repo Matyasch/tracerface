@@ -56,7 +56,8 @@ class ManageApplicationDialog(dbc.Modal):
             dbc.Label('Manage functions'),
             dcc.Dropdown(
                 id='functions-traced-select',
-                placeholder='Select function to manage'),
+                placeholder='Select function to manage',
+                optionHeight=40),
             dbc.Button('Manage parameters',
                 id='manage-params-button',
                 color='success',

@@ -92,12 +92,24 @@ class Setup:
         try:
             self._setup[app][function]['traced'] = True
         except KeyError:
+            for func_name in self._setup[app]:
+                if self._setup[app][func_name]['mangled'] == function:
+                    self._setup[app][func_name]['traced'] = True
+                    return
             err_message = 'No function named {} was found in {}'.format(function, app)
             raise SetupError.init_function_not_exists_in_binary(err_message)
 
     # Removes a function from traced ones
     def remove_function_from_trace(self, app, function):
-        self._setup[app][function]['traced'] = False
+        try:
+            self._setup[app][function]['traced'] = False
+        except KeyError:
+            for func_name in self._setup[app]:
+                if self._setup[app][func_name]['mangled'] == function:
+                    self._setup[app][func_name]['traced'] = False
+                    return
+            err_message = 'No function named {} was found in {}'.format(function, app)
+            raise SetupError.init_function_not_exists_in_binary(err_message)
 
     # Returns the indexes where a parameter is set for tracing
     def get_parameters(self, app, function):
