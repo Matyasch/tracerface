@@ -7,22 +7,22 @@ import cxxfilt
 
 
 class BinaryAlreadyAddedError(Exception):
-    def __init__(self, message):
+    def __init__(self, message=''):
         super().__init__(message)
 
 
 class BinaryNotExistsError(Exception):
-    def __init__(self, message):
+    def __init__(self, message=''):
         super().__init__(message)
 
 
 class ConfigFileError(Exception):
-    def __init__(self, message):
+    def __init__(self, message=''):
         super().__init__(message)
 
 
 class FunctionNotInBinaryError(Exception):
-    def __init__(self, message):
+    def __init__(self, message=''):
         super().__init__(message)
 
 
@@ -38,9 +38,7 @@ class Setup:
         try:
             symbols = check_output(['nm', path]).decode().rstrip().split('\n')
         except CalledProcessError:
-            raise BinaryNotExistsError(
-                'Could not find binary at {}, so it is assumed to be a built-in function'.format(path)
-            )
+            raise BinaryNotExistsError
 
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}

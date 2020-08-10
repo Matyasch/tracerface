@@ -5,7 +5,12 @@ from dash import callback_context
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 
-import tracerface.web_ui.alerts as alerts
+from  tracerface.web_ui.alerts import (
+    ErrorAlert,
+    SuccessAlert,
+    TraceErrorAlert,
+    WarningAlert
+)
 from tracerface.web_ui.dashboard import Dashboard
 from tracerface.web_ui.graph import Graph
 from tracerface.web_ui.trace_setup import (
@@ -59,7 +64,7 @@ def stop_trace_on_error(app, trace_controller):
     def stop_trace(timer_tick, trace_on):
         if timer_tick and trace_on:
             if trace_controller.thread_error():
-                return False, alerts.trace_error_alert(trace_controller.thread_error())
+                return False, TraceErrorAlert(trace_controller.thread_error())
         raise PreventUpdate
 
 
@@ -135,21 +140,22 @@ def update_apps_dropdown_options(app, setup):
         if id == 'add-app-button' and app_to_add:
             try:
                 setup.initialize_binary(app_to_add)
-                alert = alerts.add_app_success_alert(app_to_add)
-            except BinaryNotExistsError as e:
+                alert = SuccessAlert('Application added')
+            except BinaryNotExistsError:
+                msg = 'Binary not found at given path so it is assumed to be a built-in function'
+                alert = WarningAlert(msg)
                 setup.initialize_built_in(app_to_add)
-                alert = alerts.WarningAlert(str(e))
         elif id == 'remove-app-button' and app_to_remove:
             setup.remove_app(app_to_remove)
         elif id == 'load-config-button' and config_path:
             try:
                 err_message = setup.load_from_file(config_path)
                 if err_message:
-                    alert = alerts.WarningAlert(err_message)
+                    alert = WarningAlert(err_message)
                 else:
-                    alert = alerts.load_setup_success_alert(config_path)
+                    alert = SuccessAlert('Setup loaded')
             except (BinaryAlreadyAddedError, ConfigFileError, FunctionNotInBinaryError) as e:
-                alert = alerts.ErrorAlert(str(e))
+                alert = ErrorAlert(str(e))
         return [{"label": app, "value": app} for app in setup.get_apps()], alert
 
 
