@@ -4,7 +4,13 @@ from unittest.mock import patch
 
 from yaml.parser import ParserError, ScannerError
 
-from tracerface.web_ui.trace_setup import Setup, SetupError
+from tracerface.web_ui.trace_setup import (
+    BinaryAlreadyAddedError,
+    BinaryNotExistsError,
+    ConfigFileError,
+    FunctionNotInBinaryError,
+    Setup
+)
 
 
 def dummy_setup():
@@ -34,6 +40,17 @@ class TestInitBinary(TestCase):
             }
         }
         self.assertEqual(setup._setup, expected)
+
+    def test_init_binary_raises_error_if_binary_already_added(self):
+        setup = Setup()
+        setup._setup = dummy_setup()
+        with self.assertRaises(BinaryAlreadyAddedError):
+            setup.initialize_binary('app1')
+
+    def test_init_binary_raises_error_if_binary_not_exists(self):
+        setup = Setup()
+        with self.assertRaises(BinaryNotExistsError):
+            setup.initialize_binary('non_existent_app')
 
 
 class TestRemoveApp(TestCase):
@@ -124,10 +141,8 @@ class TestSetupFunctionToTrace(TestCase):
     def test_setup_function_to_trace_raises_error_if_function_not_exists(self):
         setup = Setup()
         setup._setup = dummy_setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(FunctionNotInBinaryError):
             setup.setup_function_to_trace('app1', 'func4')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY)
 
 
 class TestRemoveFunctionFromTrace(TestCase):
@@ -152,10 +167,8 @@ class TestRemoveFunctionFromTrace(TestCase):
     def test_remove_function_from_trace_raises_error_if_function_not_exists(self):
         setup = Setup()
         setup._setup = dummy_setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(FunctionNotInBinaryError):
             setup.remove_function_from_trace('app1', 'func4')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY)
 
 
 class TestParameters(TestCase):
@@ -223,10 +236,8 @@ class TestLoadFromFile(TestCase):
 
         read.side_effect = side_effect
         setup = Setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(ConfigFileError):
             setup.load_from_file('/dummy/path')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.WRONG_CONFIG_FILE)
 
     @patch('tracerface.web_ui.trace_setup.Path.read_text')
     def test_load_from_file_raises_exception_if_file_is_directory(self, read):
@@ -235,10 +246,8 @@ class TestLoadFromFile(TestCase):
 
         read.side_effect = side_effect
         setup = Setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(ConfigFileError) as ctx:
             setup.load_from_file('/dummy/path')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.WRONG_CONFIG_FILE)
 
     @patch('tracerface.web_ui.trace_setup.yaml.safe_load')
     @patch('tracerface.web_ui.trace_setup.Path.read_text')
@@ -248,10 +257,8 @@ class TestLoadFromFile(TestCase):
 
         load.side_effect = side_effect
         setup = Setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(ConfigFileError) as ctx:
             setup.load_from_file('/dummy/path')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.WRONG_CONFIG_FILE)
 
     @patch('tracerface.web_ui.trace_setup.yaml.safe_load')
     @patch('tracerface.web_ui.trace_setup.Path.read_text')
@@ -261,10 +268,8 @@ class TestLoadFromFile(TestCase):
 
         load.side_effect = side_effect
         setup = Setup()
-        with self.assertRaises(SetupError) as ctx:
+        with self.assertRaises(ConfigFileError) as ctx:
             setup.load_from_file('/dummy/path')
-        error_cause = ctx.exception.error_cause
-        self.assertEqual(error_cause, SetupError.ErrorCauses.WRONG_CONFIG_FILE)
 
     @patch('tracerface.web_ui.trace_setup.yaml.safe_load', return_value={'dummy_built_in' : {}})
     @patch('tracerface.web_ui.trace_setup.Path.read_text')

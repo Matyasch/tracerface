@@ -8,7 +8,12 @@ from dash.exceptions import PreventUpdate
 import tracerface.web_ui.alerts as alerts
 from tracerface.web_ui.dashboard import Dashboard
 from tracerface.web_ui.graph import Graph
-from tracerface.web_ui.trace_setup import SetupError
+from tracerface.web_ui.trace_setup import (
+    BinaryAlreadyAddedError,
+    BinaryNotExistsError,
+    ConfigFileError,
+    FunctionNotInBinaryError
+)
 
 
 # Disable function managagement buttons if no function is selected
@@ -103,7 +108,7 @@ def disable_searchbar(app, call_graph):
         return disabled
 
 
-# Add or remove applications, load content of config file
+# Update collection of apps to be traced
 def update_apps_dropdown_options(app, setup):
     output = [
         Output('applications-select', 'options'),
@@ -131,12 +136,9 @@ def update_apps_dropdown_options(app, setup):
             try:
                 setup.initialize_binary(app_to_add)
                 alert = alerts.add_app_success_alert(app_to_add)
-            except SetupError as err:
-                if err.error_cause == SetupError.ErrorCauses.BINARY_NOT_FOUND:
-                    setup.initialize_built_in(app_to_add)
-                    alert = alerts.WarningAlert(str(err))
-                elif err.error_cause == SetupError.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY:
-                    alert = alerts.ErrorAlert(str(err))
+            except BinaryNotExistsError as e:
+                setup.initialize_built_in(app_to_add)
+                alert = alerts.WarningAlert(str(e))
         elif id == 'remove-app-button' and app_to_remove:
             setup.remove_app(app_to_remove)
         elif id == 'load-config-button' and config_path:
@@ -146,8 +148,8 @@ def update_apps_dropdown_options(app, setup):
                     alert = alerts.WarningAlert(err_message)
                 else:
                     alert = alerts.load_setup_success_alert(config_path)
-            except SetupError as msg:
-                alert = alerts.ErrorAlert(str(msg))
+            except (BinaryAlreadyAddedError, ConfigFileError, FunctionNotInBinaryError) as e:
+                alert = alerts.ErrorAlert(str(e))
         return [{"label": app, "value": app} for app in setup.get_apps()], alert
 
 

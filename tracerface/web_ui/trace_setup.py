@@ -6,36 +6,24 @@ import yaml
 import cxxfilt
 
 
-class SetupError(Exception):
-    class ErrorCauses(Enum):
-        BINARY_ALREADY_ADDED = 1
-        BINARY_NOT_FOUND = 2
-        FUNCTION_NOT_EXISTS_IN_BINARY = 3
-        WRONG_CONFIG_FILE = 4
-
-    def __init__(self, message, cause):
+class BinaryAlreadyAddedError(Exception):
+    def __init__(self, message):
         super().__init__(message)
-        self._error_cause = cause
 
-    @classmethod
-    def init_binary_already_added(cls, message):
-        return cls(message=message, cause=cls.ErrorCauses.BINARY_ALREADY_ADDED)
 
-    @classmethod
-    def init_binary_not_found(cls, message):
-        return cls(message=message, cause=cls.ErrorCauses.BINARY_NOT_FOUND)
+class BinaryNotExistsError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
-    @classmethod
-    def init_function_not_exists_in_binary(cls, message):
-        return cls(message=message, cause=cls.ErrorCauses.FUNCTION_NOT_EXISTS_IN_BINARY)
 
-    @classmethod
-    def init_wrong_config_file(cls, message):
-        return cls(message=message, cause=cls.ErrorCauses.WRONG_CONFIG_FILE)
+class ConfigFileError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
-    @property
-    def error_cause(self):
-        return self._error_cause
+
+class FunctionNotInBinaryError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
 
 class Setup:
@@ -45,13 +33,14 @@ class Setup:
     # initialize app and its functions for tracing
     def initialize_binary(self, path):
         if path in self._setup:
-            raise SetupError.init_binary_already_added('Binary at {} already added'.format(path))
+            raise BinaryAlreadyAddedError('Binary at {} already added'.format(path))
 
         try:
             symbols = check_output(['nm', path]).decode().rstrip().split('\n')
         except CalledProcessError:
-            err_message = 'Could not find binary at {}, so it is assumed to be a built-in function'.format(path)
-            raise SetupError.init_binary_not_found(err_message)
+            raise BinaryNotExistsError(
+                'Could not find binary at {}, so it is assumed to be a built-in function'.format(path)
+            )
 
         functions = [symbol.split()[-1] for symbol in symbols]
         init_state = {}
@@ -96,8 +85,9 @@ class Setup:
                 if self._setup[app][func_name]['mangled'] == function:
                     self._setup[app][func_name]['traced'] = True
                     return
-            err_message = 'No function named {} was found in {}'.format(function, app)
-            raise SetupError.init_function_not_exists_in_binary(err_message)
+            raise FunctionNotInBinaryError(
+                'No function named {} was found in {}'.format(function, app)
+            )
 
     # Removes a function from traced ones
     def remove_function_from_trace(self, app, function):
@@ -108,8 +98,9 @@ class Setup:
                 if self._setup[app][func_name]['mangled'] == function:
                     self._setup[app][func_name]['traced'] = False
                     return
-            err_message = 'No function named {} was found in {}'.format(function, app)
-            raise SetupError.init_function_not_exists_in_binary(err_message)
+            raise FunctionNotInBinaryError(
+                'No function named {} was found in {}'.format(function, app)
+            )
 
     # Returns the indexes where a parameter is set for tracing
     def get_parameters(self, app, function):
@@ -147,32 +138,28 @@ class Setup:
         try:
             content = Path(path).read_text()
         except FileNotFoundError:
-            raise SetupError.init_wrong_config_file('Could not find config file at {}'.format(path))
+            raise ConfigFileError('Could not find config file at {}'.format(path))
         except IsADirectoryError:
-            raise SetupError.init_wrong_config_file('{} is a directory, not a file'.format(path))
+            raise ConfigFileError('{} is a directory, not a file'.format(path))
 
         try:
             config = yaml.safe_load(content)
         except (yaml.parser.ParserError, yaml.scanner.ScannerError):
-            raise SetupError.init_wrong_config_file('File needs to be yaml format')
+            raise ConfigFileError('File needs to be yaml format')
 
-        try:
-            err_message = ''
-            for app in config:
-                try:
-                    self.initialize_binary(app)
-                    for function in config[app]:
-                        self.setup_function_to_trace(app, function)
-                        for index in config[app][function]:
-                            self.add_parameter(app, function, index, config[app][function][index])
-                except SetupError as err:
-                    if err.error_cause == SetupError.ErrorCauses.BINARY_NOT_FOUND:
-                        self.initialize_built_in(app)
-                        for index in config[app]:
-                            self.add_parameter('built-ins', app, index, config[app][index])
-                        err_message = 'Some binaries were not found so they were assumed to be built-in functions'
-                    else:
-                        raise
-            return err_message
-        except TypeError:
-            raise SetupError.init_wrong_config_file('File format is incorrect')
+        err_message = ''
+        for app in config:
+            try:
+                self.initialize_binary(app)
+                for function in config[app]:
+                    self.setup_function_to_trace(app, function)
+                    for index in config[app][function]:
+                        self.add_parameter(app, function, index, config[app][function][index])
+            except BinaryNotExistsError:
+                self.initialize_built_in(app)
+                for index in config[app]:
+                    self.add_parameter('built-ins', app, index, config[app][index])
+                err_message = 'Some binaries were not found so they were assumed to be built-in functions'
+            except TypeError:
+                raise ConfigFileError('File format is incorrect')
+        return err_message
