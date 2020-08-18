@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from unittest import main, TestCase
 
 from tracerface.call_graph import CallGraph

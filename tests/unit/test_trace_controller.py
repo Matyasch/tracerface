@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from unittest import main, mock, TestCase
 
 from tracerface.trace_controller import TraceController
