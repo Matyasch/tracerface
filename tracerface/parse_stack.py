@@ -11,7 +11,7 @@ from re import compile
 
 
 # Regex patterns to match in bcc trace output
-_FUNCTION_PATTERN = compile(r'^b\'(.+)\+.*\s\[(.+)\]')
+_FUNCTION_PATTERN = compile(r'([a-zA-Z0-9_]+)\+.*\s\[(.+)\]')
 _PARAMS_PATTERN = compile(r'^\d+\s+\d+\s+\S+\s+\S+\s+(.+)')
 _HEADER_PATTERN = compile(r'^PID\s+TID\s+COMM\s+FUNC')
 
@@ -77,7 +77,7 @@ def parse_stack(stack):
     traced = True
     while stack:
         call = stack.pop(0)
-        caller = _FUNCTION_PATTERN.match(call)
+        caller = _FUNCTION_PATTERN.search(call)
         if caller:
             caller_node = _create_node(caller)
             caller_hash = sha256(repr(caller_node).encode()).hexdigest()
