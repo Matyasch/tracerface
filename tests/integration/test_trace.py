@@ -15,19 +15,23 @@ from tracerface.web_ui.ui_format import (
 
 
 EXPECTED_NODES = [
-    {'name': '__libc_start_main', 'count': 0, 'source': 'libc-2.27.so'},
+    {'name': '__libc_start_main', 'count': 0, 'source': 'libc-2.31.so'},
     {'name': 'func1', 'count': 2, 'source': 'test_application'},
     {'name': 'func2', 'count': 1, 'source': 'test_application'},
     {'name': 'func3', 'count': 5, 'source': 'test_application'},
+    {'name': 'func4', 'count': 0, 'source': 'test_application'},
+    {'name': 'func5', 'count': 0, 'source': 'test_application'},
     {'name': 'func6', 'count': 0, 'source': 'test_application'},
     {'name': 'main', 'count': 0, 'source': 'test_application'}
 ]
 
 
 EXPECTED_EDGES = [
-    {'call_count': 2, 'called_name': 'func1', 'caller_name': 'func6', 'params': '...'},
-    {'call_count': 1, 'called_name': 'func2', 'caller_name': 'func6', 'params': '3'},
-    {'call_count': 5, 'called_name': 'func3', 'caller_name': 'func6', 'params': ''},
+    {'call_count': 2, 'called_name': 'func1', 'caller_name': 'func5', 'params': '...'},
+    {'call_count': 1, 'called_name': 'func2', 'caller_name': 'func4', 'params': '3'},
+    {'call_count': 5, 'called_name': 'func3', 'caller_name': 'func4', 'params': ''},
+    {'call_count': 0, 'called_name': 'func4', 'caller_name': 'func6', 'params': ''},
+    {'call_count': 0, 'called_name': 'func5', 'caller_name': 'func6', 'params': ''},
     {'call_count': 0, 'called_name': 'func6', 'caller_name': 'main', 'params': ''},
     {'call_count': 0, 'called_name': 'main', 'caller_name': '__libc_start_main', 'params': ''}
 ]

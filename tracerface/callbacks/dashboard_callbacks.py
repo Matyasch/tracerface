@@ -17,7 +17,8 @@ from tracerface.web_ui.trace_setup import (
     BinaryAlreadyAddedError,
     BinaryNotExistsError,
     ConfigFileError,
-    FunctionNotInBinaryError
+    FunctionNotInBinaryError,
+    BuiltInNotExistsError
 )
 
 
@@ -144,7 +145,12 @@ def update_apps_dropdown_options(app, setup):
             except BinaryNotExistsError:
                 msg = 'Binary not found at given path so it is assumed to be a built-in function'
                 alert = WarningAlert(msg)
-                setup.initialize_built_in(app_to_add)
+                try:
+                    setup.initialize_built_in(app_to_add)
+                except BuiltInNotExistsError:
+                    msg = 'Binary not found at given path, nor as built-in'
+                    alert = WarningAlert(msg)
+                    
         elif id == 'remove-app-button' and app_to_remove:
             setup.remove_app(app_to_remove)
         elif id == 'load-config-button' and config_path:
