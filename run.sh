@@ -10,7 +10,8 @@ if ! [ -f "/usr/share/bcc/tools/trace" ]; then
     exit 1
 fi
 
-if ! [ -f "/usr/lib/python3/dist-packages/bcc/__init__.py" ]; then
+BCC_INSTALLED="$(python3 -c "import bcc")"
+if [ $BCC_INSTALLED ]; then
     echo "Please install the python3-bcc package"
     exit 1
 fi
